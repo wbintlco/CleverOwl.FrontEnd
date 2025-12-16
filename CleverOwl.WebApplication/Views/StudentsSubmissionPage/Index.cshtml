@@ -1,0 +1,484 @@
+﻿@model IEnumerable<RLI.Common.DataObjects.GetAssignmentSubmissionsResultModel>
+@using RLI.Common.Managers
+@using RLI.Common.DataObjects
+@using System.Web.Http;
+@using RLI.EntityFramework.EDM
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissions"));
+    List<RLI.Common.DataObjects.GetAssignmentSubmissionsResultModel> gradedAssig = Model.Where(t => t.GradingStatus == "graded" && t.Status == "submitted").ToList();
+    List<RLI.Common.DataObjects.GetAssignmentSubmissionsResultModel> notGradedAssig = Model.Where(t => t.GradingStatus == "notgraded" && t.Status == "submitted").ToList();
+    List<RLI.Common.DataObjects.GetAssignmentSubmissionsResultModel> notSubmittedAssig = Model.Where(t => t.Status == "new" || t.Status=="draft").ToList();
+    List<RLI.Common.DataObjects.GetAssignmentSubmissionsResultModel> assignmentNotViewedStudents = Model.Where(t => t.Status == "notviewed").ToList();
+    AspNetUser currentUser = ViewBag.CurrentUser;
+    int? currentUserId = null;
+    if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Student")
+    {
+        currentUserId = currentUser.Studentkey;
+    }
+    else if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Teacher")
+    {
+
+        currentUserId = currentUser.TeacherKey;
+    }
+    var AssignmentName = ViewBag.AssignmentName;
+
+    var GradeKey = ViewBag.GradeKey;
+    var SubjectKey = ViewBag.SubjectKey;
+}
+
+<style>
+    .m-accordion__item-title {
+        border-bottom: 1px solid;
+    }
+
+    .select2-results {
+        padding: 15% !important;
+    }
+
+    svg {
+        height: 50px;
+    }
+
+    .page-banner {
+        margin-top: 100px;
+        height: fit-content;
+        background-color: #ffffff;
+    }
+
+    .page-body {
+        padding: 0;
+        margin-bottom: 50px;
+    }
+
+    .grid-card {
+        box-shadow: rgb(99 99 99 / 20%) 0px 2px 8px 0px;
+        border-radius: 25px;
+        padding: 40px;
+        background: linear-gradient( to left, rgb(115 110 197 / 80%) 0%, rgb(68 60 182) 100% ) left bottom #ffffff no-repeat;
+        background-size: 100% 18px;
+    }
+
+    .grid-card-head-title {
+        margin-top: 20px;
+    }
+
+    .grid-card-head-datetime {
+        margin-top: 20px;
+    }
+
+    .grid-card-body {
+        margin-top: 25px;
+        font-weight: 100;
+    }
+
+    .grid-card-footer {
+        margin-top: 50px;
+        margin-bottom: -10px;
+    }
+
+    .table-row {
+        display: table-row;
+        height: auto;
+    }
+
+    .table-cell1 {
+        border: none;
+        display: table-cell;
+        padding: 2px;
+        width: 80%
+    }
+
+    .table-cell2 {
+        border: none;
+        display: table-cell;
+        padding: 2px;
+    }
+
+    video {
+        max-width: 398px;
+        max-height: 130px;
+    }
+
+
+
+    .select2-selection__clear {
+        padding-top: 8px !important;
+    }
+
+    @@media(min-width: 992px) and (max-width:1024px) {
+        .RenderBody {
+            max-width: 100%;
+            padding-right: 15%;
+            padding-left: 15%;
+        }
+    }
+
+    @@media (max-width:522px) {
+        #select2-recordsDropdown-container {
+            position: absolute;
+            right: 18%;
+        }
+    }
+
+    .studentSubmissionCard {
+        cursor: pointer;
+        transition-duration: 0.3s;
+        transition-property: transform;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+        .studentSubmissionCard:hover {
+            background-color: #f98e47;
+            transform: scale(1.1);
+        }
+</style>
+
+<section class="page-banner">
+    <div class="container">
+        <div class="page-title-wrapper">
+            <div>
+                <ul class="bradcurmed">
+                    <li><a href="@Url.Action("Index","Dashboard")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Wall"))</a></li>
+                    <li><a href="@Url.Action("Index","Assignments")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Assignments"))</a></li>
+                    <li><a rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissions"))</a></li>
+                </ul>
+            </div>
+
+            <div class="row m--margin-top-20-desktop">
+                <div class="col-lg-1 m-auto m--hidden-tablet m--hidden-mobile">
+                    @Html.Partial("~/Views/SharedSvgs/_AssignmentsIcon.cshtml")
+                </div>
+                <div class="col-lg-5 col-12 m-auto">
+                    <h1 class="page-title"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissions")) (@ViewBag.AssignmentName)</h1>
+                </div>
+                <div class="col-lg-3  m-auto">
+                </div>
+                <div class="col-lg-3 col-12 m-auto">
+
+                </div>
+            </div>
+
+
+
+        </div>
+        @if (Model.Count() > 0)
+        {
+            <div class="row mt-4">
+
+                <div class="col-9 pr-0">
+                    <div class="m-input-icon m-input-icon--left m-input-icon--right" style="">
+                        <input id="searchInput" type="text" class="form-control searchInputAssignSync" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Search"))...">
+                        <span class="m-input-icon__icon m-input-icon__icon--right mr-3"><span><i class="fas fa-search"></i></span></span>
+                    </div>
+                </div>
+
+                <div class="col-3 pl-1">
+                    <div class="m-input-icon m-input-icon--left m-input-icon--right records-control-widget" style="">
+                        <select class="form-control" id="recordsDropdown" style="width:100%">
+                            <option>10</option>
+                            <option>20</option>
+                            <option selected="">50</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+        }
+
+
+
+    </div>
+</section>
+@if (Model.Count() > 0)
+{
+    <div class="row">
+
+        <div class="col-12">
+            <div class="page-body">
+                <div class="container">
+                    <div class="row">
+                        @if (notGradedAssig.Count() > 0)
+                        {
+                            <div class="col-12 mt-4" id="searchContainer">
+
+                            </div>
+                            <div class="m-accordion m-accordion--section m-accordion--padding-lg w-100" id="m_section_6_content">
+                                <!--begin::Item-->
+                                <div class="m-accordion__item">
+                                    <div class="m-accordion__item-head collapsed-" role="tab" id="m_section_6_content_6_head" data-toggle="collapse" href="#m_section_6_content_6_body">
+                                        <span class="m-accordion__item-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "NotGraded"))</span>
+                                        <span class="m-accordion__item-mode"></span>
+                                    </div>
+                                    <div class="m-accordion__item-body collapse show" id="m_section_6_content_6_body" role="tabpanel" aria-labelledby="m_section_6_content_6_head" data-parent="#m_section_6_content">
+                                        <div class="m-accordion__item-content">
+
+                                            @Html.Partial("_StudentSubmissionsGrid", notGradedAssig)
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @if (gradedAssig.Count() > 0)
+                        {
+                            <div class="m-accordion m-accordion--section m-accordion--padding-lg w-100" id="m_section_7_content">
+                                <!--begin::Item-->
+                                <div class="m-accordion__item">
+                                    <div class="m-accordion__item-head collapsed-" role="tab" id="m_section_7_content_7_head" data-toggle="collapse" href="#m_section_7_content_7_body">
+                                        <span class="m-accordion__item-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "Graded"))</span>
+                                        <span class="m-accordion__item-mode"></span>
+                                    </div>
+                                    <div class="m-accordion__item-body collapse show" id="m_section_7_content_7_body" role="tabpanel" aria-labelledby="m_section_7_content_7_head" data-parent="#m_section_7_content">
+                                        <div class="m-accordion__item-content">
+                                            @Html.Partial("_StudentSubmissionsGrid", gradedAssig)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @if (notSubmittedAssig.Count() > 0)
+                        {
+                            <div class="m-accordion m-accordion--section m-accordion--padding-lg w-100" id="m_section_8_content">
+                                <!--begin::Item-->
+                                <div class="m-accordion__item">
+                                    <div class="m-accordion__item-head collapsed-" role="tab" id="m_section_8_content_8_head" data-toggle="collapse" href="#m_section_8_content_8_body">
+                                        <span class="m-accordion__item-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmissionsPageNotSubmitted"))</span>
+                                        <span class="m-accordion__item-mode"></span>
+                                    </div>
+                                    <div class="m-accordion__item-body collapse show" id="m_section_8_content_8_body" role="tabpanel" aria-labelledby="m_section_8_content_8_head" data-parent="#m_section_8_content">
+                                        <div class="m-accordion__item-content">
+                                            @Html.Partial("_StudentSubmissionsGrid", notSubmittedAssig)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @if (assignmentNotViewedStudents.Count() > 0)
+                        {
+                            <div class="m-accordion m-accordion--section m-accordion--padding-lg w-100" id="m_section_8_content">
+                                <!--begin::Item-->
+                                <div class="m-accordion__item">
+                                    <div class="m-accordion__item-head collapsed-" role="tab" id="m_section_8_content_8_head" data-toggle="collapse" href="#m_section_8_content_8_body">
+                                        <span class="m-accordion__item-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmissionsPageNotViewed"))</span>
+                                        <span class="m-accordion__item-mode"></span>
+                                    </div>
+                                    <div class="m-accordion__item-body collapse show" id="m_section_8_content_8_body" role="tabpanel" aria-labelledby="m_section_8_content_8_head" data-parent="#m_section_8_content">
+                                        <div class="m-accordion__item-content">
+                                            @Html.Partial("_StudentSubmissionsGrid", assignmentNotViewedStudents)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+}
+else
+{
+    @Html.Partial("~/Views/StudentsSubmissionPage/_EmptyStudentsSubmission.cshtml")
+}
+
+@using (Html.BeginForm("StudentSubmissionDetails", "StudentsSubmissionPage", FormMethod.Post, new { id = "StudentSubmissionDetailsHidden", @class = "", @style = "display:none;" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("userId", "")
+    @Html.Hidden("assignmentId", "")
+    @Html.Hidden("isGraded", "")
+    @Html.Hidden("index", "")
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+
+    <!--Reference the SignalR library. -->
+    @Scripts.RenderFormat("<script src='https://" + Request.Url.Host + "/{0}'></script>", "~/Scripts/jquery.signalR-2.4.1.min.js")
+    <!--Reference the autogenerated SignalR hub script. -->
+    @Scripts.RenderFormat("<script src='https://" + Request.Url.Host + "/{0}'></script>", "~/signalr/hubs")
+
+<script>
+        var AssignmentsPageSearching = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageSearching"))";
+        var AssignmentsPageResultNotFound = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageResultNotFound"))";
+
+        $('#recordsDropdown').select2({
+            language: {
+                noResults: function () {
+                    return AssignmentsPageResultNotFound;
+                },
+                searching: function () {
+                    return AssignmentsPageSearching;
+                }
+            },
+            placeholder: 'Sessions Count',
+            minimumResultsForSearch: 10
+        });
+
+    $("#searchInput").keyup(function () {
+        setTimeout(function () {
+            mApp.block($("#searchContainer"));
+            FilterSubmissions();
+        }, 1000);
+    })
+
+    function FilterSubmissions() {
+            var search = $("#searchInput").val();
+            var records = $("#recordsDropdown option:selected").val();
+
+        if (search != '') {
+            $.ajax({
+                url: '@Url.Action("SeachStudentsSubmissions", "StudentsSubmissionPage")',
+                type: 'POST',
+                dataType: "html",
+                data: {
+                    assignmnentId: '@ViewBag.assignmnentId', studentFullName: search, records: records,
+                    __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+                },
+                success: function (data) {
+                    $("#searchContainer").empty();
+                    $("#searchContainer").html(data);
+                    mApp.unblock($("#searchContainer"));
+                }
+            });
+        } else {
+            $("#searchContainer").empty();
+            mApp.unblock($("#searchContainer"));
+        }
+
+        }
+
+        $('.studentSubmissionCard').hover(function () {
+            //orange
+            $(this).find('.btn-brand').css('background-color', '#ffffff');
+            $(this).find('.btn-brand').css('border-color', '#ffffff');
+            $(this).find('.btn-brand').css('color', '#f98e47');
+            //green
+            $(this).find('.btn-success').css('background-color', '#ffffff');
+            $(this).find('.btn-success').css('border-color', '#ffffff');
+            $(this).find('.btn-success').css('color', '#34bfa3');
+            //red
+            $(this).find('.btn-danger').css('background-color', '#ffffff');
+            $(this).find('.btn-danger').css('border-color', '#ffffff');
+            $(this).find('.btn-danger').css('color', '#f4516c');
+        }, function () {
+            //orange
+            $(this).find('.btn-brand').css('background-color', '#f98e47');
+            $(this).find('.btn-brand').css('border-color', '#f98e47');
+            $(this).find('.btn-brand').css('color', '#ffffff');
+            //grenn
+            $(this).find('.btn-success').css('background-color', '#34bfa3');
+            $(this).find('.btn-success').css('border-color', '#34bfa3');
+            $(this).find('.btn-success').css('color', '#ffffff');
+            //red
+            $(this).find('.btn-danger').css('background-color', '#f4516c');
+            $(this).find('.btn-danger').css('border-color', '#f4516c');
+            $(this).find('.btn-danger').css('color', '#ffffff');
+        });
+
+
+        $('.btn-brand').hover(function () {
+            $(this).css('background-color', '#2b2350');
+            $(this).css('border-color', '#2b2350');
+        }, function () {
+            $(this).css('background-color', '#ffffff');
+            $(this).css('border-color', '#ffffff');
+
+        });
+        $('.btn-success').hover(function () {
+            $(this).css('background-color', '#2b2350');
+            $(this).css('border-color', '#2b2350');
+        }, function () {
+            $(this).css('background-color', '#ffffff');
+            $(this).css('border-color', '#ffffff');
+        });
+
+        $('.btn-danger').hover(function () {
+            $(this).css('background-color', '#2b2350');
+            $(this).css('border-color', '#2b2350');
+        }, function () {
+            $(this).css('background-color', '#ffffff');
+            $(this).css('border-color', '#ffffff');
+        });
+
+
+        $(document).ready(function () {
+
+            $(document).on('click', '.studentSubmissionsGrid', function () {
+                setOnClickListener($(this));
+            });
+                                     @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Teacher")
+                                 {
+                                 <text>
+            try {
+                console.log('@currentUserId');
+                console.log('@SubjectKey-@GradeKey');
+                console.log('@AssignmentName');
+            var prevcoursedata = {
+                "version": "1.0.0",
+                "context": {
+                    "type": "preview-course",
+                    "action": "preview-course",
+                    "user": {
+                        "id": '@currentUserId'
+                    },
+                    "data": {
+                        "classInfo": {
+                            "id": '@SubjectKey-@GradeKey',
+                            "className": '@AssignmentName'
+                        }
+                    },
+                    content: [
+                    ],
+
+                },
+            };
+
+        document.getElementById("gooru").inputdata = prevcoursedata;
+        } catch (e) {
+
+        }
+
+        </text>
+    }
+
+        });
+
+        function setOnClickListener(selector) {
+            var userId = selector.attr('data-userId');
+            var assignmentId = selector.attr('data-assigId');
+            var isGraded = selector.attr('data-graded');
+            var index = selector.attr('data-index');
+            var submissionStatus = selector.attr('data-status');
+            var submissionsSize = 0;
+            if (submissionStatus == "submitted" && isGraded == "True") {
+                submissionsSize = "@gradedAssig.Count()"
+            } else if (submissionStatus == "submitted" && isGraded == "False") {
+                submissionsSize = "@notGradedAssig.Count()";
+            } else if (submissionStatus == "new" || submissionStatus == "draft") {
+                submissionsSize = "@notSubmittedAssig.Count()";
+            } else if (submissionStatus == "notviewed") {
+                submissionsSize = "@assignmentNotViewedStudents.Count()";
+                return;
+            }
+
+            //check attr
+            console.log('userId: ' + userId);
+            console.log('assignmentId: ' + assignmentId);
+            console.log('isGraded: ' + isGraded);
+            console.log('index: ' + index);
+            console.log('submissionsSize: ' + submissionsSize);
+            console.log('submissionStatus: ' + submissionStatus);
+            //end of check attr
+
+            submit_post_via_hidden_form("@Url.Action("StudentSubmissionDetails", "StudentsSubmissionPage")", { userId: userId, assignmentId: assignmentId, isGraded: isGraded, index: index, submissionsSize: submissionsSize, submissionStatus: submissionStatus});
+        }
+</script>
+}

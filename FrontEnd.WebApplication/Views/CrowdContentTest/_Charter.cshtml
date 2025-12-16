@@ -1,0 +1,59 @@
+﻿@using RLI.Common.Managers
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+@using (Html.BeginForm("SignCharter", "CrowdContent", FormMethod.Post, new { @class = "m-form m-form--fit m-form--label-align-right m-form--group-seperator-dashed", @id = "charterForm", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="m-form__section m-form__section--first">
+        <div class="m-form__heading">
+            <h3 class="font-weight-bold">
+                <i class="fa fa-pen-fancy" style="padding-right: 20px;font-size:3rem;"></i>
+                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateCharterPageTitle"))
+            </h3>
+        </div>
+        <div class="form-group m-form__group row">
+            <div class="col-xl-12 col-lg-12">
+                <div class="m-list-search">
+                    <div class="m-list-search__results">
+                        <span class="m-list-search__result-category m-list-search__result-category--first">
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateCharterPageInvitation")) <strong>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateCharterPageCRDP"))</strong>,
+                        </span>
+                        <p class="lead">
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateCharterPageIntroSentence"))
+                        </p>
+                        <span class="m-list-search__result-category m-list-search__result-category--first" style="font-weight:500;">
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateCharterPageRightAnResTitle"))
+                        </span>
+                        <p class="lead">
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateCharterPageOpeningRightSentence"))
+                        </p>
+                        <span class="m-list-search__result-item">
+                            <span class="m-list-search__result-item-icon"><i class="flaticon-interface-5 m--font-success"></i></span>
+                            <span class="m-list-search__result-item-text">
+                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateCharterPageFirstRight"))
+                            </span>
+                        </span>
+                        <span class="m-list-search__result-item">
+                            <span class="m-list-search__result-item-icon"><i class="flaticon-interface-5 m--font-success"></i></span>
+                            <span class="m-list-search__result-item-text">
+                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateCharterPageSecondRight"))
+                            </span>
+                        </span>
+                        <span class="m-list-search__result-item">
+                            <span class="m-list-search__result-item-icon"><i class="flaticon-interface-5 m--font-success"></i></span>
+                            <span class="m-list-search__result-item-text">
+                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateCharterPageThirdRight"))
+                            </span>
+                        </span>
+                    </div>
+                    <p class="lead m--margin-top-10">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateCharterPageAgreePrompt"))
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+}

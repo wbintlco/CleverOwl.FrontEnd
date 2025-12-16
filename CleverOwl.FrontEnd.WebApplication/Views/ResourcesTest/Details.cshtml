@@ -1,0 +1,123 @@
+﻿@model Everest.OpenCurate.EntityFramework.EDM.Candidate
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Candidate</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ForeignCandidateKey)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ForeignCandidateKey)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PublishedDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PublishedDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Scope)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Scope)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Summary)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Summary)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.URL)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.URL)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Notes)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Notes)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.File.FileName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.File.FileName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Grade.Grade1)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Grade.Grade1)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Language.Language1)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Language.Language1)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Status.Status1)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Status.Status1)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Subject.Subject1)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Subject.Subject1)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Topic.Topic1)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Topic.Topic1)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.CandidateKey }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

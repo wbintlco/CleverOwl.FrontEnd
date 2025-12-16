@@ -1,0 +1,556 @@
+﻿@model IEnumerable<RLI.EntityFramework.EDM.SynchronousSession>
+@using RLI.Common.Managers
+@using RLI.EntityFramework.EDM
+@using Microsoft.AspNet.Identity
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageSynchronousSessions"));
+
+    Language currentLanguage = ViewBag.CurrentLanguage;
+    bool iscoordinator = false;
+    if ((User.IsInRole("ContentManager") || User.IsInRole("Coordinator") || User.IsInRole("HeadOfDepartment") || User.IsInRole("SchoolDirector") || User.IsInRole("SchoolPrincipal") || User.IsInRole("SeniorCoordinator")) && ViewBag.CurrentUser.Id != User.Identity.GetUserId())
+    {
+        iscoordinator = true;
+    }
+}
+@if (currentLanguage == null || !currentLanguage.IsRTL)
+{
+    <style>
+        .search-form-widget .select2.select2-container.select2-container--default {
+            padding: 0;
+            border-radius: 30px 0px 0px 30px !important;
+        }
+    </style>
+}
+else
+{
+    <style>
+        .search-form-widget .select2.select2-container.select2-container--default {
+            padding: 0;
+            border-radius: 0px 30px 30px 0px !important;
+        }
+    </style>
+}
+
+<style>
+    svg {
+        width: 50px;
+    }
+
+    .select2-results {
+        padding: 15% !important;
+    }
+
+    .page-banner {
+        margin-top: 100px;
+        height: fit-content;
+        margin-bottom: 30px;
+        background-color: #ffffff;
+    }
+
+    .page-body {
+        padding: 0;
+        margin-bottom: 50px;
+    }
+
+    .grid-card {
+        box-shadow: rgb(99 99 99 / 20%) 0px 2px 8px 0px;
+        border-radius: 25px;
+        padding: 40px;
+        background: linear-gradient( to left, rgb(115 110 197 / 80%) 0%, rgb(68 60 182) 100% ) left bottom #ffffff no-repeat;
+        background-size: 100% 18px;
+    }
+
+    @@media (min-width:1024px) {
+        .grid-card {
+            min-height: 357px;
+        }
+    }
+
+    @@media (max-width:522px) {
+        #select2-recordsDropdown-container {
+            position: absolute;
+            right: 18%;
+        }
+    }
+
+    .grid-card-head-title {
+        margin-top: 20px;
+    }
+
+        .grid-card-head-title h3 {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+            .grid-card-head-title h3:hover {
+                overflow: visible;
+                word-break: break-word;
+                white-space: normal;
+            }
+
+    .grid-card-head-datetime {
+        margin-top: 20px;
+    }
+
+        .grid-card-head-datetime .datetime {
+            max-width: 80%;
+        }
+
+    .grid-card-body {
+        margin-top: 25px;
+        font-weight: 100;
+    }
+
+        .grid-card-body p {
+            word-break: break-word;
+            max-height: 200px;
+            overflow: hidden;
+        }
+
+    .grid-card-footer {
+        margin-top: 50px;
+        margin-bottom: -10px;
+    }
+
+    .search-form-widget .select2-search__field {
+        background: transparent !important;
+        border: 0 !important;
+        padding: 19px 10px 19px 30px !important;
+        font-size: 16px !important;
+        font-weight: 400 !important;
+        margin: 0 !important;
+        border-radius: 45px !important;
+        -webkit-transition: all 0.3s ease-in-out;
+        -o-transition: all 0.3s ease-in-out !important;
+        transition: all 0.3s ease-in-out !important;
+    }
+
+
+    .search-form-widget .select2-container--default .select2-selection--multiple {
+        background: transparent !important;
+        border: 0 !important;
+    }
+
+    .search-form-widget .select2-container--default.select2-container--focus .select2-selection--multiple {
+        background: transparent !important;
+        border: 0 !important;
+    }
+
+    .search-form-widget .select2-dropdown {
+        margin-top: 10px;
+        background-color: #ffffff !important;
+        border-radius: 45px !important;
+    }
+
+    .search-form-widget .select2-results {
+        padding: 20px !important;
+    }
+
+    .search-form-widget .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #fdf1f1 !important;
+    }
+
+    .search-form-widget .select2-selection__choice {
+        padding: 18px !important;
+        width: inherit !important;
+    }
+
+    .search-form-widget .select2-selection__choice__remove {
+        float: right;
+        display: block;
+        height: 100%;
+        margin-top: 6px;
+        margin-left: 6px;
+    }
+
+    .search-form-widget .select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
+        border: 0 !important;
+        background-color: transparent !important;
+    }
+
+
+    .select2.select2-container.select2-container--default {
+        width: 100% !important;
+    }
+
+    .select2-selection__clear {
+        padding-top: 8px !important;
+    }
+
+    @@media(max-width:1023px) and (min-width:769px) {
+        svg {
+            max-width: 10%;
+        }
+    }
+
+    @@media(max-width:991px) {
+        .BodyParent #m_aside_left {
+            display: none !important;
+        }
+
+        .sessionIcon {
+            display: none;
+        }
+    }
+
+    .coordinator {
+        pointer-events: none;
+        opacity: 0.5;
+        cursor: not-allowed;
+        filter: grayscale(100%);
+    }
+</style>
+
+<!--==========================-->
+<!--=         Banner         =-->
+<!--==========================-->
+
+
+<section class="page-banner">
+    <div class="container">
+
+        <div class="page-title-wrapper">
+            <div>
+                <ul class="bradcurmed">
+                    <li><a href="@Url.Action("Index","Dashboard")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageWall"))</a></li>
+                    <li><a href="@Url.Action("Index","SynchronousSessions")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageSynchronousSessions"))</a></li>
+                </ul>
+            </div>
+            <div class="row m--margin-top-20-desktop">
+                <div class="col-lg-1 m-auto sessionIcon">
+                    @Html.Partial("~/Views/SharedSvgs/_SynchronousLearningIcon.cshtml")
+                </div>
+                <div class="col-lg-5 col-12 m-auto">
+                    <h1 class="page-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageSynchronousSessions"))</h1>
+                </div>
+                <div class="col-lg-3  m-auto">
+                </div>
+
+                <div class="col-lg-3 col-12 m-auto">
+                    @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Teacher" || RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Student")
+                    {
+                        <button id="topCreateButton" type="button" class="@(Model == null || Model.Count() == 0 ? "d-none" : "") createButton btn m-btn--pill m-btn m-btn--gradient-from-primary m-btn--gradient-to-info pull-right m--padding-top-15 m--padding-bottom-15 m--padding-left-20 m--padding-right-20 w-100-mobile @(iscoordinator ? "coordinator" : "")">
+                            <i class="fa fa-plus m--padding-right-5"></i>
+                            <span>
+                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageCreateSession"))
+                            </span>
+                        </button>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+        <div class="@(Model == null || Model.Count() == 0 ? "d-none" : "")">
+            <div class="row mt-4 mb-4">
+                <div class="col-9 pr-0">
+                    <div class="search-form-widget m-input-icon m-input-icon--left m-input-icon--right" style="margin-top:0px!important">
+                        <select id="searchInput" class="search-field" multiple="multiple" name="param">
+                            <option></option>
+                        </select>
+                        <span class="m-input-icon__icon m-input-icon__icon--right mr-3"><span><i class="fas fa-search"></i></span></span>
+                    </div>
+                </div>
+                <div class="col-3 pl-1">
+                    <div class="records-control-widget">
+                        <select class="form-control" id="recordsDropdown">
+                            <option selected="">10</option>
+                            <option>20</option>
+                            <option>50</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name != "Student")
+                {
+                    <div class="col-lg-4 col-md-4 col-12 mb-2">
+                        @Html.DropDownList("GradesDropDown", (SelectList)ViewBag.Grades, "Grades", htmlAttributes: new { @class = "form-control", @id = "GradeDropDown", @style = "width:100%;" })
+                    </div>
+                }
+                <div class="col-lg-4 col-md-4 col-12 mb-2">
+                    @Html.DropDownList("SubjectDropDown", (SelectList)ViewBag.Subjects, "Subjects", htmlAttributes: new { @class = "form-control", @id = "SubjectDropDown", @style = "width:100%;" })
+                </div>
+                <div class="col-lg-4 col-md-4 col-12">
+                    @Html.DropDownList("DueDates", (SelectList)ViewBag.DueDates, "DueDates", htmlAttributes: new { @class = "form-control", @id = "SessionsDatesDropDown", @style = "width:100%;" })
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</section>
+<div class="page-body">
+    <div id="gridContainer" class="container">
+        @Html.Partial("_SynchronousSessionsGrid", (object)ViewBag.SynchronousSessionsSetupViewModel)
+    </div>
+</div>
+<!-- /.page-banner -->
+<!--=============================-->
+<!--=         Page Body         =-->
+<!--=============================-->
+
+
+
+@section Scripts {
+
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+
+    <script>
+        var SynchronousSessionsWizardAlertCopiedTitleSwal = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageCopied!"))";
+        var SynchronousSessionsWizardAlertCopiedTextSwal = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageYourMeetingLinkWasCopiedToClipboard"))";
+        var SynchronousSessionsWizardAlertConfirmButtonSwal = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageAlright"))";
+        var SynchronousSessionsWizardSessionDeleteConfirmTitleSwal = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageAreYouSure?"))";
+        var SynchronousSessionsWizardSessionDeleteConfirmTextSwal = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageOncedeletedthesessioncantberestored"))";
+        var SynchronousSessionsWizardSessionDeleteConfirmButtonSwal = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageYesdeleteit!"))";
+        var SynchronousSessionsWizardSessionDeleteErrorTitleSwal = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageErrorDeletingSession!"))";
+        var SynchronousSessionsWizardSessionDeleteErrorTextSwal = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageWewerentabletodeleteyoursessionatthemomentpleasetryagainlater"))";
+        var SynchronousSessionsWizardSessionDeleteCancelButtonSwal = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsWizardSessionDeleteCancelButtonSwal"))";
+        var SynchronousSessionsPageSearching = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageSearching"))";
+        var SynchronousSessionsPageYouMustEnter3Characters = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageYouMustEnter3Characters"))";
+        var SynchronousSessionsPageResultNotFound = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageResultNotFound"))";
+        $('.RenderBody').removeClass('col-md-9');
+        $(".createButton").click(function () {
+            window.location = '@Url.Action("Create")';
+        });
+    $("#createSessionButtonEmptySlateBtn").click(function () {
+            window.location = '@Url.Action("Create")';
+        });
+        function refreshGrid() {
+
+            $(document).on('click', '#sessionUrlCopyButton', function () {
+
+                var url = $(this).data("session-url");
+
+                navigator.clipboard.writeText(url).then(function () {
+
+                    swal.fire({
+                        "title": SynchronousSessionsWizardAlertCopiedTitleSwal,
+                        "text": SynchronousSessionsWizardAlertCopiedTextSwal,
+                        "type": 'success',
+                        "confirmButtonClass": "btn m-btn--pill btn-brand",
+                        "confirmButtonText": SynchronousSessionsWizardAlertConfirmButtonSwal
+                    }).then((result) => {
+                    });
+
+                }, function () {
+                    console.log('clipboard failed');
+                });
+            });
+
+            $(".deleteSessionButton").click(function () {
+                var sessionKey = $(this).data("session-id");
+                swal.fire({
+                    "title": SynchronousSessionsWizardSessionDeleteConfirmTitleSwal,
+                    "text": SynchronousSessionsWizardSessionDeleteConfirmTextSwal,
+                    "type": 'warning',
+                    "confirmButtonClass": "btn m-btn--pill btn-danger",
+                    "confirmButtonText": SynchronousSessionsWizardSessionDeleteConfirmButtonSwal,
+                    "cancelButtonText": SynchronousSessionsWizardSessionDeleteCancelButtonSwal,
+                    showCancelButton: true,
+                    "cancelButtonClass": "btn m-btn--pill btn-metal"
+                }).then((result) => {
+                    if (result.value) {
+                        deleteConfirmed(sessionKey);
+                    }
+                });
+            });
+
+        }
+        refreshGrid();
+
+        function deleteConfirmed(session) {
+
+            var card = $(`#card-${session}`);
+            mApp.block(card);
+
+            $.ajax({
+                url: '@Url.Action("Delete")',
+                type: 'POST',
+                data: {
+                    __RequestVerificationToken: $('@Html.AntiForgeryToken()').val(),
+                    id: session
+                },
+                success: function (data) {
+                    mApp.unblock(card);
+                    card.fadeOut('fast', function () {
+                        card.remove();
+
+                        var gridCardsCount = $(".container .grid-card").length;
+                        if (gridCardsCount == 0) {
+                            $("#topCreateButton").addClass("d-none");
+                            $(".blankslate").removeClass("d-none");
+                        }
+                    });
+                },
+                error: function (error) {
+                    mApp.unblock(card);
+                    swal.fire({
+                        "title": SynchronousSessionsWizardSessionDeleteErrorTitleSwal,
+                        "text": SynchronousSessionsWizardSessionDeleteErrorTextSwal,
+                        "type": 'error',
+                        "confirmButtonClass": "btn m-btn--pill btn-brand",
+                        "confirmButtonText": SynchronousSessionsWizardAlertConfirmButtonSwal
+                    });
+                }
+            });
+        }
+
+        var container = $("#gridContainer");
+        $('#recordsDropdown').select2({
+            language: {
+                noResults: function () {
+                    return SynchronousSessionsPageResultNotFound;
+                },
+                searching: function () {
+                    return SynchronousSessionsPageSearching;
+                }
+            },
+            placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SyncSessionsPageSelectCount"))',
+            minimumResultsForSearch: 10
+        });
+
+        var gradeDropDown = $('#GradeDropDown').select2({
+            language: {
+                noResults: function () {
+                    return SynchronousSessionsPageResultNotFound;
+                },
+                searching: function () {
+                    return SynchronousSessionsPageSearching;
+                }
+            },
+            placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SyncSessionsPageSelectGrade"))',
+            allowClear: true
+        });
+
+        var subjectDropDown = $('#SubjectDropDown').select2({
+            language: {
+                noResults: function () {
+                    return SynchronousSessionsPageResultNotFound;
+                },
+                searching: function () {
+                    return SynchronousSessionsPageSearching;
+                }
+            },
+            placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SyncSessionsPageSelectSubject"))',
+            allowClear: true
+        });
+
+        var sessionsDatesDropDown = $('#SessionsDatesDropDown').select2({
+            language: {
+                noResults: function () {
+                    return SynchronousSessionsPageResultNotFound;
+                },
+                searching: function () {
+                    return SynchronousSessionsPageSearching;
+                }
+            },
+            placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SyncSessionsPageSelectDate"))',
+            allowClear: true
+        });
+
+        $("#recordsDropdown").change(function () {
+            FilterAssignment();
+        })
+
+        $("#GradeDropDown").change(function () {
+            FilterAssignment();
+        })
+
+        $("#SubjectDropDown").change(function () {
+            FilterAssignment();
+        })
+
+        $("#SessionsDatesDropDown").change(function () {
+            FilterAssignment();
+        })
+
+        var searchInput = $('#searchInput').select2({
+            ajax: {
+                url: '@Url.Action("Search")',
+                dataType: 'json',
+                type: 'POST',
+                delay: 250,
+                cache: true,
+                allowClear: true,
+                multiple: true,
+                maximumSelectionLength: 1,
+                data: function (params) {
+                    var query = {
+                        query: params.term,
+                         __RequestVerificationToken : $('@Html.AntiForgeryToken()').val()
+                    }
+
+                    return query;
+                },
+                processResults: function (data, params) {
+                    return {
+                        results: data
+                    };
+                }
+            },
+            language: {
+                inputTooShort: function () {
+                    return SynchronousSessionsPageYouMustEnter3Characters;
+                },
+                noResults: function () {
+                    return SynchronousSessionsPageResultNotFound;
+                },
+                searching: function () {
+                    return SynchronousSessionsPageSearching;
+                }
+            },
+            placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DataTableSearch"))',
+            escapeMarkup: function (markup) { return markup; },
+            minimumInputLength: 3,
+            maximumSelectionLength: 1,
+            templateSelection: function (data) {
+
+                return data.text;
+            }
+        });
+
+        searchInput.on('select2:select', function (e) {
+            FilterAssignment();
+        });
+
+        searchInput.on("select2:unselecting", function (e) {
+            FilterAssignment();
+        });
+
+        function FilterAssignment() {
+            var search = searchInput.val();
+            var records = $("#recordsDropdown option:selected").val();
+            var grade = $("#GradeDropDown option:selected").val();
+            var subject = $("#SubjectDropDown option:selected").val();
+            var sessionDate = $("#SessionsDatesDropDown option:selected").val();
+            $.ajax({
+                url: '@Url.Action("Filter", "SynchronousSessions")',
+                type: 'POST',
+                dataType: "html",
+                data: {
+                    query:search,records: records, gradeKey: grade, subjectKey: subject, sessionDate: sessionDate,
+                    __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+                },
+                beforeSend: function () {
+                    mApp.block(container);
+                },
+                success: function (data) {
+                    container.empty();
+                    container.html(data);
+                    mApp.unblock(container);
+                    refreshGrid();
+                },
+                error: function () {
+                    mApp.unblock(container);
+                    swal("Something Went Wrong!", "We couldn't filter your sessions, please try again later.", "error");
+                }
+            });
+        }
+
+    </script>
+}

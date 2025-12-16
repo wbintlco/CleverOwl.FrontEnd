@@ -1,0 +1,43 @@
+﻿@model IEnumerable<CleverOwl.WebApplication.Models.ContactModel>
+@{
+    if (Model.Count() == 0)
+    {
+        <h3>No Contact found</h3>
+    }
+    else
+    {
+        for (int i = 0; i < Model.Count(); i++)
+        {
+            <li id="conversationTab_@i" class="m-nav__item activateItem" data-conversation_id=@Model.ElementAt(i).coversationID data-member_id="@Model.ElementAt(i).memberID" data-index="@i">
+                <a id="conversationItem_@i" class="m-nav__link m-tabs__item conversationItem" href="#">
+                    <div class="row">
+                        <div class="col-4">
+                            <img class="profilePhoto" src="@(Model.ElementAt(i).profileimageurlsmall)" />
+                        </div>
+                        <div class="col-8 m-auto">
+                            <div class="row">
+                                <div class="col-12">
+                                    <span class="m-nav__link-text" style="font-size:1.1em;white-space: nowrap;overflow: hidden;">@Model.ElementAt(i).fullname</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-9">
+                                    <span style="font-size:0.7em;white-space: nowrap;overflow: hidden;">@Html.Raw(Model.ElementAt(i).lastMessage)</span>
+                                </div>
+                                <div class="col-3">
+                                    @if (Model.ElementAt(i).isread == false)
+                                    {
+                                        <span class="m--font-success" style="font-size:0.7em; text-align:end">new</span>
+
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </li>
+        }
+    }
+
+}
+

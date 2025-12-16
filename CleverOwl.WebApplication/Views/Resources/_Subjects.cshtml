@@ -1,0 +1,26 @@
+﻿@using RLI.Common.Managers
+@using Everest.OpenCurate.EntityFramework.EDM
+@model IEnumerable<Everest.OpenCurate.EntityFramework.EDM.Subject>
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    int subjectIndex = 0;
+    int CurrentLanguageIdentifier = (int)ViewBag.CurrentLanguageIdentifier;
+}
+<h2 class="widget-title">
+    <i class="m-menu__link-icon fab fa-discourse mr-2" style="font-size:2.5rem;"><span class="ml-2" style="font-family:'poppins'; font-size:2rem; font-weight:bold">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ResourcesPageSubject"))</span></i>
+    <i class="show_subject m-menu__ver-arrow la m--pull-right mt-3" data-status="none" style="color: #2b2350"></i>
+    @*<i class="show_subject m-menu__ver-arrow la la-angle-up m--pull-right mt-3 d-none d-lg-block" data-status="up" style="color: #2b2350"></i>*@
+</h2>
+<ul id="subjects_list">
+    @foreach (Subject subject in Model.Distinct().OrderBy(s => s.SubjectIndex))
+    {
+
+       string subjectValue = CurrentLanguageIdentifier == 0 ? subject.Subject1 : subject.DataGUID.DataTranslations.Where(dt => dt.LanguageKey == CurrentLanguageIdentifier).FirstOrDefault().Value;
+
+        <li class="Subject_Filter" style="cursor:pointer" data-key="@subject.SubjectKey" data-index="@subjectIndex">
+            <a>@subjectValue</a>
+            <span class="m-badge m-badge--brand">@Model.Count(c => c.SubjectKey == subject.SubjectKey).ToString()</span><span class="remove m-badge m-badge--danger" data-key="@subject.SubjectKey" data-display="false" style="display:none; margin-left:10px " title="click to remove">X</span>
+        </li>
+        subjectIndex++;
+    }
+</ul>

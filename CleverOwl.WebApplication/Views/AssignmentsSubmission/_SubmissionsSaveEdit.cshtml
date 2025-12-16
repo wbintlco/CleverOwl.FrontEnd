@@ -1,0 +1,44 @@
+﻿
+@model RLI.Common.DataObjects.SubmissionDetailsViewModel
+@using RLI.Common.Managers
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+    <div class="row">
+        <div id="onlineTextBlock" class="col-md-6 col-12 mt-2">
+            <div id="summernote" class="note-icon-summernote"></div>
+        </div>
+        <div id="submissionFilesBlock" class="col-md-6 col-12 mt-2">
+            <div id="dropzone" class="m-dropzone dropzone m-dropzone--metal" style="height:300px">
+                <div class="m-dropzone__msg dz-message needsclick">
+                    <div>
+                        <i class="fa fa-file-upload fa-8x" style="margin-bottom:20px;"></i>
+                    </div>
+                    <span class="m-dropzone__msg-desc">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageDragDrop"))</span>
+                </div>
+            </div>
+            <div id="filesUploaded" class="row">
+
+            </div>
+        </div>
+    </div>
+    <div id="SaveBtns" class="mt-5" style="text-align:center">
+        @if (Model.Locked == false)
+        {
+            if (Model.SubmissionStatus == "draft")
+            {
+                <button id="editSubmissionBtn" class="btn btn-brand">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSaveChanges"))</button>
+                <button id="saveSubmissionBtn" class="btn btn-brand">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSave"))</button>
+            }
+            else if (Model.SubmissionStatus != "submitted")
+            {
+                <button id="saveSubmissionBtn" class="btn btn-brand">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSave"))</button>
+                <button id="saveDraftSubmissionBtn" class="btn btn-brand">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSaveDraft"))</button>
+            }
+            <button id="cancelSubmissionBtn" class="btn btn-brand">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageCancel"))</button>
+        }
+
+    </div>
+
+
+

@@ -1,0 +1,456 @@
+﻿@using RLI.Common.Managers
+@using RLI.WebApplication.Models
+@using RLI.EntityFramework.EDM
+@using RLI.Common.Enums
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+
+    ViewBag.Title = UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageTitleViewBag");
+
+    AspNetUser currentUser = ViewBag.CurrentUser;
+
+    int currentStep = 0;
+
+    if (currentUser.CrowdContentStatusKey != null)
+    {
+        switch ((StatusEnum)currentUser.CrowdContentStatusKey)
+        {
+            case StatusEnum.StatusSigned:
+                currentStep = 2;
+                break;
+            case StatusEnum.StatusProfileReviewed:
+                currentStep = 2;
+                break;
+            case StatusEnum.StatusPhoneVerified:
+                currentStep = 4;
+                break;
+            case StatusEnum.StatusContentSpecified:
+                currentStep = 5;
+                break;
+            default:
+                currentStep = 0;
+                break;
+        }
+    }
+
+    ReviewProfileViewModel reviewProfileViewModel = (ReviewProfileViewModel)ViewBag.UserDetails;
+
+    string phoneNumber = reviewProfileViewModel == null ? string.Empty : reviewProfileViewModel.PhoneNumber;
+    Language currentLanguage = ViewBag.CurrentLanguage;
+}
+
+@Styles.Render("~/assets/vendors/intl-tel-input/build/css/intlTelInput.min.css")
+
+@if (currentStep == 5)
+{
+    @Html.Partial("_ActionCompleted")
+
+    @section Scripts {
+        <script>
+            swal.fire({
+                title: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageAlreadyParticipatedTitle"))',
+                text: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageAlreadyParticipatedMsg"))'
+            }).then((result) => {
+                window.location = '@Url.Action("Index","Home")';
+            });
+        </script>
+    }
+    return;
+}
+
+    @if (currentLanguage.IsRTL)
+    {
+        <style>
+            .flip{
+                -webkit-transform: scaleX(-1); 
+                transform: scaleX(-1);
+            }
+        </style>
+    }
+
+<style>
+    .wizard-step-title-custom {
+        font-size: 20px !important;
+    }
+
+    .intl-tel-input {
+        width: 100% !important;
+    }
+</style>
+
+<!--Begin::Main Portlet-->
+<div class="m-portlet m-portlet--full-height" style="overflow:hidden;">
+    <!--begin: Portlet Body-->
+    <div class="m-portlet__body m-portlet__body--no-padding">
+
+        <!--begin: Form Wizard-->
+        <div class="m-wizard m-wizard--3 m-wizard--success" id="m_wizard">
+
+            <!--begin: Message container -->
+            <div class="m-portlet__padding-x">
+
+                <!-- Here you can put a message or alert -->
+            </div>
+
+            <!--end: Message container -->
+            <div class="row m-row--no-padding">
+                <div class="col-xl-1 col-lg-12"></div>
+                <div class="col-xl-4 col-lg-12">
+
+                    <!--begin: Form Wizard Head -->
+                    <div class="m-wizard__head">
+
+                        <!--begin: Form Wizard Progress -->
+                        <div class="m-wizard__progress">
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+
+                        <!--end: Form Wizard Progress -->
+                        <!--begin: Form Wizard Nav -->
+                        <div class="m-wizard__nav">
+                            <div class="m-wizard__steps">
+                                <div class="m-wizard__step m-wizard__step--current" m-wizard-target="m_wizard_form_step_1">
+                                    <div class="m-wizard__step-info">
+                                        <a href="#" class="m-wizard__step-number">
+                                            <span><span>1</span></span>
+                                        </a>
+                                        <div class="m-wizard__step-label">
+                                            <h3 class="m-auto m--padding-left-15 font-weight-bold wizard-step-title-custom">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageTheCharter"))</h3>
+                                            <div class="m-auto m--padding-left-15">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageSignToCharter"))</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="m-wizard__step" m-wizard-target="m_wizard_form_step_2">
+                                    <div class="m-wizard__step-info">
+                                        <a href="#" class="m-wizard__step-number">
+                                            <span><span>2</span></span>
+                                        </a>
+                                        <div class="m-wizard__step-label">
+                                            <h3 class="m-auto m--padding-left-15 font-weight-bold wizard-step-title-custom">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageReviewProfile"))</h3>
+                                            <div class="m-auto m--padding-left-15">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageCheckPersonalInfo"))</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="m-wizard__step" m-wizard-target="m_wizard_form_step_3">
+                                    <div class="m-wizard__step-info">
+                                        <a href="#" class="m-wizard__step-number">
+                                            <span><span>3</span></span>
+                                        </a>
+                                        <div class="m-wizard__step-label">
+                                            <h3 class="m-auto m--padding-left-15 font-weight-bold wizard-step-title-custom">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageVerifyNumberTitle"))</h3>
+                                            <div class="m-auto m--padding-left-15">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageVerifyNumberMsg"))</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="m-wizard__step" m-wizard-target="m_wizard_form_step_4">
+                                    <div class="m-wizard__step-info">
+                                        <a href="#" class="m-wizard__step-number">
+                                            <span><span>4</span></span>
+                                        </a>
+                                        <div class="m-wizard__step-label">
+                                            <h3 class="m-auto m--padding-left-15 font-weight-bold wizard-step-title-custom">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageSpecifyContent"))</h3>
+                                            <div class="m-auto m--padding-left-15">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageTellUsWhatYouHave"))</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <img class="img-fluid m--margin-left-25 m--hidden-mobile m--hidden-tablet" src="@Url.Content("~/assets/files/media/img/others/crowdcontent-wizard@2x.png")" alt="Crowd Content">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--end: Form Wizard Nav -->
+                    </div>
+
+                    <!--end: Form Wizard Head -->
+                </div>
+                <div class="col-xl-7 col-lg-12" style="background-color: rgb(243, 246, 249);">
+
+                    <!--begin: Form Wizard Form-->
+                    <div class="m-wizard__form">
+
+                        <!--
+                            1) Use m-form--label-align-left class to alight the form input lables to the right
+                            2) Use m-form--state class to highlight input control borders on form validation
+                        -->
+                        <div class="m-portlet__body m-portlet__body--no-padding">
+
+                            <!--begin: Form Wizard Step 1-->
+                            <div class="m-wizard__form-step m-wizard__form-step--current" id="m_wizard_form_step_1" data-form-id="charterForm">
+                                @Html.Partial("_Charter")
+                            </div>
+
+                            <!--end: Form Wizard Step 1-->
+                            <!--begin: Form Wizard Step 2-->
+                            <div class="m-wizard__form-step" id="m_wizard_form_step_2" data-form-id="profileReviewForm">
+                                @Html.Partial("_ProfileReview", (object)ViewBag.UserDetails)
+                            </div>
+
+                            <!--end: Form Wizard Step 2-->
+                            <!--begin: Form Wizard Step 3-->
+                            <div class="m-wizard__form-step" id="m_wizard_form_step_3" data-form-id="phoneVerificationForm">
+                                @Html.Partial("_PhoneVerification", (object)ViewBag.VerifyPhoneNumberModel)
+                            </div>
+
+                            <!--end: Form Wizard Step 3-->
+                            <!--begin: Form Wizard Step 4-->
+                            <div class="m-wizard__form-step" id="m_wizard_form_step_4" data-form-id="contentCategoriesForm">
+                                @Html.Partial("_ContentCategories")
+                            </div>
+
+                            <!--end: Form Wizard Step 4-->
+                        </div>
+
+                        <div class="m-form m-form--label-align-left- m-form--state-">
+                            <!--begin: Form Actions -->
+                            <div class="m-portlet__foot m-portlet__foot--fit m--margin-top-40">
+                                <div class="m-form__actions">
+                                    <div class="row">
+                                        <div class="col-lg-6 m--align-left">
+                                            @*<a href="#" class="btn btn-secondary m-btn m-btn--custom m-btn--icon" data-wizard-action="prev">
+                                                    <span>
+                                                        <i class="la la-arrow-left"></i>&nbsp;&nbsp;
+                                                        <span>Back</span>
+                                                    </span>
+                                                </a>*@
+                                        </div>
+                                        <div class="col-lg-6 m--align-right">
+                                            <a href="#" class="btn btn-brand m-btn m-btn--custom m-btn--icon" data-wizard-action="submit">
+                                                <span>
+                                                    <i class="la la-check"></i>&nbsp;&nbsp;
+                                                    <span>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageParticipateBtn"))</span>
+                                                </span>
+                                            </a>
+                                            <a href="#" class="btn m-btn--pill btn-success btn-lg m-btn m-btn--custom m-btn--icon" data-wizard-action="next">
+                                                <span>
+                                                    <span id="btnNextContent">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageSignAndContinue"))</span>&nbsp;&nbsp;
+                                                    <i class="la la-arrow-right flip"></i>
+                                                </span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--end: Form Actions -->
+                        </div>
+                    </div>
+
+                    <!--end: Form Wizard Form-->
+                </div>
+            </div>
+        </div>
+
+        <!--end: Form Wizard-->
+    </div>
+
+    <!--end: Portlet Body-->
+</div>
+
+<!--End::Main Portlet-->
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/files/wizards/crowdcontent-participate-wizard.js")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+    @Scripts.Render("~/assets/vendors/intl-tel-input/build/js/intlTelInput.min.js")
+    @Scripts.Render("~/assets/vendors/jquery.repeater/jquery.repeater.min.js")
+
+<script>
+    var participationLastStep = @currentStep;
+
+    var successUrl = '@Url.Action("Index","Home")';
+
+    var CrowdContentParticipateGreetBackSuccessTitleSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateGreetBackSuccessTitleSwal")";
+    var CrowdContentParticipateGreetBackSuccessBodySwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateGreetBackSuccessBodySwal")";
+    var CrowdContentParticipateAlertErrorTitleSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateAlertErrorTitleSwal")";
+    var CrowdContentParticipateAlertErrorBodySwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateAlertErrorBodySwal")";
+    var CrowdContentParticipateAlertWrongCodeTitleSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateAlertWrongCodeTitleSwal")";
+    var CrowdContentParticipateAlertWrongCodeBodySwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateAlertWrongCodeBodySwal")";
+    var CrowdContentParticipateAlertDeleteSubjectGradeSwalTitleSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateAlertDeleteSubjectGradeSwalTitleSwal")";
+    var CrowdContentParticipateAlertDeleteSubjectGradeSwalTextSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateAlertDeleteSubjectGradeSwalTextSwal")";
+    var CrowdContentParticipateAlertAcceptTermsTitleSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateAlertAcceptTermsTitleSwal")";
+    var CrowdContentParticipateAlertAcceptTermsTextSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateAlertAcceptTermsTextSwal")";
+    var CrowdContentParticipateAlertPhoneNumberNotValidTitleSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateAlertPhoneNumberNotValidTitleSwal")";
+    var CrowdContentParticipateAlertPhoneNumberNotValidTextSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateAlertPhoneNumberNotValidTextSwal")";
+    var CrowdContentParticipateAlertSuccessTitleSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateAlertSuccessTitleSwal")";
+    var CrowdContentParticipateAlertSuccessTextSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateAlertSuccessTextSwal")";
+    var CrowdContentParticipateSubmitAlertErrorTitleSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateSubmitAlertErrorTitleSwal")";
+    var CrowdContentParticipateSubmitAlertErrorTextSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateSubmitAlertErrorTextSwal")";
+    var CrowdContentParticipateAlertContributionCategoriesMissingTitleSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateAlertContributionCategoriesMissingTitleSwal")";
+    var CrowdContentParticipateAlertContributionCategoriesMissingTextSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateAlertContributionCategoriesMissingTextSwal")";
+
+    /*start:code resend*/
+    var CrowdContentParticipateResendCodeAlertPleaseWaitTitleSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateResendCodeAlertPleaseWaitTitleSwal")";
+    var CrowdContentParticipateResendCodeAlertPleaseWaitTextSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateResendCodeAlertPleaseWaitTextSwal")";
+    var CrowdContentParticipateResendCodeAlertSuccessTitleSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateResendCodeAlertSuccessTitleSwal")";
+    var CrowdContentParticipateResendCodeAlertSuccessTextSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateResendCodeAlertSuccessTextSwal")";
+    var CrowdContentParticipateResendCodeAlertErrorTitleSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateResendCodeAlertErrorTitleSwal")";
+    var CrowdContentParticipateResendCodeAlertErrorTextSwal = "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateResendCodeAlertErrorTextSwal")";
+    /*end:code resend*/
+
+    /*add remaining keys here*/
+    var CrowdContentParticipatePageContinue ="@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageContinue")";
+
+
+        function initSectorsSelect()
+        {
+            $('#sectorsSelect').select2({
+                placeholder: "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageSectorPlaceholder")",
+                multiple: false,
+                tags: true,
+                createTag: function (tag) {
+                    return { id: tag.term, text: tag.term, tag: true };
+                }
+            });
+        }
+
+        $("#contentContributionRepeater").repeater({
+            initEmpty: false,
+            isFirstItemUndeletable: true,
+            show: function () {
+                $(this).slideDown();
+
+                initContentContributionSelects();
+            },
+            hide: function (e) {
+                swal({
+                    "title": CrowdContentParticipateAlertDeleteSubjectGradeSwalTitleSwal,
+                    "text": CrowdContentParticipateAlertDeleteSubjectGradeSwalTextSwal,
+                    "type": "warning",
+                    "confirmButtonClass": "btn btn-danger m-btn m-btn--wide",
+                    showCancelButton: true,
+                    confirmButtonText: "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageRemoveBtn")"
+                }).then((result) => {
+                    if (result.value) {
+                        $(this).slideUp(e);
+                    }
+                });
+            }
+        });
+
+        function initContentContributionSelects() {
+            $(".gradeSelect").select2({ placeholder: "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageGradePlaceholder")" });
+            $(".subjectsSelect").select2({ placeholder: "@UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageSubjectPlaceholder")" });
+        }
+
+    function informationAccuracyAcknowledged() {
+        return $('#AcknowledgeAccuracyInformation').prop("checked");
+    }
+
+    var resendAnchor = $('#resendLink');
+    var resendUrl = '@Url.Action("VerifyPhoneNumber", "Manage")';
+
+    resendAnchor.click(function () {
+
+        $.ajax({
+            url: resendUrl,
+            data: { phoneNumber:  $('#PhoneNumber').val(), resendCode: 1, modelOnly: true },
+            success: function (data) {
+                switch (data.StatusCode) {
+                    case 9:
+                        swal(CrowdContentParticipateResendCodeAlertPleaseWaitTitleSwal, CrowdContentParticipateResendCodeAlertPleaseWaitTextSwal, "info");
+                        break;
+                    case 11:
+                        swal(CrowdContentParticipateResendCodeAlertSuccessTitleSwal, CrowdContentParticipateResendCodeAlertSuccessTextSwal, "success").then((result) => {
+
+                            resetTimer(60);
+
+                        });
+                        break;
+                    default:
+                        swal(CrowdContentParticipateResendCodeAlertErrorTitleSwal, CrowdContentParticipateResendCodeAlertErrorTextSwal, "error");
+                }
+            },
+            error: function () {
+                swal(CrowdContentParticipateResendCodeAlertErrorTitleSwal, CrowdContentParticipateResendCodeAlertErrorTextSwal, "error");
+            }
+        });
+    });
+
+        $(document).ready(function () {
+            $(window).keydown(function (event) {
+                if (event.keyCode == 13) {
+                    event.preventDefault();
+
+                    return false;
+                }
+            });
+        });
+
+</script>
+
+    <!-- phone scripts -->
+    <script>
+            var phoneNumberInput = document.querySelector("#mobilePhoneNumberSelect");
+            var mobilePhoneNumberSelect = $("#mobilePhoneNumberSelect");
+               var numberInvalidSpan = $('#numberInvalidSpan');
+
+        var phoneNumberIntlTelInput;
+        function initPhoneInput() {
+            phoneNumberIntlTelInput = window.intlTelInput(phoneNumberInput, {
+            preferredCountries: ["lb"],
+            initialCountry: "lb",
+            separateDialCode: "true",
+            nationalMode: false
+            //initialCountry: "lb"
+            //,geoIpLookup: function (callback) {
+            //    $.get('https://ipinfo.io', function() {}, "jsonp").always(function(resp) {
+            //        var countryCode = (resp && resp.country) ? resp.country : "";
+            //        callback(countryCode);
+            //    });
+            //}
+            //, utilsScript: '@Url.Content("~/assets/vendors/intl-tel-input/build/js/utils.js?1549804213570")'
+              ,utilsScript: '@Url.Content("~/assets/vendors/intl-tel-input/build/js/utils.js?1603274336113")'
+            });
+
+            phoneNumberIntlTelInput.setNumber('@phoneNumber');
+
+            var mobilePhoneNumberSelectChange = function () {
+
+                if (!phoneNumberIntlTelInput.isValidNumber()) {
+                    numberInvalidSpan.show();
+                }
+                else {
+                    numberInvalidSpan.hide();
+
+                }
+                var number = phoneNumberIntlTelInput.getNumber(intlTelInputUtils.numberFormat.E164);
+                $('#PhoneNumber').val(number);
+            }
+
+            mobilePhoneNumberSelect.on('input', mobilePhoneNumberSelectChange);
+            mobilePhoneNumberSelect.on('change', mobilePhoneNumberSelectChange);
+            mobilePhoneNumberSelect.keypress(function (e) {
+                var keyCode = e.which;
+                if (keyCode != 8 && keyCode != 32 && (keyCode < 48 || keyCode > 57)) {
+                    return false;
+                }
+            });
+
+            mobilePhoneNumberSelect.on("cut copy paste", function (e) {
+                e.preventDefault();
+            });
+        }
+
+        function phoneNumberValid() {
+            return phoneNumberIntlTelInput.isValidNumber();
+        }
+
+        function phoneVerified() {
+            $.ajax({
+                url: '@Url.Action("PhoneVerified")',
+                type: 'POST',
+                data: { __RequestVerificationToken : $('@Html.AntiForgeryToken()').val() },
+                success: function (data) {
+                },
+                error: function (error) {
+                }
+            });
+        }
+    </script>
+}

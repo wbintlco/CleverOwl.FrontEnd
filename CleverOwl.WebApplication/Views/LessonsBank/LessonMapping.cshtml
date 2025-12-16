@@ -1,0 +1,242 @@
+﻿
+@using RLI.Common.Managers
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageAddToCurriculum"));
+}
+
+@Styles.Render("~/assets/vendors/custom/select2/select2.bundle.css")
+
+<title>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageAddToCurriculum"))</title>
+<div class="m-portlet m-portlet--mobile">
+
+    <div class="m-portlet m-portlet--mobile">
+        <div class="m-portlet__head">
+            <div class="m-portlet__head-caption">
+                <div class="m-portlet__head-title">
+                    <h3 class="m-portlet__head-text">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageAddToCurriculum"))
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="m-portlet__body" style="padding:20px">
+            <div class="row">
+                <div class="col-md-3">
+                    <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageGrade"))</div>
+                    <div>@Html.DropDownList("GradeKey", (SelectList)ViewBag.GradeKey, "", new { style = "width:100%", id = "gradeDD" })</div>
+
+                </div>
+                <div class="col-md-3">
+                    <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageSubject"))</div>
+                    <div>@Html.DropDownList("subject", (SelectList)ViewBag.SubjectKey, "", new { id = "subjectDD", style = "width:100%" })</div>
+                </div>
+                <div class="col-md-3">
+                    <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageLibrary"))</div>
+                    @Html.DropDownList("ChapterTypeKey", null, "", htmlAttributes: new { @class = "form-control ChapterTypeKey", style = "width:100%" })
+                </div>
+
+                <div class="col-md-3">
+                    <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageChapter"))</div>
+                    @Html.DropDownList("chapter", (SelectList)ViewBag.ChapterKey, "", new { id = "ChapterDD", style = "width:100%" })
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px">
+                <div class="col-md-3">
+                    <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageTopic"))</div>
+                    @Html.DropDownList("topic", (SelectList)ViewBag.TopicKey, "", new { id = "topicDD", style = "width:100%" })
+                </div>
+                @*<div class="col-md-3">
+                        <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageProvider"))</div>
+                        @Html.DropDownList("provider", (SelectList)ViewBag.ESystemKey, "", new { id = "providerDD", style = "width:100%" })
+                    </div>*@
+                @*<div class="col-md-3">
+                        <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageLessonType:"))</div>
+                        @Html.DropDownList("lesson", (SelectList)ViewBag.LessonTypeKey, new { id = "lessonTypeDD", style = "width:100%" })
+                    </div>*@
+                @*<div class="col-md-3">
+                        <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageLanguage:"))</div>
+                        @Html.DropDownList("Language", (SelectList)ViewBag.LanguageKey,"", new { id = "languageDD", style = "width:100%" })
+                    </div>*@
+
+            </div>
+
+            <div class="row" style="margin-top:10px">
+                <div class="col-md-6">
+                </div>
+                <div class="col-md-3">
+                    <button class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100" id="applyBtn" style="margin-top:20px">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageApply"))</button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn m-btn--pill btn-outline-metal m-btn m-btn--outline-2x w-100" id="cancelBtn" style="margin-top:20px">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageCancel"))</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+@using (Html.BeginForm("GetChaptersPerChapterType", "Lessons", FormMethod.Post, new { id = "GetChaptersPerChapterTypeHidden", @class = "", @style = "display:none;" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("chapterType", "")
+    @Html.Hidden("subject", "")
+    @Html.Hidden("grade", "")
+}
+
+@using (Html.BeginForm("GetTopicsPerChapterWithoutPdf", "Lessons", FormMethod.Post, new { id = "GetTopicsPerChapterHidden", @class = "", @style = "display:none;" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("chapter", "")
+}
+
+@using (Html.BeginForm("MapLessons", "LessonBuilderManagement", FormMethod.Post, new { id = "MapLessonsHidden", @class = "", @style = "display:none;" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("fileKey", "")
+    @Html.Hidden("topicKey", "")
+    @Html.Hidden("providerKey", "")
+}
+
+@section Scripts {
+
+    <!--begin::Page Vendors -->
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+    @Scripts.Render("~/assets/vendors/custom/datatables/datatables.bundle.js")
+    <script>
+
+    $(document).ready(function () {
+
+            $('#gradeDD').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageSelectGrade"))'
+
+
+            });
+
+            $('#subjectDD').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageSelectSubject"))'
+
+
+            });
+
+            $('#topicDD').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageSelectTopic"))'
+
+
+            });
+            $('#providerDD').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageSelectProvider"))'
+
+
+            });
+            $('#lessonTypeDD').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageSelectLessonType"))'
+
+
+            });
+            $('#languageDD').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageSelectLanguage"))'
+            });
+
+        $('#ChapterDD').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageChapter"))'
+        });
+
+         $('#ChapterTypeKey').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageLibrary"))'
+        });
+
+
+            $('#applyBtn').click(function () {
+                var topic = $("#topicDD").val();
+                var provider = $("#providerDD").val();
+
+                $("#fileKey").val('@ViewBag.fileKey');
+                $("#topicKey").val(topic);
+                $("#providerKey").val(provider);
+
+                $("#MapLessonsHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == "Success") {
+                        console.log(data);
+                        window.location = "@Url.Action("AdaptLessons", "LessonBuilderManagement")";
+                    }
+                    else {
+                        swal("Error", "We couldn't save the lesson at the moment, please try again.", "error");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error In MapLessons !!!!!!!");
+                }
+            });
+
+            });
+            $('#cancelBtn').click(function () {
+                window.close();
+            });
+
+        $("#ChapterTypeKey").change(function () {
+            var gradeKey = $("#gradeDD option:selected").val();
+            var subjectKey = $("#subjectDD option:selected").val();
+            var chapterTypeKey = $(this).val();
+
+            GetChaptersPerChapterType(gradeKey,subjectKey,chapterTypeKey);
+        })
+         function GetChaptersPerChapterType(gradeKey,subjectKey,chapterTypeKey) {
+             $("#chapterType").val(chapterTypeKey);
+            $("#subject").val(subjectKey);
+            $("#grade").val(gradeKey);
+
+            $("#GetChaptersPerChapterTypeHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    $("#ChapterDD").empty();
+                    var html = '<option></option>';
+                     $.each(data, function (index, value) {
+                         html+='<option value='+value.id+'>'+value.text+'</option>'
+                     });
+                    $("#ChapterDD").append(html);
+                    $("#ChapterDD").prepend('<option></option>');
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error In GetChaptersPerChapterType !!!!!!!");
+                }
+            });
+        }
+
+        $(document).on("change", "#ChapterDD", function () {
+            var chapterKey = $(this).val();
+            $("#chapter").val(chapterKey);
+
+            $("#GetTopicsPerChapterHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    $("#topicDD").empty();
+                    var html = '<option></option>';
+                     $.each(data, function (index, value) {
+                         html+='<option value='+value.id+'>'+value.text+'</option>'
+                     });
+                    $("#topicDD").append(html);
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error In GetTopicsPerChapter !!!!!!!");
+                }
+            });
+        })
+
+        });
+
+
+    </script>
+
+}

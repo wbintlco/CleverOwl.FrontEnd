@@ -1,0 +1,252 @@
+﻿
+@model FrontEnd.WebApplication.Models.SubjectViewModel
+
+@{
+    ViewBag.Title = "Create";
+}
+@using RLI.Common.Managers
+
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageTitle"));
+}
+
+<style>
+    .select2-results__group {
+        color: #0E8BF2 !important;
+        font-size: 20px !important;
+        font-weight: bold;
+    }
+</style>
+
+<div class="m-portlet m-portlet--mobile" id="SubjectsDiv">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageAddSubject"))
+                </h3>
+            </div>
+        </div>
+        <div class="m-portlet__head-tools">
+        </div>
+    </div>
+    <div class="m-portlet__body" style="padding:10px;">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "createForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <div class="form-group">
+
+                <div class="col-md-12">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageSubject1"))<br />
+                    @Html.EditorFor(model => model.Subject1, new { htmlAttributes = new { @class = "form-control", style = "width:100%" } })
+                    @Html.ValidationMessageFor(model => model.Subject1, Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageSubjectError")).ToString(), new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2" for="GradeIndex">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageSubjectIndex"))</label>
+                <div class="col-md-12">
+                    @Html.DropDownList("SubjectIndex", (SelectList)ViewBag.IndexDropDown, "", new { style = "width:100%", id = "IndexDropDown" })
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2" for="Grade1">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageVisibility"))</label>
+                <div class="col-md-12">
+                    <select id="Visibility" name="Visibility" style="width:100%">
+                        <option value="false" selected>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPageFalse11"))</option>
+                        <option value="true">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPageTrue11"))</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="m-portlet m-portlet--mobile">
+                <div class="m-portlet__head">
+                    <div class="m-portlet__head-caption">
+                        <div class="m-portlet__head-title">
+                            <h3 class="m-portlet__head-text">
+                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageSubjectTranslation"))
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="m-portlet__head-tools">
+                    </div>
+                </div>
+                <div class="m-portlet__body" style="padding:10px;">
+                    <div class="form-group">
+                        <label class="control-label col-md-2">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageLanguageTranslation11"))</label>
+                        <div class="col-md-4">
+                            <select id="translationLanguageDropdown" name="LanguageKey" style="width:100%">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="m-form__section m-form__section--first">
+
+                        <div id="m_repeater_1">
+                            <div class="form-group  m-form__group" id="m_repeater_1">
+
+                                <div data-repeater-list="" class="col-lg-11" id="repeaterDiv">
+                                </div>
+                            </div>
+                            <div class="m-form__group form-group row">
+
+                                <div class="col-lg-4">
+                                    <div data-repeater-create="" class="btn btn btn-sm btn-brand m-btn m-btn--icon m-btn--pill m-btn--wide" id="addLanguageTranslationBtn">
+                                        <span>
+                                            <i class="la la-plus"></i>
+                                            <span>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageAdd11"))</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <input type="submit" id="submitBtn" value="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageCreate11"))" class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100 submitBtn" />
+
+                    </div>
+
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <input type="submit" id="submitBtnAndContinue" value="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageCreateAndContinue11"))" class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100 submitBtn" />
+
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 mt-1">
+                        <a class="btn m-btn--pill btn-outline-metal m-btn m-btn--outline-2x w-100" href="@Url.Action("Index","Subjects")">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageBackToSubjects"))</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            <div class="form-group" hidden>
+                <label class="control-label col-md-2">LanguageTransaltionKeys</label>
+                <div class="col-md-12">
+                    <input name="LanguageTransaltionKeys" id="LanguageTransaltionKeys" />
+                </div>
+            </div>
+
+            <div class="form-group" hidden>
+                <label class="control-label col-md-2">SubjectNamesPerLanguage</label>
+                <div class="col-md-12">
+                    <input name="SubjectNamesPerLanguage" id="SubjectNamesPerLanguage" />
+                </div>
+            </div>
+            <div class="form-group" hidden>
+                <label class="control-label col-md-2">Continue</label>
+                <div class="col-md-12">
+                    <input name="Continue" id="Continue" />
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+@using (Html.BeginForm("CollectLanguageTranslations", "Grades", FormMethod.Post, new { id = "CollectLanguageTranslationsHidden", @class = "", @style = "display:none;" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("langKeys", "")
+    @Html.Hidden("gradeNames", "")
+    @Html.Hidden("cycleNames", "")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+
+<script>
+
+        $(document).ready(function () {
+
+
+            $('#Visibility').select2({
+            });
+
+            $('#translationLanguageDropdown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageLanguageTranslation11"))',
+                data: @Html.Raw(Json.Encode(ViewBag.LanguageKey)),
+            });
+            $('#IndexDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageSelectIndex"))',
+            });
+            $('#IndexDropDown').append('<option value = "-1">put it here</option>')
+            var languageTranslationIndex = 1;
+            var languageTranslationArrayKeys = [];
+            var languageTranslationArraySubjectsName = [];
+            $("#addLanguageTranslationBtn").click(function () {
+
+                var LanguageTranslationKey = $("#translationLanguageDropdown option:selected").val();
+                var LanguageTranslationText = $("#translationLanguageDropdown option:selected").text();
+                var lastchapterTranslationName = $(".subjectNameClass").last().val();
+                if (languageTranslationArrayKeys.includes(LanguageTranslationKey) || LanguageTranslationKey === '' || lastchapterTranslationName === '') {
+                    return;
+                }
+                languageTranslationArrayKeys.push(LanguageTranslationKey);
+
+                var html = '<div data-repeater-item="" id="languageTranslationRepeater_' + languageTranslationIndex + '" class="form-group m-form__group row align-items-center"><div class="col-md-4"><div class="m-form__group m-form__group--inline">';
+                html += '<div class="m-form__label control-label"><label>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageLanguageTranslation11"))</label></div>';
+                html += '<div class="m-form__control"><input type="text" disabled="" class="form-control m-input" placeholder="' + LanguageTranslationText + '""></div></div>';
+                html += '<div class="d-md-none m--margin-bottom-10"></div></div><div class="col-md-4"><div class="m-form__group m-form__group--inline">';
+                html += '<div class="m-form__label"><label class="m-label m-label--single">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageSubjectName"))</label></div>';
+                html += '<div class="m-form__control"><input type="text" class="form-control m-input subjectNameClass" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageSubjectName"))"></div></div>';
+                html += '<div class="d-md-none m--margin-bottom-10"></div></div><div class="col-md-4"><div class="m-form__label"><label class="m-label m-label--single" style="visibility:hidden;">Name</label></div>';
+                html += '<div data-repeater-delete="" data-langKey="' + LanguageTranslationKey + '" data-repeaterId="languageTranslationRepeater_' + languageTranslationIndex + '" class="btn-sm btn btn-danger m-btn m-btn--icon m-btn--pill deleteTranslationBtn"><span><i class="la la-trash-o"></i><span>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageDelete11"))</span></span></div></div></div>';
+
+                $("#repeaterDiv").append(html);
+                languageTranslationIndex++;
+                $("#translationLanguageDropdown ").val('').trigger("change");
+                $("#TranslationLanguageKeys").val(JSON.stringify(languageTranslationArrayKeys));
+
+
+            });
+
+            function removeKeyFromArray(array,i) {
+                const index = array.indexOf(i);
+                if (index > -1) {
+                    array.splice(index, 1);
+                }
+            }
+            $(document).on("click", ".deleteTranslationBtn", function () {
+                var divToDelete = $(this).attr("data-repeaterId");
+                var langKey = $(this).attr("data-langKey");
+                removeKeyFromArray(languageTranslationArrayKeys, langKey);
+                $("#" + divToDelete).remove();
+            });
+
+            $(".submitBtn").click(function () {
+                mApp.block($("#SubjectsDiv"));
+                if ($(this).attr("id") == "submitBtn") {
+                    event.preventDefault();
+                    $('.subjectNameClass').each(function (index, value) {
+                        languageTranslationArraySubjectsName.push($(this).val());
+                    });
+                    $("#LanguageTransaltionKeys").val(JSON.stringify(languageTranslationArrayKeys));
+                    $("#SubjectNamesPerLanguage").val(JSON.stringify(languageTranslationArraySubjectsName));
+                    $('#Continue').val("false");
+                    $('#createForm').submit();
+                } else {
+                    event.preventDefault();
+                    $('.subjectNameClass').each(function (index, value) {
+                        languageTranslationArraySubjectsName.push($(this).val());
+                    });
+                    $("#LanguageTransaltionKeys").val(JSON.stringify(languageTranslationArrayKeys));
+                    $("#SubjectNamesPerLanguage").val(JSON.stringify(languageTranslationArraySubjectsName));
+                    $('#Continue').val("true");
+                    $('#createForm').submit();
+                }
+
+
+            });
+
+        });
+
+</script>
+}

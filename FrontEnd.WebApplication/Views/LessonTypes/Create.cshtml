@@ -1,0 +1,129 @@
+﻿
+@model FrontEnd.WebApplication.Models.LessonTypeViewModel
+
+@{
+    ViewBag.Title = "Create";
+}
+@using RLI.Common.Managers
+
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageTitle"));
+}
+
+<style>
+    .select2-results__group {
+        color: #0E8BF2 !important;
+        font-size: 20px !important;
+        font-weight: bold;
+    }
+</style>
+
+<div class="m-portlet m-portlet--mobile" id="LessonTypeDiv">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageAddLessonTypes"))
+                </h3>
+            </div>
+        </div>
+        <div class="m-portlet__head-tools">
+        </div>
+    </div>
+    <div class="m-portlet__body" style="padding:10px;">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "createForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageLessonType"))<br />
+                            @Html.EditorFor(model => model.LessonType1, new { htmlAttributes = new { @class = "form-control", style = "width:100%" } })
+                            @Html.ValidationMessageFor(model => model.LessonType1, Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageLessonError")).ToString(), new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="col-10">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageIcon"))<br />
+                        @Html.EditorFor(model => model.IconHTML, new { htmlAttributes = new { @class = "form-control", style = "width:100%", id = "iconInput" } })
+                        @Html.ValidationMessageFor(model => model.IconHTML, Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageIconError")).ToString(), new { @class = "text-danger" })
+
+                    </div>
+                    
+                    <div class="col-2" >
+                        <div style="visibility:hidden">icon</div>
+                        <div style="display:flex; align-items:center; justify-content:center; min-height:40px">
+                            <i id="font" class="fa-3x">
+
+                            </i>
+                        </div>
+                    </div>
+                    <div class="col-12" style="padding-bottom:15px">
+                        <a href="https://fontawesome.com/v5.15/icons?d=gallery&p=2" target="_blank">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageCreateLessonTypeLink"))</a>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input type="submit" id="submitBtn" style="margin-top:10px" value="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageCreateLessonType"))" class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100 submitBtn" />
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input type="submit" id="submitBtnAndContinue" style="margin-top:10px" value="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageCreateLessonAndContinue"))" class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100 submitBtn" />
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 mt-1" >
+                            <a class="btn m-btn--pill btn-outline-metal m-btn m-btn--outline-2x w-100" style="margin-top:7px" href="@Url.Action("Index","LessonTypes")">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageBackToLessonTypes"))</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="form-group" hidden>
+                <label class="control-label col-md-2">Continue</label>
+                <div class="col-md-12">
+                    <input name="Continue" id="Continue" />
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+
+    <script>
+
+        $(document).ready(function () {
+
+            $('#iconInput').keyup(function () {
+                $('#font').removeClass();
+                $('#font').addClass('fa-3x '+$(this).val());
+            });
+
+
+            $(".submitBtn").click(function () {
+                mApp.block($("#LessonTypeDiv"));
+                if ($(this).attr("id") == "submitBtn") {
+                    event.preventDefault();
+                    $('#Continue').val("false");
+                    $('#createForm').submit();
+                } else {
+                    event.preventDefault();
+                    $('#Continue').val("true");
+                    $('#createForm').submit();
+                }
+
+
+            });
+
+        });
+
+    </script>
+}
+

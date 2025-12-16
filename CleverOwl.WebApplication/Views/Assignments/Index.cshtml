@@ -1,0 +1,627 @@
+﻿@model IEnumerable<CleverOwl.WebApplication.Models.AssignmentCardViewModel>
+@using RLI.Common.Managers
+@using RLI.Common.DataObjects
+@using System.Web.Http;
+@using Microsoft.AspNet.Identity
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    //ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageAssignments"));
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageCreateAssignments"));
+    bool iscoordinator = false;
+    if ((User.IsInRole("ContentManager") || User.IsInRole("Coordinator") || User.IsInRole("HeadOfDepartment") || User.IsInRole("SchoolPrincipal") || User.IsInRole("SeniorCoordinator")) && ViewBag.CurrentUser.Id != User.Identity.GetUserId())
+    {
+        iscoordinator = true;
+    }
+}
+
+<style>
+    .select2-results {
+        padding: 15% !important;
+    }
+
+    svg {
+        height: 50px;
+    }
+
+    .page-banner {
+        margin-top: 100px;
+        height: fit-content;
+        margin-bottom: 30px;
+        background-color: #ffffff;
+    }
+
+
+
+    .page-body {
+        padding: 0;
+        margin-bottom: 50px;
+    }
+
+    .grid-card {
+        box-shadow: rgb(99 99 99 / 20%) 0px 2px 8px 0px;
+        border-radius: 25px;
+        padding: 40px;
+        background: linear-gradient( to left, rgb(115 110 197 / 80%) 0%, rgb(68 60 182) 100% ) left bottom #ffffff no-repeat;
+        background-size: 100% 18px;
+    }
+
+    .grid-card-head-title {
+        margin-top: 20px;
+    }
+
+    .grid-card-head-datetime {
+        margin-top: 20px;
+    }
+
+    .grid-card-body {
+        margin-top: 25px;
+        font-weight: 100;
+    }
+
+    .grid-card-footer {
+        margin-top: 50px;
+        margin-bottom: -10px;
+    }
+
+    .table-row {
+        display: table-row;
+        height: auto;
+    }
+
+    .table-cell1 {
+        border: none;
+        display: table-cell;
+        padding: 2px;
+        width: 80%
+    }
+
+    .table-cell2 {
+        border: none;
+        display: table-cell;
+        padding: 2px;
+    }
+
+    video {
+        max-width: 398px;
+        max-height: 130px;
+    }
+
+
+
+    .select2-selection__clear {
+        padding-top: 8px !important;
+    }
+
+    @@media(min-width: 992px) and (max-width:1024px) {
+        .RenderBody {
+            max-width: 100%;
+            padding-right: 15%;
+            padding-left: 15%;
+        }
+    }
+
+    @@media (max-width:522px) {
+        #select2-recordsDropdown-container {
+            position: absolute;
+            right: 18%;
+        }
+    }
+
+    .coordinator {
+        pointer-events: none;
+        opacity: 0.5;
+        cursor: not-allowed;
+        filter: grayscale(100%);
+    }
+</style>
+
+<section class="page-banner">
+    <div class="container">
+        <div class="page-title-wrapper">
+            <div>
+                <ul class="bradcurmed">
+                    <li><a href="@Url.Action("Index","Dashboard")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageWall"))</a></li>
+                    <li><a href="@Url.Action("Index","Assignments")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageAssignments001"))</a></li>
+                </ul>
+            </div>
+            <div class="row m--margin-top-20-desktop">
+                <div class="col-lg-1 m-auto m--hidden-tablet m--hidden-mobile">
+                    @Html.Partial("~/Views/SharedSvgs/_AssignmentsIcon.cshtml")
+                </div>
+                <div class="col-lg-5 col-12 m-auto">
+                    <h1 class="page-title"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageAssignments001"))</h1>
+                </div>
+                <div class="col-lg-3  m-auto">
+                </div>
+                <div class="col-lg-3 col-12 m-auto">
+                    @if (Model != null && Model.Count() != 0)
+                    {
+                        if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Teacher")
+                        {
+                            <button id="createButton" type="button" class="btn m-btn--pill m-btn m-btn--gradient-from-primary m-btn--gradient-to-info pull-right m--padding-top-15 m--padding-bottom-15 m--padding-left-20 m--padding-right-20 w-100-mobile pull-right @(iscoordinator ? "coordinator" : "")">
+                                <i class="fa fa-plus m--padding-right-5"></i>
+                                <span>
+                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageCreateAssignment001"))
+                                </span>
+                            </button>
+                        }
+                    }
+
+                </div>
+            </div>
+
+        </div>
+        @if (Model != null && Model.Count() != 0)
+        {
+
+            <div class="row mt-4">
+
+                <div class="col-9 pr-0">
+                    <div class="m-input-icon m-input-icon--left m-input-icon--right" style="">
+                        <input id="searchInput" type="text" class="form-control searchInputAssignSync" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageSearch..."))">
+                        <span class="m-input-icon__icon m-input-icon__icon--right mr-3"><span><i class="fas fa-search"></i></span></span>
+                    </div>
+                </div>
+
+                <div class="col-3 pl-1">
+                    <div class="m-input-icon m-input-icon--left m-input-icon--right records-control-widget" style="">
+                        <select class="form-control" id="recordsDropdown" style="width:100%">
+                            <option selected="">10</option>
+                            <option>20</option>
+                            <option>50</option>
+                        </select>
+                        @*<span class="m-input-icon__icon m-input-icon__icon--right mr-3" style="margin-top:20px"><i class="fas fa-chevron-down"></i></span>*@
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name != "Student")
+                {
+                    <div class="col-lg-4 col-md-4 col-12 m--margin-top-5-mobile">
+                        @Html.DropDownList("GradesDropDown", (SelectList)ViewBag.Grades, "Grades", htmlAttributes: new { @class = "form-control", @id = "GradeDropDown", @style = "width:100%;" })
+                    </div>
+                }
+
+                <div class="col-lg-4 col-md-4 col-12 m--margin-top-5-mobile">
+                    @Html.DropDownList("SubjectDropDown", (SelectList)ViewBag.Subjects, "Subjects", htmlAttributes: new { @class = "form-control", @id = "SubjectDropDown", @style = "width:100%;" })
+                </div>
+                <div class="col-lg-4 col-md-4 col-12 m--margin-top-5-mobile">
+                    @Html.DropDownList("DueDates", (SelectList)ViewBag.DueDates, "DueDates", htmlAttributes: new { @class = "form-control", @id = "DueDatesDropDown", @style = "width:100%;" })
+                </div>
+            </div>
+
+        }
+
+    </div>
+</section>
+
+<div class="row mt-5">
+
+    <div class="col-12">
+        <div class="page-body">
+            <div class="container">
+
+
+                <div class="row" id="assignmentDiv">
+                    @if (Model == null || Model.Count() == 0)
+                    {
+                        if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Teacher")
+                        {
+                            @Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
+                            { "title", "Hey hey!" },
+                            { "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Youdontseemtohaveanyassignments")).ToString() }
+                            , { "description", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Creatinganassignmentwillallowyoutosendassignmentsforstudents")).ToString() }
+                            , { "action", true },
+                            { "actionBtnId", "createButtonInEmptySlate" },
+                            { "actionBtnText", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_CreateAssignment001")).ToString() } })
+                        }
+                        else
+                        {
+                            @Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
+                            { "title", "Hey hey!" },
+                            { "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Youdontseemtohaveanyassignments")).ToString() }
+                            , { "description", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Creatinganassignmentwillallowyoutosendassignmentsforstudents")).ToString() }
+                            , { "action", false },
+                            { "actionBtnId", "createButtonInEmptySlate" },
+                            { "actionBtnText", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_CreateAssignment001")).ToString() } })
+                        }
+
+                        @*<div class="blankslate m-auto col-12">
+                                <div class="mb-3">
+                                    @Html.Partial("~/Views/SharedSvgs/_EmptySlateIcon.cshtml")
+                                </div>
+                                <h3 class="mb-1">You don’t seem to have any assignments.</h3>
+                                <p class="mb-4">Creating an assignment will allow you to send assignments for students.</p>
+                                @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Teacher")
+                                {
+                                    <button id="createButtonInEmptySlate" type="button" class="btn m-btn--pill m-btn m-btn--gradient-from-primary m-btn--gradient-to-info m--padding-top-15 m--padding-bottom-15 m--padding-left-20 m--padding-right-20 w-100-mobile">
+                                        <i class="fa fa-plus m--padding-right-5"></i>
+                                        <span>
+                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageCreateAssignment001"))
+                                        </span>
+                                    </button>
+                                }
+                            </div>*@
+                    }
+                    else
+                    {
+                        @Html.Partial("_AssignmentCard", Model)
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+@using (Html.BeginForm("DeleteAssignment", "Assignments", FormMethod.Post, new { id = "DeleteAssignmentHidden", @class = "", @style = "display:none;" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("assignmentId", "")
+    @Html.Hidden("courseId", "")
+    @Html.Hidden("courseModule", "")
+}
+
+@using (Html.BeginForm("RemoveBookmark", "Bookmark", FormMethod.Post, new { id = "RemoveBookmarkAssignmentComponentForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("assignment_Key", "")
+}
+
+@using (Html.BeginForm("BookmarkAssignmentComponent", "Dashboard", FormMethod.Post, new { id = "BookmarkAssignmentComponentForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("componentKey", "")
+}
+
+@using (Html.BeginForm("GetLatestSession", "Dashboard", FormMethod.Post, new { id = "GetLatestSessionForm" }))
+{
+    @Html.AntiForgeryToken()
+}
+
+@using (Html.BeginForm("GetUserConversations", "Messages", FormMethod.Post, new { id = "GetUserConversationsForLeftMenu" }))
+{
+    @Html.AntiForgeryToken()
+}
+
+@using (Html.BeginForm("GetNewBookmarks", "Bookmark", FormMethod.Post, new { id = "GetNewBookmarksHidden" }))
+{
+    @Html.AntiForgeryToken()
+}
+
+@using (Html.BeginForm("RefreshWhatsToday", "Dashboard", FormMethod.Post, new { id = "RefreshWhatsTodayHidden" }))
+{
+    @Html.AntiForgeryToken()
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+
+    <!--Reference the SignalR library. -->
+    @Scripts.RenderFormat("<script src='https://" + Request.Url.Host + "/{0}'></script>", "~/Scripts/jquery.signalR-2.4.1.min.js")
+    <!--Reference the autogenerated SignalR hub script. -->
+    @Scripts.RenderFormat("<script src='https://" + Request.Url.Host + "/{0}'></script>", "~/signalr/hubs")
+
+    <script>
+
+    var AssignmentsPageSearching = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageSearching"))";
+    var AssignmentsPageResultNotFound = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageResultNotFound"))";
+
+    $(document).ready(function () {
+        $('.RenderBody').removeClass('col-md-9');
+        $('.BodyParent').find('div').first().addClass('m--hidden-mobile m--hidden-tablet');
+            $("#createButton").click(function () {
+                window.location='@Url.Action("Create")';
+            });
+
+        $(document).on("click","#createButtonInEmptySlate",function () {
+                window.location='@Url.Action("Create")';
+        });
+
+            $('#recordsDropdown').select2({
+                language: {
+                    noResults: function () {
+                        return AssignmentsPageResultNotFound;
+                    },
+                    searching: function () {
+                        return AssignmentsPageSearching;
+                    }
+                },
+                placeholder: 'Sessions Count',
+                minimumResultsForSearch: 10
+            });
+            $('#GradeDropDown').select2({
+                language: {
+                    noResults: function () {
+                        return AssignmentsPageResultNotFound;
+                    },
+                    searching: function () {
+                        return AssignmentsPageSearching;
+                    }
+                },
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageGrade001"))',
+                allowClear: true
+            });
+            $('#SubjectDropDown').select2({
+                language: {
+                    noResults: function () {
+                        return AssignmentsPageResultNotFound;
+                    },
+                    searching: function () {
+                        return AssignmentsPageSearching;
+                    }
+                },
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageSubject001"))',
+                allowClear: true
+            });
+            $('#DueDatesDropDown').select2({
+                language: {
+                    noResults: function () {
+                        return AssignmentsPageResultNotFound;
+                    },
+                    searching: function () {
+                        return AssignmentsPageSearching;
+                    }
+                },
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageType001"))',
+                allowClear: true
+            });
+
+                //$('.readMoreBtn').click(function () {
+                //    var parent = $(this).parent();
+                //    var more = parent.find('.more');
+                //    var dots = parent.find('.dots');
+                //    var lessBtn = parent.find('.lessBtn');
+                //    more.show();
+                //    $(this).hide();
+                //    dots.hide();
+                //    lessBtn.show();
+
+                //});
+                //$('.lessBtn').click(function () {
+                //    var parent = $(this).parent().parent();
+                //    var more = parent.find('.more');
+                //    var dots = parent.find('.dots');
+                //    var readMoreBtn = parent.find('.readMoreBtn');
+                //    more.hide();
+                //    $(this).hide();
+                //    dots.show();
+                //    readMoreBtn.show();
+                //});
+
+
+                 $(function () {
+            // Reference the auto-generated proxy for the hub.
+            var moodleSignalRManager = $.connection.moodleSignalRManager;
+            // Create a function that the hub can call back to display messages.
+            moodleSignalRManager.client.addNewTimelineDataToPage = function (type, payload) {
+                console.log('addNEw');
+                console.log(type);
+                console.log(payload);
+                GetNewTimelineData(payload);
+                RefreshBadges();
+                clearInterval(x);
+                GetLatestSession();
+                RefreshWhatsToday();
+            };
+
+            moodleSignalRManager.client.addNewMessageToPage = function (type, payload) {
+                console.log('GetUserConversationsForLeftMenu');
+                GetUserConversationsForLeftMenu();
+            };
+
+            moodleSignalRManager.client.addNewBookmarkDataToPage = function (type, payload) {
+                console.log(type);
+                GetNewBookmarks();
+            };
+
+            // Start the connection.
+            //$.connection.hub.start().done(function () {
+            //    console.log('connection.hub.start()');
+            //});
+            var count = 0;
+            if (count == 0) {
+                console.log('im here');
+               $("#newPostsBtn").hide();
+                //GetNewTimelineData();
+                count++;
+            }
+
+        });
+
+            });
+    function Delete(assId, courseId, moduleId) {
+
+        swal.fire({
+                  "title": "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageDeleteAssignment001"))",
+                  "text": "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageDeleteAssignmentPromptMsg001"))",
+                  "type": 'warning',
+                  "confirmButtonClass": "btn m-btn--pill btn-danger",
+                  "confirmButtonText":"@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageYes001"))",
+                  showCancelButton: true,
+                  "cancelButtonClass": "btn m-btn--pill btn-metal",
+                  "cancelButtonText": "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageCancel001"))",
+        }).then((result) => {
+
+            console.log(result);
+
+                  if (result.value) {
+                        mApp.block($("#assignmentDiv"));
+                        DeleteAssignmentById(assId, courseId, moduleId);
+                  }
+                });
+
+        }
+
+    function DeleteAssignmentById(assId,courseId,moduleId) {
+
+        $("#assignmentId").val(assId);
+        $("#courseId").val(courseId);
+        $("#courseModule").val(moduleId);
+
+            $("#DeleteAssignmentHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == 200) {
+                        FilterAssignment();
+                    }
+                    },
+                error: function (xhr, status, error) {
+                    console.log("Error In DeleteAssignmentHidden !!!!!!!");
+                }
+            });
+    }
+
+    $("#recordsDropdown").change(function () {
+        mApp.block($("#assignmentDiv"));
+        FilterAssignment();
+    })
+
+    $("#GradeDropDown").change(function () {
+        mApp.block($("#assignmentDiv"));
+        FilterAssignment();
+    })
+
+    $("#SubjectDropDown").change(function () {
+        mApp.block($("#assignmentDiv"));
+        FilterAssignment();
+    })
+
+    $("#DueDatesDropDown").change(function () {
+        mApp.block($("#assignmentDiv"));
+        FilterAssignment();
+    })
+
+    $("#searchInput").keyup(function () {
+        setTimeout(function () {
+            mApp.block($("#assignmentDiv"));
+            FilterAssignment();
+        }, 1000);
+    })
+
+    //$(".lessonsLinkInDescriptionTitle").remove();
+    //$(".lessonsLinkInDescriptionScorm").remove();
+    //$(".lessonsLinkInDescription").remove();
+
+    function FilterAssignment() {
+            var search = $("#searchInput").val();
+            var records = $("#recordsDropdown option:selected").val();
+            var grade = $("#GradeDropDown option:selected").val();
+            var subject = $("#SubjectDropDown option:selected").val();
+            var dueDate = $("#DueDatesDropDown option:selected").val();
+            $.ajax({
+                url: '@Url.Action("AssignmentsFilter", "Assignments")',
+                type: 'POST',
+                dataType: "html",
+                data: {
+                    query:search,records: records, gradeKey: grade, subjectKey: subject, dueDate: dueDate,
+                    __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+                },
+                success: function (data) {
+
+                    $("#assignmentDiv").empty();
+                    $("#assignmentDiv").html(data);
+
+                    mApp.unblock($("#assignmentDiv"));
+                    //$(".lessonsLinkInDescriptionTitle").remove();
+                    //$(".lessonsLinkInDescriptionScorm").remove();
+                    //$(".lessonsLinkInDescription").remove();
+                }
+            });
+        }
+
+       $(document).on("click", ".assigmentBookmarkBtn", function () {
+            event.preventDefault();
+
+           console.log("assignmentBookmarkBtn click!!!");
+
+            var currentElement = $(this);
+            var assignmentKey = $(this).attr("data-assignId");
+
+            mApp.progress($(this));
+            $("#componentKey").val(assignmentKey);
+            $("#BookmarkAssignmentComponentForm").ajaxSubmit({
+                        beforeSubmit: function () {
+                        },
+                success: function (data) {
+                    mApp.unprogress(currentElement);
+
+                    console.log("sucess!!!");
+
+                    if (data == 200) {
+
+                        console.log("200!!!");
+
+                        currentElement.removeClass("assigmentBookmarkBtn");
+                        currentElement.addClass("assigmentRemoveBookmarkBtn");
+                        currentElement.html('<i class="fa fa-bookmark fa-2x text-primary "></i>');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            mApp.unprogress(currentElement);
+                            console.log("Error In BookmarkAssignmentComponentForm !!!!!!!");
+                        }
+                    });
+        })
+
+         $(document).on("click", ".assigmentRemoveBookmarkBtn", function () {
+             event.preventDefault();
+
+             console.log("assigmentRemoveBookmarkBtn click!!!");
+
+            var currentElement = $(this);
+            var assignmentKey = $(this).attr("data-assignId");
+
+            mApp.progress($(this));
+            $("#assignment_Key").val(assignmentKey);
+            $("#RemoveBookmarkAssignmentComponentForm").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    mApp.unprogress(currentElement);
+                    if (data == 200) {
+
+                        currentElement.removeClass("assigmentRemoveBookmarkBtn");
+                        currentElement.addClass("assigmentBookmarkBtn");
+                        currentElement.html('<i class="fa fa-bookmark fa-2x text-secondary"></i>');
+
+
+                    }
+                },
+                error: function (xhr, status, error) {
+                    mApp.unprogress(currentElement);
+                    console.log("Error In RemoveBookmarkAssignmentComponentForm !!!!!!!");
+                }
+            });
+        })
+
+        function GetNewBookmarks() {
+
+                $("#GetNewBookmarksHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == "error") {
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageErrorOccurPleaseTryAgainLater"))", "error");
+                        return;
+                    }
+                    $('#bookmarksSideMenuContainer').empty();
+                    $('#bookmarksSideMenuContainer').append(data);
+                },
+                error: function (xhr, status, error) {
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageErrorOccurPleaseTryAgainLater"))", "error");
+                    console.log("Error In GetNewBookmarksHidden !!!!!!!");
+
+                }
+            });
+        }
+
+    </script>
+}

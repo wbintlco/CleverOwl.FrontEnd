@@ -1,0 +1,846 @@
+﻿
+
+@using RLI.Common.Managers
+@{
+    ViewBag.Title = "JExcelLocalisationEdit";
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+@Styles.Render("~/assets/vendors/JExcel/dist/jexcel.css")
+@Styles.Render("~/assets/vendors/JExcel/dist/jexcel.theme.css")
+@Styles.Render("~/assets/vendors/JExcel/dist/jsuites.css")
+
+<style>
+    input[type="file"] {
+        display: none;
+    }
+    .jexcel_content {
+        display: block !important;
+        overflow-x: scroll !important;
+    }
+</style>
+
+<div id="demo" class="m-portlet m-portlet--mobile">
+
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage11Edit"))
+                </h3>
+            </div>
+        </div>
+        <div class="m-portlet__head-tools">
+            <div class="m-portlet__nav">
+                <div class="m-portlet__nav-item">
+                    <label class="m-portlet__nav-link btn m-btn--pill btn-outline-success m-btn m-btn--outline-2x w-100">
+                        <input type="file" id="selectedFile" />
+                        <i style="padding-right:5px" class="fas fa-cloud-upload-alt"></i>
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage1Upload"))
+                    </label>
+                    <label id="download" class="m-portlet__nav-link btn m-btn--pill btn-outline-primary m-btn m-btn--outline-2x w-100" style="margin-left:10px">
+                        <i style="padding-right:5px" class="fas fa-cloud-download-alt"></i>
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage1Download"))
+                    </label>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div id="body" class="m-portlet__body" style="padding:10px;">
+
+        <div id="filter_container" class="m-portlet m-portlet--mobile">
+            <div class="m-portlet__head">
+                <div class="m-portlet__head-caption">
+                    <div class="m-portlet__head-title">
+                        <h3 class="m-portlet__head-text">
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage2Filter"))
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div class="m-portlet__body" style="padding:10px">
+                <div class="row">
+                    <div class="col-md-3 col-12">
+                        <div class="form-group m-form__group">
+                            <label class="col-form-lable">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage3Controller")):</label>
+                            <div>
+                                <select id="ControllersDropDown" class="form-control" style="width:100%">
+                                    <option></option>
+                                    @foreach (var controller in ViewBag.Controllers)
+                                    {
+                                        <option value="@controller">@controller</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-12">
+                        <div class="form-group m-form__group">
+                            <label class="col-form-lable">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage4Action")):</label>
+                            <div>
+                                <select id="ActionsDropDown" class="form-control" style="width:100%"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-12">
+                        <div class="form-group m-form__group">
+                            <label class="col-form-lable">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage5Language")):</label>
+                            <div>
+                                <select id="LanguagesDropDown" style="width:100%">
+                                    <option></option>
+                                    <option value="4">English</option>
+                                    <option value="3">Arabic</option>
+                                    <option value="62">French</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-12">
+                        <div class="row">
+                            <div class="form-group m-form__group col-6">
+                                <label class="col-form-lable" style="visibility:hidden!important">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage2Filter"))</label><br />
+                                <div id="filter" class="btn m-btn--pill btn-outline-primary m-btn m-btn--outline-2x" style="width:100% !important">
+                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage2Filter"))
+                                </div>
+                            </div>
+                            <div class="form-group m-form__group col-6">
+                                <label class="col-form-lable" style="visibility:hidden!important">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage61Clear"))</label><br />
+                                <div id="Clear_btn" class="btn m-btn--pill btn-outline-metal m-btn m-btn--outline-2x" style="width:100% !important">
+                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage61Clear"))
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div id="JExcelContainer" style="min-width:100%">
+                    <div id="JExcelTable" style="min-width:100%; display:block!important;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__foot" style="padding:10px">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-3">
+                <div id="save_btn" class="m-portlet__nav-link btn m-btn--pill btn-outline-primary m-btn m-btn--outline-2x w-100">
+                    <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage7Save"))</div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div id="cancel_Btn" class="m-portlet__nav-link btn m-btn--pill btn-outline-metal m-btn m-btn--outline-2x w-100">
+                    <div id="cancel_btn_content">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage88Cancel"))</div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div id="delete_Btn" class="m-portlet__nav-link btn m-btn--pill btn-outline-danger m-btn m-btn--outline-2x w-100">
+                    <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage9Delete"))</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@using (Html.BeginForm("EditLocalisation", "Localisations", FormMethod.Post, new { id = "EditLocalisation", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("jsonData", "")
+}
+@using (Html.BeginForm("GetActionsDropDownPerController", "Localisations", FormMethod.Post, new { id = "GetActionsDropDownPerController", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("valueSelected", "")
+}
+@using (Html.BeginForm("GetControllersDropDownPerAction", "Localisations", FormMethod.Post, new { id = "GetControllersDropDownPerAction", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("valueSelectedAction", "")
+}
+@using (Html.BeginForm("GetLanguageContents", "Localisations", FormMethod.Post, new { id = "GetLanguageContents", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("language", "")
+    @Html.Hidden("controller", "")
+    @Html.Hidden("action", "")
+}
+@using (Html.BeginForm("DeleteLocalisation", "Localisations", FormMethod.Post, new { id = "DeleteLocalisation", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("dataToDelete", "")
+}
+@using (Html.BeginForm("GetActionAndController", "Localisations", FormMethod.Post, new { id = "GetActionAndController", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("data", "")
+}
+
+@section Scripts{
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+    @Scripts.Render("~/assets/vendors/JExcel/dist/jexcel.js")
+    @Scripts.Render("~/assets/vendors/JExcel/dist/jsuites.js")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+
+    <script>
+        var LocalisationsEditPageAreYouSure = "LocalisationsEditPageAreYouSure";
+        var LocalisationsEditPageCancelBtn = "LocalisationsEditPageCancelBtn";
+        var LocalisationsEditPageDeleteBtn = "LocalisationsEditPageDeleteBtn";
+        var LocalisationsEditPage7Error = "LocalisationsEditPage7Error";
+        var LocalisationsEditPage8ErrorOccur = "LocalisationsEditPage8ErrorOccur";
+        var jExcelTable;
+        var permissionDenied = false;
+        var beforeEditingData = [];
+        var deniedChange = true;
+        var deleted = false;
+        var FilterOrUpload = -1;
+        var action1;
+        var controller1;
+        var language1;
+        let selectedFile;
+        document.getElementById('selectedFile').addEventListener("change", (event) => {
+            selectedFile = event.target.files[0];
+            if (selectedFile) {
+                mApp.block($('#demo'));
+                let fileReader = new FileReader();
+                fileReader.readAsBinaryString(selectedFile);
+                fileReader.onload = (event) => {
+                    let data = event.target.result;
+                    let workbook = XLSX.read(data, { type: "binary" });
+                    workbook.SheetNames.forEach(sheet => {
+                        let rowObject = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheet]);
+                        beforeEditingData = rowObject;
+
+                    });
+                }
+                fileReader.onloadend = (event) => {
+                    if (beforeEditingData.length != 0) {
+                        resetTable();
+                        var jsonExcel = [];
+                        $.each(beforeEditingData, function (index, value) {
+                            var item = {};
+                            item["Field"] = value.Field ;
+                            item["LanguagesContentKey"] = value.LanguagesContentKey;
+                            item["FieldValue"] = encodeURI(value.FieldValue);
+                            item["Language"] = value.Language;
+                            jsonExcel.push(item);
+                        });
+                        $('#data').val(JSON.stringify(jsonExcel));
+                        $('#GetActionAndController').ajaxSubmit({
+                            beforeSubmit: function () {
+                            },
+                            success: function (data) {
+                                if (data == "error") {
+                                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage7Error"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage8ErrorOccur"))", "error");
+                                    FilterOrUpload = -1;
+                                    mApp.unblock($('#demo'));
+                                    resetTable();
+                                    return;
+                                }
+                                beforeEditingData = data;
+                                var i = 1;
+                                ableRow(i);
+                                $.each(data, function (index, value) {
+                                    $('#JExcelTable').jexcel('setValue', 'A' + i, value.LanguagesContentKey);
+                                    $('#JExcelTable').jexcel('setValue', 'B' + i, value.Controller);
+                                    $('#JExcelTable').jexcel('setValue', 'C' + i, value.Action);
+                                    $('#JExcelTable').jexcel('setValue', 'D' + i, value.FieldKey);
+                                    $('#JExcelTable').jexcel('setValue', 'E' + i, value.FieldValue);
+                                    $('#JExcelTable').jexcel('setValue', 'F' + i, value.Language);
+                                    $('#JExcelTable').jexcel('setReadOnly', 'A' + i, true);
+                                    $('#JExcelTable').jexcel('setReadOnly', 'B' + i, true);
+                                    $('#JExcelTable').jexcel('setReadOnly', 'C' + i, true);
+                                    $('#JExcelTable').jexcel('setReadOnly', 'D' + i, true);
+                                    $('#JExcelTable').jexcel('setReadOnly', 'F' + i, true);
+                                    i++;
+                                });
+                                FilterOrUpload = 0;
+                                disableRow(i);
+                                deniedChange = false;
+                                mApp.unblock($('#demo'));
+                                $('#selectedFile').val(null);
+                                $('#cancel_btn_content').html('Cancel Upload');
+                            },
+                            error: function (xhr, status, error) {
+                                swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage7Error"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage8ErrorOccur"))", "error");
+                                mApp.unblock($('#demo'));
+                                FilterOrUpload = -1;
+                                $('#selectedFile').val(null);
+                                resetTable();
+                            }
+                        });
+
+
+                    }
+
+                }
+            }
+        });
+
+        var changed = function(instance, cell, x, y, value) {
+            if (deniedChange == true) {
+                return;
+            }
+            var cellName = jexcel.getColumnNameFromId([x,y]);
+            var firstChar = cellName.charAt(0);
+            if (firstChar != 'G') {
+                return;
+            }
+            var isChecked = $('#JExcelTable').jexcel('getValue', cellName);
+            if (isChecked) {
+                deniedChange = true;
+                var fieldKeySelected = $('#JExcelTable').jexcel('getValue', 'D' + cellName.substring(1));
+                for (var i = 1; i <= beforeEditingData.length; i++) {
+                    var currentFieldKey = $('#JExcelTable').jexcel('getValue', 'D' + i);
+                    if (fieldKeySelected == currentFieldKey) {
+                        $('#JExcelTable').jexcel('setValue', 'G' + i, true);
+                    }
+                }
+                deniedChange = false;
+            } else {
+                deniedChange = true;
+                var fieldKeySelected = $('#JExcelTable').jexcel('getValue', 'D' + cellName.substring(1));
+                for (var i = 1; i <= beforeEditingData.length; i++) {
+                    var currentFieldKey = $('#JExcelTable').jexcel('getValue', 'D' + i);
+                    if (fieldKeySelected == currentFieldKey) {
+                        $('#JExcelTable').jexcel('setValue', 'G' + i, false);
+                    }
+                }
+                deniedChange = false;
+            }
+
+        }
+
+        function initTable() {
+            jExcelTable = $('#JExcelTable').jexcel({
+                data: [[null]],
+                columns: [
+                    {
+                        type: 'text',
+                        title: 'LanguagesContentKey',
+                        width: '200',
+                    },
+                    {
+                        type: 'text',
+                        title: 'Controller',
+                        width: '150',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'Action',
+                        width: '150',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'FieldKey',
+                        width: '280',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'FieldValue',
+                        width: '280',
+                        wordWrap: true
+                    }, {
+                        type: 'text',
+                        title: 'Language',
+                        width: '150'
+                    }, {
+                        type: 'checkbox',
+                        title: 'delete',
+                        width: '150',
+                    },
+
+                ],
+                onchange: changed,
+                rowResize: true,
+                minSpareRows: 1,
+                allowManualInsertRow: false,
+                csvHeaders: true,
+                search: true,
+                pagination: 25,
+            });
+            disableRow(1);
+        }
+        function resetTable() {
+            $('#JExcelContainer').empty();
+            $('#JExcelContainer').append('<div id="JExcelTable" style="min-width:100%"></div>');
+            controller1 = '';
+            action1 = '';
+            language1 = '';
+            initTable();
+        }
+        function getDropDown(dropDown, valueSelected) {
+            mApp.block($('#demo'));
+            if (dropDown == "controller") {
+                $("#valueSelected").val(valueSelected);
+                $("#GetActionsDropDownPerController").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        html = '<option></option>';
+                        $.each(data, function (index, value) {
+                            html += '<option value="' + value + '">' + value + '</option>';
+                        });
+                        $('#ActionsDropDown').empty();
+                        $('#ActionsDropDown').append(html);
+
+                        mApp.unblock($('#demo'));
+                    },
+                    error: function (xhr, status, error) {
+
+                        mApp.unblock($('#demo'));
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage7Error"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage8ErrorOccur"))", "error");
+
+                    }
+                });
+            }
+
+        }
+        function getLanguageContent(language, controller, action) {
+            mApp.block('#demo');
+            $("#language").val(language);
+            $("#controller").val(controller);
+            $("#action").val(action);
+            $("#GetLanguageContents").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    resetTable();
+                    beforeEditingData = data;
+                    rowIndex = 1;
+                    ableRow(rowIndex);
+                    $.each(data, function (index, value) {
+                        $('#JExcelTable').jexcel('setValue', 'A' + rowIndex, value.LanguagesContentKey);
+                        $('#JExcelTable').jexcel('setValue', 'B' + rowIndex, value.Controller);
+                        $('#JExcelTable').jexcel('setValue', 'C' + rowIndex, value.Action);
+                        $('#JExcelTable').jexcel('setValue', 'D' + rowIndex, value.FieldKey);
+                        $('#JExcelTable').jexcel('setValue', 'E' + rowIndex, value.FieldValue);
+                        if (value.Language == 4) {
+                            $('#JExcelTable').jexcel('setValue', 'F' + rowIndex, "English");
+                        }
+                        if (value.Language == 3) {
+                            $('#JExcelTable').jexcel('setValue', 'F' + rowIndex, "Arabic");
+                        }
+                        if (value.Language == 62) {
+                            $('#JExcelTable').jexcel('setValue', 'F' + rowIndex, "French");
+                        }
+                        $('#JExcelTable').jexcel('setReadOnly', 'A' + rowIndex, true);
+                        $('#JExcelTable').jexcel('setReadOnly', 'B' + rowIndex, true);
+                        $('#JExcelTable').jexcel('setReadOnly', 'C' + rowIndex, true);
+                        $('#JExcelTable').jexcel('setReadOnly', 'D' + rowIndex, true);
+                        $('#JExcelTable').jexcel('setReadOnly', 'F' + rowIndex, true);
+                        rowIndex++;
+                    });
+                    deniedChange = false;
+                    disableRow(rowIndex);
+                    mApp.unblock('#demo');
+                    if (deleted == true) {
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPageEditDeleteSuccessfull"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPageplzEditsuccessfullyDeleted"))", "success");
+                        deleted = false;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    deniedChange = true;
+                    mApp.unblock($('#demo'));
+                    FilterOrUpload = -1;
+                    resetTable();
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage7Error"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage8ErrorOccur"))", "error");
+
+                }
+            });
+        }
+
+        function disableRow(rowIndex) {
+            $('#JExcelTable').jexcel('setReadOnly', 'A' + rowIndex, true);
+            $('#JExcelTable').jexcel('setReadOnly', 'B' + rowIndex, true);
+            $('#JExcelTable').jexcel('setReadOnly', 'C' + rowIndex, true);
+            $('#JExcelTable').jexcel('setReadOnly', 'D' + rowIndex, true);
+            $('#JExcelTable').jexcel('setReadOnly', 'E' + rowIndex, true);
+            $('#JExcelTable').jexcel('setReadOnly', 'F' + rowIndex, true);
+            $('#JExcelTable').jexcel('setReadOnly', 'G' + rowIndex, true);
+        }
+        function ableRow(rowIndex) {
+            $('#JExcelTable').jexcel('setReadOnly', 'A' + rowIndex, false);
+            $('#JExcelTable').jexcel('setReadOnly', 'B' + rowIndex, false);
+            $('#JExcelTable').jexcel('setReadOnly', 'C' + rowIndex, false);
+            $('#JExcelTable').jexcel('setReadOnly', 'D' + rowIndex, false);
+            $('#JExcelTable').jexcel('setReadOnly', 'E' + rowIndex, false);
+            $('#JExcelTable').jexcel('setReadOnly', 'F' + rowIndex, false);
+            $('#JExcelTable').jexcel('setReadOnly', 'G' + rowIndex, false);
+        }
+
+        $(document).ready(function () {
+
+            $('#ControllersDropDown').select2({
+                placeholder: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage9SelectC"))"
+            });
+            $('#ActionsDropDown').select2({
+                placeholder: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage10SelectA"))"
+            });
+            $('#LanguagesDropDown').select2({
+                placeholder: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage11SelectL"))"
+            });
+            $('#ControllersDropDown').on('change', function () {
+                if (permissionDenied == false) {
+                    getDropDown("controller", $('#ControllersDropDown').val());
+                }
+            });
+
+            jExcelTable = initTable();
+            $('#filter').on('click', function () {
+                language1 = $('#LanguagesDropDown').val();
+                controller1 = $('#ControllersDropDown').val();
+                action1 = $('#ActionsDropDown').val();
+                if (FilterOrUpload == 0) {
+                    mergeFilterWithUpload();
+                    return;
+                }
+                    FilterOrUpload = 1;
+                    getLanguageContent(language1, controller1, action1);
+                
+            });
+            $('#save_btn').on('click', function () {
+
+                mApp.block($('#demo'));
+
+                if (beforeEditingData.length == 0) {
+                    mApp.unblock($('#demo'));
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPageEditBeforeSaving"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPagePlzEditbeforeSaving"))", "error");
+                    return;
+                }
+                if (FilterOrUpload == 1) {
+                    saveBtnClickedAfterFilter();
+                } else if (FilterOrUpload == 0) {
+                    saveBtnClickedAfterUpload();
+                } else {
+                    mApp.unblock($('#demo'));
+                }
+            });
+            $('#cancel_Btn').on('click', function () {
+                mApp.block($('#demo'));
+                resetTable();
+                mApp.unblock($('#demo'));
+                deniedChange = true;
+                if (FilterOrUpload == 0) {
+                    $('#cancel_btn_content').html('Cancel');
+                }
+                FilterOrUpload = -1;
+            });
+            $('#Clear_btn').on('click', function () {
+                mApp.block($('#demo'));
+                permissionDenied = true;
+                $('#ControllersDropDown').val('').trigger('change');
+                $('#ActionsDropDown').val('').trigger('change');
+                $('#LanguagesDropDown').val('').trigger('change');
+                $('#ActionsDropDown').empty();
+                permissionDenied = false;
+                mApp.unblock($('#demo'));
+
+            });
+            $('#delete_Btn').on('click', function () {
+                swal({
+                    title: "Delete",
+                    text: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPageAreYouSure"))",
+                    type: "warning",
+                    showCancelButton: true,
+                    cancelButtonText: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPageCancelBtn"))",
+                    confirmButtonClass: "btn btn-brand m-btn",
+                    confirmButtonText: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPageDeleteBtn"))"
+                }).then(function (e) {
+                    if (e.dismiss !== "cancel") {
+                        mApp.block($('#demo'));
+                        var jsonData = [];
+                        var dataRows = $('#JExcelTable').jexcel('getData', false);
+                        for (var d in dataRows) {
+                            var current = dataRows[d];
+                            var languagesContentKey = current[0];
+                            var controller = current[1];
+                            var action = current[2];
+                            var fieldKey = current[3];
+                            var fieldValue = current[4];
+                            var checkedCell = current[6];
+
+                            if (languagesContentKey != '' && checkedCell == true) {
+                                var item = {};
+                                item["LanguagesContentKey"] = languagesContentKey;
+                                item["Controller"] = controller;
+                                item["Action"] = action;
+                                item["FieldKey"] = fieldKey;
+                                item["FieldValue"] = fieldValue;
+                                jsonData.push(item);
+                            }
+                        }
+                        if (jsonData.length != 0) {
+                            $("#dataToDelete").val(JSON.stringify(jsonData));
+                            $("#DeleteLocalisation").ajaxSubmit({
+                                beforeSubmit: function () {
+                                },
+                                success: function (data) {
+                                    if (data == 200) {
+                                        mApp.unblock($('#demo'));
+                                        jsonData = [];
+                                        deleted = true;
+                                        getLanguageContent(language1, controller1, action1);
+
+                                    }
+                                },
+                                error: function (xhr, status, error) {
+                                    mApp.unblock($('#demo'));
+                                    jsonData = [];
+                                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage7Error"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage8ErrorOccur"))", "error");
+
+                                }
+                            });
+                        } else {
+                            mApp.unblock($('#demo'));
+                            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage77Check"))", "", "error");
+                        }
+
+                    } else {
+                        return;
+                    }
+                });
+            });
+
+            $('#download').click(function () {
+                filename = 'localisation.xlsx';
+                var dataRows = $('#JExcelTable').jexcel('getData', false);
+                var data = [];
+                for (var d = 0; d < dataRows.length - 1; d++) {
+                    var item = {};
+                    var current = dataRows[d];
+                    item["Field"] = current[3];
+                    item["LanguagesContentKey"] = current[0];
+                    item["FieldValue"] = current[4];
+                    item["Language"] = current[5];
+                    data.push(item);
+                }
+                var ws = XLSX.utils.json_to_sheet(data);
+                var wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Localisation");
+                XLSX.writeFile(wb, filename);
+            });
+
+
+
+        });
+
+
+        function saveBtnClickedAfterFilter() {
+            mApp.block($('#demo'));
+            var jsonData = [];
+            var temp = [];
+            var dataRows = $('#JExcelTable').jexcel('getData', false);
+
+            for (var d in dataRows) {
+                        var before = beforeEditingData[d];
+                        var current = dataRows[d];
+                        var languagesContentKey = current[0];
+                        var controller = current[1];
+                        var action = current[2];
+                        var fieldKey = current[3];
+                        var fieldValue = current[4];
+                        if (languagesContentKey != '' && fieldValue == '') {
+                            mApp.unblock($('#demo'));
+                            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPageEmptyCells"))", "", "error");
+                            return;
+                        }
+                        if (languagesContentKey != '' && fieldValue != before.FieldValue) {
+                            var item = {};
+                            item["LanguagesContentKey"] = languagesContentKey;
+                            item["Controller"] = controller;
+                            item["Action"] = action;
+                            item["FieldKey"] = fieldKey;
+                            item["FieldValue"] = encodeURI(fieldValue);
+                            jsonData.push(item);
+                        }
+                        var item2 = {};
+                        item2["LanguagesContentKey"] = languagesContentKey;
+                        item2["Controller"] = controller;
+                        item2["Action"] = action;
+                        item2["FieldKey"] = fieldKey;
+                        item2["FieldValue"] = fieldValue;
+                        temp.push(item2);
+
+            }
+            console.log(jsonData);
+            if (jsonData.length != 0) {
+                        $("#jsonData").val(JSON.stringify(jsonData));
+                        $("#EditLocalisation").ajaxSubmit({
+                            beforeSubmit: function () {
+                            },
+                            success: function (data) {
+                                if (data == "success") {
+                                    mApp.unblock($('#demo'));
+                                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPageSuccess"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPageSuccessfullyUpdated"))", "success");
+                                    beforeEditingData = temp;
+                                    jsonData = [];
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                mApp.unblock($('#demo'));
+                                jsonData = [];
+                                swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage7Error"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage8ErrorOccur"))", "error");
+
+                            }
+                        });
+            } else {
+                        mApp.unblock($('#demo'));
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPageEditBeforeSaving"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPagePlzEditbeforeSaving"))", "error");
+            }
+        }
+
+        function saveBtnClickedAfterUpload() {
+            mApp.block($('#demo'));
+            var jsonData = [];
+            var temp = [];
+            var dataRows = $('#JExcelTable').jexcel('getData', false);
+
+            for (var d in dataRows) {
+                        var current = dataRows[d];
+                        var languagesContentKey = current[0];
+                        var controller = current[1];
+                        var action = current[2];
+                        var fieldKey = current[3];
+                        var fieldValue = current[4];
+                        if (languagesContentKey != '' && fieldValue == '') {
+                            mApp.unblock($('#demo'));
+                            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsPageEmptyCells"))", "", "error");
+                            return;
+                        }
+                        if (languagesContentKey != '') {
+                            var item = {};
+                            item["LanguagesContentKey"] = languagesContentKey;
+                            item["Controller"] = controller;
+                            item["Action"] = action;
+                            item["FieldKey"] = fieldKey;
+                            item["FieldValue"] = encodeURI(fieldValue);
+                            jsonData.push(item);
+                        }
+                        var item2 = {};
+                        item2["LanguagesContentKey"] = languagesContentKey;
+                        item2["Controller"] = controller;
+                        item2["Action"] = action;
+                        item2["FieldKey"] = fieldKey;
+                        item2["FieldValue"] = fieldValue;
+                        temp.push(item2);
+
+            }
+            if (jsonData.length != 0) {
+                        $("#jsonData").val(JSON.stringify(jsonData));
+                        $("#EditLocalisation").ajaxSubmit({
+                            beforeSubmit: function () {
+                            },
+                            success: function (data) {
+                                if (data == "success") {
+                                    mApp.unblock($('#demo'));
+                                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPageSuccess"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPageSuccessfullyUpdated"))", "success");
+                                    beforeEditingData = temp;
+                                    jsonData = [];
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                mApp.unblock($('#demo'));
+                                jsonData = [];
+                                swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage7Error"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage8ErrorOccur"))", "error");
+
+                            }
+                        });
+            }
+        }
+
+        function mergeFilterWithUpload() {
+            swal({
+                title: "Confirm",
+                text: "do you want to merge the filtered contents with the uploaded excel?",
+                 type: "warning",
+                 showCancelButton: true,
+                cancelButtonText: "Cancel",
+                confirmButtonClass: "btn btn-brand m-btn",
+                confirmButtonText: "merge"
+            }).then(function (e) {
+                if (e.dismiss !== "cancel") {
+
+                    var startIndex = beforeEditingData.length + 1;
+                    var languagesContentKeyArray = [];
+                    $.each(beforeEditingData, function (index, value) {
+                        languagesContentKeyArray.push(value.LanguagesContentKey);
+                    });
+                    getLanguageContentAndMerge(controller1, action1, startIndex, languagesContentKeyArray);
+
+                } else {
+                    return;
+                }
+            });
+
+        }
+
+        function getLanguageContentAndMerge(controller, action, startIndex, languagesContentKeyArray) {
+            mApp.block('#demo');
+            $("#language").val(language);
+            $("#controller").val(controller);
+            $("#action").val(action);
+            $("#GetLanguageContents").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+
+                    rowIndex = startIndex;
+                    ableRow(rowIndex);
+                    $.each(data, function (index, value) {
+                        if (!languagesContentKeyArray.includes(value.LanguagesContentKey)) {
+                            $('#JExcelTable').jexcel('setValue', 'A' + rowIndex, value.LanguagesContentKey);
+                            $('#JExcelTable').jexcel('setValue', 'B' + rowIndex, value.Controller);
+                            $('#JExcelTable').jexcel('setValue', 'C' + rowIndex, value.Action);
+                            $('#JExcelTable').jexcel('setValue', 'D' + rowIndex, value.FieldKey);
+                            $('#JExcelTable').jexcel('setValue', 'E' + rowIndex, value.FieldValue);
+                            if (value.Language == 4) {
+                                $('#JExcelTable').jexcel('setValue', 'F' + rowIndex, "English");
+                            }
+                            if (value.Language == 3) {
+                                $('#JExcelTable').jexcel('setValue', 'F' + rowIndex, "Arabic");
+                            }
+                            if (value.Language == 62) {
+                                $('#JExcelTable').jexcel('setValue', 'F' + rowIndex, "French");
+                            }
+                            $('#JExcelTable').jexcel('setReadOnly', 'A' + rowIndex, true);
+                            $('#JExcelTable').jexcel('setReadOnly', 'B' + rowIndex, true);
+                            $('#JExcelTable').jexcel('setReadOnly', 'C' + rowIndex, true);
+                            $('#JExcelTable').jexcel('setReadOnly', 'D' + rowIndex, true);
+                            $('#JExcelTable').jexcel('setReadOnly', 'F' + rowIndex, true);
+                            rowIndex++;
+                            beforeEditingData.push(value);
+                        }
+                    });
+                    deniedChange = false;
+                    disableRow(rowIndex);
+                    mApp.unblock('#demo');
+                    if (deleted == true) {
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPageEditDeleteSuccessfull"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPageplzEditsuccessfullyDeleted"))", "success");
+                        deleted = false;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    deniedChange = true;
+                    mApp.unblock($('#demo'));
+                    FilterOrUpload = -1;
+                    resetTable();
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage7Error"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsEditPage8ErrorOccur"))", "error");
+
+                }
+            });
+        }
+
+    </script>
+
+
+
+}
+
+
+

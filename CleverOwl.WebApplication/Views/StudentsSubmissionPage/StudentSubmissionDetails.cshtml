@@ -1,0 +1,1024 @@
+﻿@model RLI.Common.DataObjects.SubmissionDetailsViewModel
+@using RLI.Common.Managers
+@using RLI.EntityFramework.EDM
+@using RLI.Common.DataObjects
+@using System.Web.Http;
+@using RLI.Common.Globals
+
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsDetails"));
+    Language currentLanguage = ViewBag.CurrentLanguage;
+    string language1 = currentLanguage.Language1;
+    string assigId = ViewBag.assignmentId;
+    string userId = ViewBag.userId;
+    string fullName = ViewBag.fullName;
+    int index = ViewBag.Index;
+    int submissionsSize = ViewBag.SubmissionsSize;
+    string submissionStatus = ViewBag.SubmissionStatus;
+    //DateTime submissionDate = ViewBag.SubmissionDate;
+    AspNetUser currentUser = ViewBag.CurrentUser;
+    DateTime tmrw = new DateTime();
+    int? currentUserId = null;
+    if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Student")
+    {
+        currentUserId = currentUser.Studentkey;
+    }
+    else if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Teacher")
+    {
+
+        currentUserId = currentUser.TeacherKey;
+    }
+
+    var GradeKey = ViewBag.GradeKey;
+    var SubjectKey = ViewBag.SubjectKey;
+    string LessonKey = ViewBag.LessonKey;
+
+
+
+}
+@Styles.Render("~/assets/vendors/bootstrap-datepicker/dist/css/bootstrap-datepicker.css")
+
+@*@Styles.Render("~/assets/vendors/chartist/dist/chartist.css")*@
+<style>
+    .table-responsive table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .table-responsive td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    .table-responsive tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+
+    #chartdiv {
+        width: 100%;
+        height: 250px;
+    }
+
+    .select2-results {
+        padding: 15% !important;
+    }
+
+    svg {
+        height: 50px;
+    }
+
+    .page-banner {
+        margin-top: 100px;
+        height: fit-content;
+        background-color: #ffffff;
+    }
+
+    .page-body {
+        padding: 0;
+        margin-bottom: 50px;
+    }
+
+    .grid-card {
+        box-shadow: rgb(99 99 99 / 20%) 0px 2px 8px 0px;
+        border-radius: 25px;
+        padding: 40px;
+        background: linear-gradient( to left, rgb(115 110 197 / 80%) 0%, rgb(68 60 182) 100% ) left bottom #ffffff no-repeat;
+        background-size: 100% 18px;
+    }
+
+    .grid-card-head-title {
+        margin-top: 20px;
+    }
+
+    .grid-card-head-datetime {
+        margin-top: 20px;
+    }
+
+    .grid-card-body {
+        margin-top: 25px;
+        font-weight: 100;
+    }
+
+    .grid-card-footer {
+        margin-top: 50px;
+        margin-bottom: -10px;
+    }
+
+    .table-row {
+        display: table-row;
+        height: auto;
+    }
+
+    .table-cell1 {
+        border: none;
+        display: table-cell;
+        padding: 2px;
+        width: 80%
+    }
+
+    .table-cell2 {
+        border: none;
+        display: table-cell;
+        padding: 2px;
+    }
+
+    video {
+        max-width: 398px;
+        max-height: 130px;
+    }
+
+
+
+    .select2-selection__clear {
+        padding-top: 8px !important;
+    }
+
+    @@media(min-width: 992px) and (max-width:1024px) {
+        .RenderBody {
+            max-width: 100%;
+            padding-right: 15%;
+            padding-left: 15%;
+        }
+    }
+
+    @@media (max-width:522px) {
+        #select2-recordsDropdown-container {
+            position: absolute;
+            right: 18%;
+        }
+    }
+
+    .m-widget4 .m-widget4__item {
+        padding-bottom: 3.25rem;
+    }
+
+    .m-subheader .m-subheader__title {
+        color: #2b2350 !important;
+        font-weight: bold;
+    }
+
+    .m-widget24__item .m-widget24__title {
+        color: #2b2350 !important;
+    }
+
+    .m-widget14__header .m-widget14__title {
+        color: #2b2350 !important;
+    }
+
+    b {
+        color: #2b2350 !important;
+    }
+
+    .progress-bar {
+        height: 100%;
+    }
+
+    #autoCorrectContainer #grid li {
+        width: 83.33% !important;
+    }
+
+    .lessonCard {
+        margin-top: 10px !important;
+    }
+
+    .grid.effect-2 {
+        padding-left: 0px !important;
+        list-style-type: none !important;
+    }
+</style>
+
+<section class="page-banner">
+    <div class="container maincontainer">
+        <div class="page-title-wrapper">
+            <div>
+                <ul class="bradcurmed">
+                    <li><a href="@Url.Action("Index","Dashboard")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Wall"))</a></li>
+                    <li><a href="@Url.Action("Index","Assignments")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Assignments"))</a></li>
+                    <li><a href="@Url.Action("Index","StudentsSubmissionPage")?assignmnentId=@assigId" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsDetailsSubmissions"))</a></li>
+                    <li><a rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsDetails"))</a></li>
+                </ul>
+            </div>
+            <div class="row m--margin-top-20-desktop">
+                <div class="col-lg-1 m-auto m--hidden-tablet m--hidden-mobile">
+                    @Html.Partial("~/Views/SharedSvgs/_AssignmentsIcon.cshtml")
+                </div>
+                <div class="col-lg-5 col-12 m-auto">
+
+                    <h1 class="page-title"> @ViewBag.AssignmentName <span id="studentName">(@fullName)</span> </h1>
+                </div>
+                <div class="col-lg-3  m-auto">
+                </div>
+                <div class="col-lg-3 col-12 m-auto">
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<div id="submissionDetails">
+    @Html.Partial("~/Views/StudentsSubmissionPage/_SubmissionDetails.cshtml")
+</div>
+
+@using (Html.BeginForm("GrantExtension", "StudentsSubmissionPage", FormMethod.Post, new { id = "GrantExtensionHidden", @class = "", @style = "display:none;" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("assignmentId", "")
+    @Html.Hidden("userId", "")
+    @Html.Hidden("date", "")
+}
+@using (Html.BeginForm("GetNextNotGradedSubmission", "StudentsSubmissionPage", FormMethod.Post, new { id = "GetNextNotGradedSubmissionHidden", @class = "", @style = "display:none" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("assigId", "")
+    @Html.Hidden("currentIndex", "")
+    @Html.Hidden("submissionStatus", "")
+    @Html.Hidden("gradingStatus", "")
+}
+@using (Html.BeginForm("GetPreviousNotGradedSubmission", "StudentsSubmissionPage", FormMethod.Post, new { id = "GetPreviousNotGradedSubmissionHidden", @class = "", @style = "display:none" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("assigID", "")
+    @Html.Hidden("curIndex", "")
+    @Html.Hidden("subStatus", "")
+    @Html.Hidden("gradingStatus2", "")
+}
+@using (Html.BeginForm("PreventSubmissionChanges", "StudentsSubmissionPage", FormMethod.Post, new { id = "PreventSubmissionChangesHidden", @class = "", @style = "display:none" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("preventAssigId", "")
+    @Html.Hidden("preventUserId", "")
+}
+@using (Html.BeginForm("AllowSubmissionChanges", "StudentsSubmissionPage", FormMethod.Post, new { id = "AllowSubmissionChangesHidden", @class = "", @style = "display:none" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("allowPreventAssigId", "")
+    @Html.Hidden("allowPreventUserId", "")
+}
+
+@using (Html.BeginForm("AddTeacherComment", "StudentsSubmissionPage", FormMethod.Post, new { id = "AddTeacherCommentHidden", @class = "", @style = "display:none" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("commentValue", "")
+    @Html.Hidden("submID", "")
+    @Html.Hidden("assignmentCmI", "")
+}
+
+@using (Html.BeginForm("DeleteTeacherComment", "StudentsSubmissionPage", FormMethod.Post, new { id = "DeleteTeacherCommentHidden", @class = "", @style = "display:none" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("commentId", "")
+}
+
+@using (Html.BeginForm("AutoCorrectedGrading", "StudentsSubmissionPage", FormMethod.Post, new { id = "AutoCorrectedGradingHidden", @class = "", @style = "display:none;" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("assId", "")
+    @Html.Hidden("IdofUser", "")
+    @Html.Hidden("grade", "")
+}
+@using (Html.BeginForm("InsertLessonCard", "AssignmentsSubmission", FormMethod.Post, new { id = "InsertLessonCardHidden" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("lessonCardId", "")
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @*@Scripts.Render("~/assets/vendors/chartist/dist/chartist.js")*@
+    @Scripts.Render("~/assets/amcharts4/core.js")
+    @Scripts.Render("~/assets/amcharts4/charts.js")
+    @Scripts.Render("~/assets/amcharts4/themes/animated.js")
+    @Scripts.Render("~/assets/amcharts4/themes/dark.js")
+    @Scripts.Render("~/assets/vendors/bootstrap-datepicker/dist/js/bootstrap-datepicker.js")
+    @Scripts.Render("~/assets/vendors/bootstrap-datepicker/dist/locales/bootstrap-datepicker.ar-tn.min.js")
+    @Scripts.Render("~/assets/vendors/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr-CH.min.js")
+    @Scripts.Render("~/assets/vendors/masonry/js/modernizr.custom.js")
+    @Scripts.Render("~/assets/vendors/masonry/js/masonry.pkgd.min.js")
+    @Scripts.Render("~/assets/vendors/masonry/js/imagesloaded.pkgd.js")
+    @Scripts.Render("~/assets/vendors/masonry/js/classie.js")
+    @Scripts.Render("~/assets/vendors/masonry/js/AnimOnScroll.js")
+
+    <script>
+    var StudentSubmissionDetailsPageOpps = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "StudentSubmissionDetailsPageOpps"))";
+    var StudentSubmissionDetailsPageErrorInGetNextSubmissions = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "StudentSubmissionDetailsPageErrorInGetNextSubmissions"))";
+    var StudentSubmissionDetailsPageAllowSubmissionChanges = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "StudentSubmissionDetailsPageAllowSubmissionChanges"))";
+    var StudentSubmissionDetailsPageErrorPreventSubmissionChanges = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "StudentSubmissionDetailsPageErrorPreventSubmissionChanges"))";
+    var StudentSubmissionDetailsPageGrantExtensionSuccess = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "StudentSubmissionDetailsPageGrantExtensionSuccess"))";
+    var StudentSubmissionDetailsPageAutoGradingSuccess = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "StudentSubmissionDetailsPageAutoGradingSuccess"))";
+    var StudentSubmissionDetailsPageErrorInGrantExtension = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "StudentSubmissionDetailsPageErrorInGrantExtension"))";
+    var StudentSubmissionDetailsPageErrorInGrading = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "StudentSubmissionDetailsPageErrorInGrading"))";
+    var StudentSubmissionDetailsPageSuccess = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "StudentSubmissionDetailsPageSuccess"))";
+     var AssignmentSubmissionPageGoToLesson = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageGoToLesson"))";
+    var assignmentId = "@assigId";
+    var userId = "@userId";
+    var currentIndex = "@index";
+    var submissionsSize = "@submissionsSize";
+    var submissionStatus = "@submissionStatus";
+    var LessonKey = "@LessonKey";
+    var gradingStatus = "";
+    if ("@ViewBag.IsGraded" == "True") {
+        gradingStatus = "graded";
+    } else {
+        gradingStatus = "notgraded";
+    }
+    $(document).ready(function () {
+
+        //InsertLessonCard(LessonKey, $('#lessonCardsContainer'));
+        InsertScromCard(LessonKey, $('#autoCorrectContainer'));
+        });
+    function InsertLessonCard(id, selector) {
+
+        if (id.length != 0) {
+            mApp.block(selector);
+            $("#lessonCardId").val(id);
+            $("#InsertLessonCardHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    selector.empty();
+                    selector.append(data);
+                        @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Student" || RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Teacher")
+    {
+        <Text>
+
+                    $('.registerPathTimlineBtn').click(function () {
+
+                        var studycontent = {
+          version: "1.0.0",
+          context: {
+            type: "study-content",
+            action: "start",
+            user: {
+              id: '@currentUserId',
+            },
+            data: {
+              classInfo: {
+                id: '@SubjectKey-@GradeKey',
+              }
+            },
+            content: [{
+                id: '@LessonKey',
+            }],
+          },
+        };
+                        document.getElementById("gooru").inputdata = studycontent;
+                    });
+                    </Text>
+    }
+                    $(".lessonCard__header_Overlay").hide();
+                    $(".m-portlet__head-tools").hide();
+                    //$(".blankslate").hide();
+                    $(".lessonCard__header_Overlay_Studenthare").hide();
+                    $(".CopyBtn").hide();
+                    $(".treeHover").css('cursor', 'default').css('text-decoration', 'none');
+                    $(".treeHover")
+                    loadMasonry();
+                    mApp.unblock(selector);
+                },
+                error: function (xhr, status, error) {
+                    //$(".blankslate").hide();
+                    //swal("Error", "error in get conversation 2", "error");
+                    console.log("Error In InsertLessonCardHidden !!!!!!!");
+                    //$('#lessonCardsContainer').css("min-height", "10px");
+                    mApp.unblock(selector);
+                }
+            });
+        } else {
+            $('#ressourcesBlock').remove();
+        }
+
+    }
+
+        function InsertScromCard(id, selector) {
+            if (id.length != 0) {
+            //$('#lessonCardsContainer').css("min-height", "20px");
+            mApp.block(selector);
+                $("#lessonCardId").val(id);
+            $("#InsertLessonCardHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    selector.empty();
+                    selector.append(data);
+                      @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Student" || RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Teacher")
+    {
+        <Text>
+
+                    $('.registerPathTimlineBtn').click(function () {
+
+                        var studycontent = {
+          version: "1.0.0",
+          context: {
+            type: "study-content",
+            action: "start",
+            user: {
+              id: '@currentUserId',
+            },
+            data: {
+              classInfo: {
+                id: '@SubjectKey-@GradeKey',
+              }
+            },
+            content: [{
+                id: '@LessonKey',
+            }],
+          },
+        };
+                        document.getElementById("gooru").inputdata = studycontent;
+                    });
+                    </Text>
+    }
+                    $(".lessonCard__header_Overlay").hide();
+                    $(".m-portlet__head-tools").hide();
+                    //$(".blankslate").hide();
+                    $(".lessonCard__header_Overlay_Studenthare").hide();
+                    $(".CopyBtn").hide();
+                    $(".treeHover").css('cursor', 'default').css('text-decoration', 'none');
+                    var scormLink = $(".m-portlet__head .m-portlet__head-caption .m-portlet__head-title a").attr("href");
+                    var html = '<a class="btn btn-brand" href="' + scormLink + '" target="_blank"> ' + AssignmentSubmissionPageGoToLesson + ' </a>';
+                    $('#goToLessonLink').append(html);
+                    console.log(scormLink);
+                    loadMasonry();
+                    mApp.unblock(selector);
+
+
+                },
+                error: function (xhr, status, error) {
+                    //$(".blankslate").hide();
+                    //swal("Error", "error in get conversation 2", "error");
+                    console.log("Error In InsertLessonCardHidden !!!!!!!");
+                    console.log("NOT INSERTED");
+                    //$('#lessonCardsContainer').css("min-height", "10px");
+                    mApp.unblock(selector);
+                }
+            });
+        } else {
+            $('#scormsBlock').remove();
+        }
+    }
+    function loadMasonry() {
+        const gridElement = document.getElementById('grid');
+        if (gridElement) {
+            new AnimOnScroll(gridElement, {
+                minDuration: 0.4,
+                maxDuration: 0.7,
+                viewportFactor: 0.2
+            });
+            masonryFitContent();
+        } else {
+            console.error("Element with ID 'grid' not found.");
+        }
+    }
+
+
+    // loadMasonry();
+
+    function masonryFitContent() {
+
+        var currentWindowWidth = $(window).width();
+        var numberOfCards = parseInt((currentWindowWidth * 0.85) / 300);
+        numberOfCards = currentWindowWidth < 700 ? 1 : numberOfCards;
+        numberOfCards = currentWindowWidth > 1200 ? 1 : numberOfCards;
+
+        var gridthWidth = numberOfCards * 450;
+        //var gridthWidth = numberOfCards * 300;
+
+        $("#grid_1").width(gridthWidth);
+
+        $("#grid_2").width(gridthWidth);
+
+
+    }
+
+    //....end functions....//
+
+    $(window).resize(function () {
+        masonryFitContent();
+
+    });
+    am4core.ready(function () {
+        // Themes begin
+        am4core.useTheme(am4themes_animated);
+        am4core.useTheme(am4themes_dark);
+        // Themes end
+
+
+
+        // create chart
+        var chart = am4core.create("chartdiv", am4charts.GaugeChart);
+        chart.innerRadius = -15;
+
+        var axis = chart.xAxes.push(new am4charts.ValueAxis());
+        axis.min = 0;
+        axis.max = 100;
+        axis.strictMinMax = true;
+        axis.numberFormatter.numberFormat = "#a";
+
+        let ds = new am4core.DropShadowFilter();
+        ds.blur = 10;
+        ds.opacity = 0.5;
+        axis.filters.push(ds)
+
+        var colorSet = new am4core.ColorSet();
+
+        var gradient = new am4core.LinearGradient();
+        gradient.stops.push({ color: am4core.color("#c00000") })
+        gradient.stops.push({ color: am4core.color("#474c5e") })
+        gradient.stops.push({ color: am4core.color("#f98e47") })
+
+        axis.renderer.line.stroke = gradient;
+        axis.renderer.line.strokeWidth = 15;
+        axis.renderer.line.strokeLinecap = "round";
+        axis.renderer.line.strokeOpacity = 1;
+
+        axis.renderer.grid.template.disabled = true;
+
+        var hand = chart.hands.push(new am4charts.ClockHand());
+        hand.radius = am4core.percent(102);
+        hand.startWidth = 16;
+        hand.pin.radius = 8;
+        hand.parent.zIndex = 100;
+        setInterval(function () {
+            @if(ViewBag.TotalScore != null)
+            {
+                 <text>
+                  hand.showValue(@Html.Raw(ViewBag.TotalScore), 100, am4core.ease.cubicOut);
+                 </text>
+            }
+
+            $("tspan").parent().parent().parent().attr("fill", "#2b2350");
+            // hand.showValue(Math.random() * 1000000, 1000, am4core.ease.cubicOut);
+        }, 1000);
+    });
+
+    $(document).ready(function () {
+
+        var currentLanguage = "en";
+        @{
+            if (language1 == "English")
+            {
+                <text>currentLanguage = "en";</text>
+            } else if (language1 == "French")
+            {
+                <text>currentLanguage = "fr";</text>
+            } else if (language1 == "Arabic")
+            {
+                <text>currentLanguage = "ar";</text>
+            }
+        }
+        var value = "";
+        @if(Model.ScormOverallGrade != null)
+            {
+                 <text>
+                    value = @Model.ScormOverallGrade.Replace('%', ' ');
+                 </text>
+            }
+        initAmChart(value);
+        initGrantExtension($('#grantExtensionDate'), currentLanguage);
+
+        if (submissionsSize <= 1) {
+            // hide next and prev
+            $('#nextBtn').hide();
+            $('#prevBtn').hide();
+        }
+        if (currentIndex == 0) {
+            //hide prev
+            $('#prevBtn').hide();
+        }
+        if (currentIndex == (submissionsSize - 1)) {
+            //hide next
+            $('#nextBtn').hide();
+        }
+
+
+
+
+        $(document).on('click', '#saveExtensions', function () {
+            var date = $('#grantExtensionDate').val();
+            grantExtension(assignmentId, $('#stringUserId').text(), date);
+        });
+        $(document).on('click', '#nextBtn', function () {
+            if (currentIndex < submissionsSize) {
+                getNextSubmission(assignmentId);
+            }
+        });
+        $(document).on('click', '#prevBtn', function () {
+            if (currentIndex > -1) {
+                getPrevSubmission(assignmentId);
+            }
+        });
+        $(document).on('click', '#preventBtn', function () {
+            var lock = $(this).attr("data-lock");
+            preventSubmissionChanges(assignmentId, $('#stringUserId').text(), lock);
+        });
+
+        $("#cancelOwnFeedback").click(function () {
+            $("#teacherComment").val('');
+        })
+
+        $(document).on('click', '#addCommentBtnSave', function () {
+            var comment = $("#teacherComment").val();
+            $("#commentValue").val(comment);
+            $("#submID").val('@ViewBag.SubmissionId');
+            $("#assignmentCmI").val('@ViewBag.courseModuleId');
+
+            mApp.block($('#commentsContainer'));
+            mApp.progress($('#addCommentBtnSave'));
+            $('#AddTeacherCommentHidden').ajaxSubmit({
+                beforeSubmit: function () {
+
+                },
+                success: function (data) {
+                    mApp.unprogress($('#addCommentBtnSave'));
+                    var html = "";
+                    var youLocalisation = '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageYou"))';
+                    html = '<div class="col-12 m-3"><h4 class="m--font-brand">' + youLocalisation + '</h4>' + data.comment + '<p>' + data.timecreated + '<a href="" data-CommentId="' + data.commentId + '" class="m-5 deleteComment"><i class="fa fa-trash"></i></a></p></div>'
+                    //html = ' <div class="row"><div class="col-lg-8">' + data.comment + '</div><div class="col-lg-4"><a href="" data-CommentId="' + data.commentId + '" class="deleteComment"><i class="fa fa-trash"></i></a></div></div>';
+
+                    $("#allCommentsLogContainer").append(html);
+                    $("#teacherComment").val('');
+                    mApp.unblock($('#commentsContainer'));
+
+                },
+                error: function () {
+                    mApp.unprogress($('#addCommentBtnSave'));
+                    swal(StudentSubmissionDetailsPageOpps, StudentSubmissionDetailsPageErrorPreventSubmissionChanges, "error");
+                }
+            });
+        });
+
+        $(document).on('click', '.deleteComment', function () {
+            event.preventDefault();
+             var commentId = $(this).attr("data-CommentId");
+             $("#commentId").val(commentId);
+
+            var currentItem = $(this);
+            mApp.block($(currentItem).parent().parent());
+            mApp.progress(currentItem);
+             $('#DeleteTeacherCommentHidden').ajaxSubmit({
+                beforeSubmit: function () {
+
+                },
+                success: function (data) {
+                    mApp.unprogress(currentItem);
+                    mApp.unblock($(currentItem).parent().parent());
+                    if (data == "200") {
+                        $(currentItem).parent().parent().remove();
+                    } else {
+                        swal(StudentSubmissionDetailsPageOpps, StudentSubmissionDetailsPageErrorPreventSubmissionChanges, "error");
+                    }
+                },
+                error: function () {
+                    mApp.unprogress(currentItem);
+                    swal(StudentSubmissionDetailsPageOpps, StudentSubmissionDetailsPageErrorPreventSubmissionChanges, "error");
+                }
+            });
+        });
+
+        $(document).on('click', '#GradeBTnToMoodleLMSPage', function () {
+            console.log("entered GradeBTnToMoodleLMSPage function");
+            @if(Model.FileSubmissionsEnabled==false && Model.OnlineTextEnabled == false)
+    {
+
+
+<text>
+            console.log("entere if block" );
+            $("#grade_modal_1").modal("show");
+            </text>
+
+    }
+    else
+    {
+<text>
+             var urlLms = "@(RLI.Common.Managers.ConfigurationManager.getMoodleAPIUrl())mod/assign/view.php?id=" + '@ViewBag.courseModuleId' + "&rownum=0&action=grader&userid=" + '@ViewBag.userId';
+            console.log(" urlLms var: " + urlLms);
+            window.location = "@Url.Action("Lms","Utilities")/?type=1&url=" + btoa(unescape(encodeURIComponent(urlLms))) +"&AssignmentKey=" + '@ViewBag.assignmentId';
+            </text>
+    }
+            console.log("finished GradeBTnToMoodleLMSPage function");
+
+        });
+
+        $("#gradeInput").keyup(function () {
+            var valueGrade = $(this).val();
+
+            if (valueGrade < 0 || valueGrade > 100) {
+                $(this).val(100)
+            }
+        })
+
+
+        $("#saveGrade").click(function () {
+            event.preventDefault();
+            var valueGrade = $("#gradeInput").val();
+            mApp.progress($("#saveGrade"));
+
+            $("#assId").val(assignmentId);
+            $("#IdofUser").val(userId);
+            $("#grade").val(valueGrade);
+
+            $('#AutoCorrectedGradingHidden').ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    mApp.unprogress($("#saveGrade"));
+                    if (data == "200") {
+                        location.reload();
+                        $("#grade_modal_1").modal("hide");
+                        swal(StudentSubmissionDetailsPageSuccess, StudentSubmissionDetailsPageAutoGradingSuccess, "success");
+                    } else {
+                        swal(StudentSubmissionDetailsPageOpps, StudentSubmissionDetailsPageErrorInGrading, "error");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    mApp.unprogress($("#saveGrade"));
+                    swal(StudentSubmissionDetailsPageOpps, StudentSubmissionDetailsPageErrorInGetNextSubmissions, "error");
+                }
+
+            });
+        })
+    });
+
+    function initAmChart(value) {
+        am4core.ready(function () {
+        // Themes begin
+        am4core.useTheme(am4themes_animated);
+        am4core.useTheme(am4themes_dark);
+        // Themes end
+
+
+
+        // create chart
+        var chart = am4core.create("chartdiv", am4charts.GaugeChart);
+        chart.innerRadius = -15;
+
+        var axis = chart.xAxes.push(new am4charts.ValueAxis());
+        axis.min = 0;
+        axis.max = 100;
+        axis.strictMinMax = true;
+        axis.numberFormatter.numberFormat = "#a";
+
+        let ds = new am4core.DropShadowFilter();
+        ds.blur = 10;
+        ds.opacity = 0.5;
+        axis.filters.push(ds)
+
+        var colorSet = new am4core.ColorSet();
+
+        var gradient = new am4core.LinearGradient();
+        gradient.stops.push({ color: am4core.color("#c00000") })
+        gradient.stops.push({ color: am4core.color("#474c5e") })
+        gradient.stops.push({ color: am4core.color("#f98e47") })
+
+        axis.renderer.line.stroke = gradient;
+        axis.renderer.line.strokeWidth = 15;
+        axis.renderer.line.strokeLinecap = "round";
+        axis.renderer.line.strokeOpacity = 1;
+
+        axis.renderer.grid.template.disabled = true;
+
+        var hand = chart.hands.push(new am4charts.ClockHand());
+        hand.radius = am4core.percent(102);
+        hand.startWidth = 16;
+        hand.pin.radius = 8;
+        hand.parent.zIndex = 100;
+            console.log("TotalScore12", '@ViewBag.TotalScore');
+            setTimeout(function () {
+             hand.showValue(@Html.Raw(ViewBag.TotalScore), 100, am4core.ease.cubicOut);
+            @*if(value != "" && value != null)
+            {
+                console.log("value:" + value);
+                hand.showValue(@Html.Raw(ViewBag.TotalScore), 100, am4core.ease.cubicOut);
+
+            }*@
+
+            $("tspan").parent().parent().parent().attr("fill", "#2b2350");
+            // hand.showValue(Math.random() * 1000000, 1000, am4core.ease.cubicOut);
+        }, 1000);
+    });
+    }
+
+    function getPrevSubmission(assigId) {
+        mApp.block($('#submissionDetails'));
+        $('#assigID').val(assigId);
+        $('#curIndex').val(currentIndex);
+        $('#subStatus').val(submissionStatus);
+        $('#gradingStatus2').val(gradingStatus);
+        $('#GetPreviousNotGradedSubmissionHidden').ajaxSubmit({
+            beforeSubmit: function () {
+
+            },
+            success: function (data) {
+                if (data == "500") {
+                    swal(StudentSubmissionDetailsPageOpps, StudentSubmissionDetailsPageErrorInGetNextSubmissions, "error");
+                    return;
+                }
+                $('#submissionDetails').empty();
+                $('#submissionDetails').append(data);
+                currentIndex--;
+                if (currentIndex == 0) {
+                    //hide prev
+                    $('#prevBtn').hide();
+                    //show next
+                    $('#nextBtn').show();
+                } else {
+                    //show next
+                    $('#nextBtn').show();
+                    // show prev
+                    $('#prevBtn').show();
+                }
+                var stringNextFullName = $("#stringNextFullName").text();
+                $("#studentName").text("(" + stringNextFullName + ")");
+                var value = $('#stringValueChart').text();
+                initAmChart(value);
+                 var currentLanguage = "en";
+        @{
+            if (language1 == "English")
+            {
+                <text>currentLanguage = "en";</text>
+            } else if (language1 == "French")
+            {
+                <text>currentLanguage = "fr";</text>
+            } else if (language1 == "Arabic")
+            {
+                <text>currentLanguage = "ar";</text>
+            }
+        }
+                initGrantExtension($('#grantExtensionDate'), currentLanguage);
+                mApp.unblock($('#submissionDetails'));
+            },
+            error: function (xhr, status, error) {
+                swal(StudentSubmissionDetailsPageOpps, StudentSubmissionDetailsPageErrorInGetNextSubmissions, "error");
+                mApp.unblock($('#submissionDetails'));
+            }
+        });
+    }
+
+    function getNextSubmission(assigId) {
+        mApp.block($('#submissionDetails'));
+        $('#assigId').val(assigId);
+        $('#currentIndex').val(currentIndex);
+        $('#submissionStatus').val(submissionStatus);
+        $('#gradingStatus').val(gradingStatus);
+        $('#GetNextNotGradedSubmissionHidden').ajaxSubmit({
+            beforeSubmit: function () {
+
+            },
+            success: function (data) {
+                mApp.unblock($('#submissionDetails'));
+                if (data == "500") {
+                    swal(StudentSubmissionDetailsPageOpps, StudentSubmissionDetailsPageErrorInGetNextSubmissions, "error");
+                    return;
+                }
+                $('#submissionDetails').empty();
+                $('#submissionDetails').append(data);
+                currentIndex++;
+                if (currentIndex == (submissionsSize - 1)) {
+                    //hide next
+                    $('#nextBtn').hide();
+                    //show prev
+                    $('#prevBtn').show();
+                } else {
+                    //show next
+                    $('#nextBtn').show();
+                    // show prev
+                    $('#prevBtn').show();
+                }
+               var stringNextFullName = $("#stringNextFullName").text();
+                $("#studentName").text("(" + stringNextFullName + ")");
+
+                var value = $('#stringValueChart').text();
+                console.log(value);
+                initAmChart(value);
+                 var currentLanguage = "en";
+        @{
+            if (language1 == "English")
+            {
+                <text>currentLanguage = "en";</text>
+            } else if (language1 == "French")
+            {
+                <text>currentLanguage = "fr";</text>
+            } else if (language1 == "Arabic")
+            {
+                <text>currentLanguage = "ar";</text>
+            }
+        }
+                initGrantExtension($('#grantExtensionDate'), currentLanguage);
+            },
+            error: function (xhr, status, error) {
+                swal(StudentSubmissionDetailsPageOpps, StudentSubmissionDetailsPageErrorInGetNextSubmissions, "error");
+                mApp.unblock($('#submissionDetails'));
+            }
+        });
+    }
+
+    function grantExtension(assigId, userId, date) {
+        mApp.block($('#modale'));
+        mApp.block($('.maincontainer'));
+        mApp.progress($('.maincontainer'));
+        mApp.block($('.commentsContainer'));
+        mApp.progress($('.commentsContainer'));
+        $('#assignmentId').val(assigId);
+        $('#userId').val(userId);
+        $('#date').val(date);
+        $('#GrantExtensionHidden').ajaxSubmit({
+            beforeSubmit: function () {
+            },
+            success: function (data) {
+                mApp.unblock($('#modale'));
+                mApp.unblock($('.maincontainer'));
+                mApp.unprogress($('.maincontainer'));
+                mApp.unblock($('.commentsContainer'));
+                mApp.unprogress($('.commentsContainer'));
+                if (data == "200") {
+                    swal(StudentSubmissionDetailsPageSuccess, StudentSubmissionDetailsPageGrantExtensionSuccess, "success");
+                } else {
+                    swal(StudentSubmissionDetailsPageOpps, StudentSubmissionDetailsPageErrorInGrantExtension, "error");
+                }
+            },
+            error: function (xhr, status, error) {
+                mApp.unblock($('#modale'));
+                swal(StudentSubmissionDetailsPageOpps, StudentSubmissionDetailsPageErrorInGetNextSubmissions, "error");
+            }
+
+        });
+    }
+    function preventSubmissionChanges(assigId, userId, lock) {
+        mApp.progress($('#preventBtn'));
+        if (lock == "False") {
+            $('#preventAssigId').val(assigId);
+            $('#preventUserId').val(userId);
+            $('#PreventSubmissionChangesHidden').ajaxSubmit({
+                beforeSubmit: function () {
+
+                },
+                success: function (data) {
+                    mApp.unprogress($('#preventBtn'));
+                    if (data == "200") {
+                        $('#preventBtn').attr("data-lock", "True");
+                        $('#preventBtn').text(StudentSubmissionDetailsPageAllowSubmissionChanges);
+                    } else {
+                        swal(StudentSubmissionDetailsPageOpps, StudentSubmissionDetailsPageErrorPreventSubmissionChanges, "error");
+                    }
+                },
+                error: function () {
+                    mApp.unprogress($('#preventBtn'));
+                    swal(StudentSubmissionDetailsPageOpps, StudentSubmissionDetailsPageErrorPreventSubmissionChanges, "error");
+                }
+
+            });
+        } else {
+            $('#allowPreventAssigId').val(assigId);
+            $('#allowPreventUserId').val(userId);
+            $('#AllowSubmissionChangesHidden').ajaxSubmit({
+                beforeSubmit: function () {
+
+                },
+                success: function (data) {
+                    mApp.unprogress($('#preventBtn'));
+                    if (data == "200") {
+                        $('#preventBtn').attr("data-lock", "False");
+
+                        $('#preventBtn').text("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPagePreventsubmissionchanges"))");
+                    } else {
+                        swal(StudentSubmissionDetailsPageOpps, StudentSubmissionDetailsPageErrorPreventSubmissionChanges, "error");
+                    }
+                },
+                error: function () {
+                    mApp.unprogress($('#preventBtn'));
+                    swal(StudentSubmissionDetailsPageOpps, StudentSubmissionDetailsPageErrorPreventSubmissionChanges, "error");
+                }
+
+            });
+        }
+
+    }
+    function initGrantExtension(selector, currentLanguage) {
+        selector.datepicker({
+            format: "dd/mm/yyyy",
+            startDate: getTheNextDay(new Date()),
+            todayHighlight: true,
+            autoclose: true,
+            language: currentLanguage
+        });
+        selector.keydown(function (event) {
+            return false;
+        });
+    }
+    function getTheNextDay(date) {
+        const tomorrow = new Date(date);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        console.log(tomorrow);
+        return tomorrow;
+    }
+    </script>
+}

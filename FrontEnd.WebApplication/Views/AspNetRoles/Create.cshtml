@@ -1,0 +1,124 @@
+﻿@model FrontEnd.WebApplication.Models.AspNetRoleViewModel
+
+@{
+    ViewBag.Title = "Create";
+}
+@using RLI.Common.Managers
+
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatCreatePageTitle"));
+}
+
+<style>
+    .select2-results__group {
+        color: #0E8BF2 !important;
+        font-size: 20px !important;
+        font-weight: bold;
+    }
+</style>
+
+<div class="m-portlet m-portlet--mobile" id="RolesDiv">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageAddRole"))
+                </h3>
+            </div>
+        </div>
+        <div class="m-portlet__head-tools">
+        </div>
+    </div>
+    <div class="m-portlet__body" style="padding:10px;">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "createForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-md-2" for="Grade1">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageRoleName"))</label>
+                    <div class="col-md-12">
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", style = "width:100%" } })
+                        @Html.ValidationMessageFor(model => model.Name, Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageRoleNameError")).ToString(), new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2" for="Domain1">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageRoleType"))</label>
+                    <div class="col-md-12">
+                        @Html.DropDownList("RoleType", (SelectList)ViewBag.RolesTypeDropDown, "", new { style = "width:100%", id = "RolesTypeDropDown" })
+
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input type="submit" id="submitBtn" value="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageCreateRole"))" class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100 submitBtn" />
+
+                        </div>
+
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input type="submit" id="submitBtnAndContinue" value="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageCreateAndContinueRole"))" class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100 submitBtn" />
+
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 mt-1">
+                            <a class="btn m-btn--pill btn-outline-metal m-btn m-btn--outline-2x w-100" href="@Url.Action("Index","AspNetRoles")">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageBackToAspNetRoles"))</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="form-group" hidden>
+                <label class="control-label col-md-2">Continue</label>
+                <div class="col-md-12">
+                    <input name="Continue" id="Continue" />
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+@using (Html.BeginForm("CollectLanguageTranslations", "Grades", FormMethod.Post, new { id = "CollectLanguageTranslationsHidden", @class = "", @style = "display:none;" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("langKeys", "")
+    @Html.Hidden("gradeNames", "")
+    @Html.Hidden("cycleNames", "")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+
+    <script>
+
+        $(document).ready(function () {
+
+            $('#RolesTypeDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageLanguageSelectRoleType"))',
+            });
+
+            $(".submitBtn").click(function () {
+                mApp.block($("#RolesDiv"));
+                if ($(this).attr("id") == "submitBtn") {
+                    event.preventDefault();
+                    $('#Continue').val("false");
+                    $('#createForm').submit();
+                } else {
+                    event.preventDefault();
+                    $('#Continue').val("true");
+                    $('#createForm').submit();
+                }
+
+
+            });
+
+        });
+
+    </script>
+}
+

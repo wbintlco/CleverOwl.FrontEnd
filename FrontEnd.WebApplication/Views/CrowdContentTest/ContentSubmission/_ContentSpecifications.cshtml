@@ -1,0 +1,707 @@
+﻿@model FrontEnd.WebApplication.Models.ContentSpecificationsViewModel
+@using RLI.Common.Managers
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+<style>
+    .cc_licenseType {
+        vertical-align: middle !important;
+    }
+
+    .cc_symbol {
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+
+    .cc_description {
+        text-align: justify !important;
+        vertical-align: middle !important;
+    }
+
+    .cc_icon {
+        font-size: 4rem !important;
+    }
+
+    .m-option__body {
+        padding-top: 1.2rem !important;
+        font-size: 1.2rem !important;
+    }
+</style>
+
+@using (Html.BeginForm("ContentUpload", "CrowdContentTest", FormMethod.Post, new { @class = "m-form m-form--fit m-form--label-align-right m-form--group-seperator-dashed", @id = "contentSpecificationsForm", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="m-form__section m-form__section--first">
+        <div class="m-form__heading">
+            <h3 class="font-weight-bold">
+                <i class="fa fa-check-double" style="padding-right: 20px;font-size:3rem;"></i>
+                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewTitle"))
+            </h3>
+        </div>
+        <div class="form-group m-form__group row">
+            <div class="col-xl-12 col-lg-12">
+                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewHeader"))
+            </div>
+        </div>
+        <div class="form-group m-form__group row m--padding-5-tablet-and-mobile">
+            <div class="col-xl-12 col-lg-12">
+                <div class="m-accordion m-accordion--default" id="m_accordion_1" role="tablist">
+
+                    <!--begin::Item-->
+                    <div class="m-accordion__item active">
+                        <div class="m-accordion__item-head" role="tab" id="m_accordion_1_item_1_head" data-toggle="collapse" href="#m_accordion_1_item_1_body" aria-expanded="false">
+                            <span class="m-accordion__item-icon m--font-brand"><i class="fa fa-star-of-life"></i></span>
+                            <span class="m-accordion__item-title m--font-brand">
+                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleOne"))
+                            </span>
+                            <span class="m-accordion__item-mode"></span>
+                        </div>
+                        <div class="m-accordion__item-body collapse show" id="m_accordion_1_item_1_body" role="tabpanel" aria-labelledby="m_accordion_1_item_1_head" data-parent="#m_accordion_1">
+
+                            <!--begin::Content-->
+                            <div class="tab-content active  m--padding-30-desktop">
+                                <div class="m-form__section m-form__section--first">
+                                    @*<div class="m-form__heading">
+                                            <h4 class="m-form__heading-title">Mandatory Entry</h4>
+                                        </div>*@
+                                    <div class="form-group m-form__group m-form__group--sm row">
+                                        <div class="col-xl-12 col-lg-12">
+                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleOneHeader"))
+                                        </div>
+                                        <ul class="list-group m--margin-10">
+                                            <li class="list-group-item">
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleOneContentOne"))
+                                            </li>
+                                            <li class="list-group-item">
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleOneContentTwo"))
+                                                <ul>
+                                                    <li>
+                                                        <strong>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleOneListItemOne"))
+                                                        </strong>
+                                                    </li>
+                                                    <li>
+                                                        <strong>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleOneListItemTwo"))
+                                                        </strong>
+                                                    </li>
+                                                    <li>
+                                                        <strong>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleOneListItemThree"))
+                                                        </strong>
+                                                    </li>
+                                                    <li>
+                                                        <strong>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleOneListItemFour"))
+                                                        </strong>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--end::Section-->
+                        </div>
+                    </div>
+
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <div class="m-accordion__item">
+                        <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_1_item_2_head" data-toggle="collapse" href="#m_accordion_1_item_2_body" aria-expanded="    false">
+                            <span class="m-accordion__item-icon m--font-brand"><i class="fab fa-creative-commons"></i></span>
+                            <span class="m-accordion__item-title m--font-brand">
+                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwo"))
+                            </span>
+                            <span class="m-accordion__item-mode"></span>
+                        </div>
+                        <div class="m-accordion__item-body collapse" id="m_accordion_1_item_2_body" role="tabpanel" aria-labelledby="m_accordion_1_item_2_head" data-parent="#m_accordion_1">
+
+                            <!--begin::Content-->
+                            <div class="tab-content  m--padding-30-desktop">
+                                <div class="m-form__section m-form__section--first">
+                                    @*<div class="m-form__heading">
+                                            <h4 class="m-form__heading-title">
+                                                Creative Commons
+                                            </h4>
+                                        </div>*@
+                                    <div class="form-group m-form__group m-form__group--sm row">
+                                        <div class="col-xl-12 col-lg-12">
+                                            <strong>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoContentOneStrong"))</strong> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoContentOne"))
+                                        </div>
+                                    </div>
+                                    <div class="form-group m-form__group m-form__group--sm row">
+                                        <div class="col-xl-12 col-lg-12">
+                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoContentTwo"))
+                                            <table class="table m--margin-top-10">
+                                                <thead class="thead-brand">
+                                                    <tr>
+                                                        <th scope="col">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewLicenseType"))</th>
+                                                        <th scope="col">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSymbol"))</th>
+                                                        <th scope="col">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewDescription"))</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="cc_licenseType">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewLicenseTypeOne"))</td>
+                                                        <td class="cc_symbol"><i class="fab fa-creative-commons-by cc_icon"></i></td>
+                                                        <td class="cc_description">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewDescriptionOne"))</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="cc_licenseType">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewLicenseTypeTwo"))</td>
+                                                        <td class="cc_symbol"><i class="fab fa-creative-commons-sa cc_icon"></i></td>
+                                                        <td class="cc_description">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewDescriptionTwo"))</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="cc_licenseType">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewLicenseTypeThree"))</td>
+                                                        <td class="cc_symbol"><i class="fab fa-creative-commons-nc cc_icon"></i></td>
+                                                        <td class="cc_description">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewDescriptionThree"))</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="cc_licenseType">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewLicenseTypeFour"))</td>
+                                                        <td class="cc_symbol"><i class="fab fa-creative-commons-nd cc_icon"></i></td>
+                                                        <td class="cc_description">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewDescriptionFour"))</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="form-group m-form__group m-form__group--sm row">
+                                        <div class="col-xl-12 col-lg-12">
+                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoContentThree"))
+                                            <div class="form-group m-form__group">
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <label class="m-option">
+                                                            <span class="m-option__label">
+                                                                <span class="m-option__head">
+                                                                    <span class="m-option__focus">
+                                                                        <span class="m-badge m-badge--brand">1</span>
+                                                                    </span>
+                                                                    <span class="m-option__title">
+                                                                        <img class="alignright" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by.svg" alt="image" width="110">
+                                                                    </span>
+
+                                                                </span>
+                                                                <span class="m-option__body text-center">
+                                                                    <strong>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewLicensingOne"))</strong>
+                                                                </span>
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <label class="m-option">
+                                                            <span class="m-option__label">
+                                                                <span class="m-option__head">
+                                                                    <span class="m-option__focus">
+                                                                        <span class="m-badge m-badge--brand">2</span>
+                                                                    </span>
+                                                                    <span class="m-option__title">
+                                                                        <img class="alignright" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" alt="image" width="110">
+                                                                    </span>
+
+                                                                </span>
+                                                                <span class="m-option__body text-center">
+                                                                    <strong>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewLicensingTwo"))</strong>
+                                                                </span>
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <label class="m-option">
+                                                            <span class="m-option__label">
+                                                                <span class="m-option__head">
+                                                                    <span class="m-option__focus">
+                                                                        <span class="m-badge m-badge--brand">3</span>
+                                                                    </span>
+                                                                    <span class="m-option__title">
+                                                                        <img class="alignright" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-nc.svg" alt="image" width="110">
+                                                                    </span>
+
+                                                                </span>
+                                                                <span class="m-option__body text-center">
+                                                                    <strong>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewLicensingThree"))</strong>
+                                                                </span>
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <label class="m-option">
+                                                            <span class="m-option__label">
+                                                                <span class="m-option__head">
+                                                                    <span class="m-option__focus">
+                                                                        <span class="m-badge m-badge--brand">4</span>
+                                                                    </span>
+                                                                    <span class="m-option__title">
+                                                                        <img class="alignright" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-nd.svg" alt="image" width="110">
+                                                                    </span>
+
+                                                                </span>
+                                                                <span class="m-option__body text-center">
+                                                                    <strong>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewLicensingFour"))</strong>
+                                                                </span>
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <label class="m-option">
+                                                            <span class="m-option__label">
+                                                                <span class="m-option__head">
+                                                                    <span class="m-option__focus">
+                                                                        <span class="m-badge m-badge--brand">5</span>
+                                                                    </span>
+                                                                    <span class="m-option__title">
+                                                                        <img class="alignright" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-nc-sa.svg" alt="image" width="110">
+                                                                    </span>
+
+                                                                </span>
+                                                                <span class="m-option__body text-center">
+                                                                    <strong>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewLicensingFive"))</strong>
+                                                                </span>
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <label class="m-option">
+                                                            <span class="m-option__label">
+                                                                <span class="m-option__head">
+                                                                    <span class="m-option__focus">
+                                                                        <span class="m-badge m-badge--brand">6</span>
+                                                                    </span>
+                                                                    <span class="m-option__title">
+                                                                        <img class="alignright" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-nc-nd.svg" alt="image" width="110">
+                                                                    </span>
+
+                                                                </span>
+                                                                <span class="m-option__body text-center">
+                                                                    <strong>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewLicensingSix"))</strong>
+                                                                </span>
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="m-form__help">
+
+                                                    <!--must use this helper element to display error message for the options-->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="m-separator m-separator--dashed m-separator--lg"></div>
+                                <div class="m-form__section">
+                                    <div class="m-form__heading">
+                                        <h4 class="m-form__heading-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoCRDPNote"))</h4>
+                                    </div>
+                                    <div class="form-group m-form__group m-form__group--sm row">
+                                        <div class="col-xl-12 col-lg-12">
+                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoNotedAcceptedByCRDP"))
+
+                                            <ul class="list-group m--margin-10">
+                                                <li class="list-group-item">
+                                                    1 – <strong>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoNoteOneStrong"))</strong> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoNoteOne"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    2 –<strong>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoNoteTwoStrong"))</strong> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoNoteTwo"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    3 – <strong>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoNoteThreeStrong"))</strong> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoNoteThree"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    4 – <strong>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoNoteFourStrong"))</strong> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoNoteFour"))
+                                                </li>
+                                            </ul>
+                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoNotAPractitioner"))
+                                        </div>
+                                    </div>
+                                    <div class="form-group m-form__group m-form__group--sm row">
+                                        <div class="col-xl-12 col-lg-12">
+                                            <strong>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoNotAPractitionerStrong"))</strong>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoNotAPractitioner"))<strong>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleTwoNoteFourStrong"))</strong>.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--end::Content-->
+                        </div>
+                    </div>
+
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <div class="m-accordion__item">
+                        <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_1_item_3_head" data-toggle="collapse" href="#m_accordion_1_item_3_body" aria-expanded="    false">
+                            <span class="m-accordion__item-icon m--font-brand"><i class="fa fa-tasks"></i></span>
+                            <span class="m-accordion__item-title m--font-brand">
+                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThree"))
+                            </span>
+                            <span class="m-accordion__item-mode"></span>
+                        </div>
+                        <div class="m-accordion__item-body collapse" id="m_accordion_1_item_3_body" role="tabpanel" aria-labelledby="m_accordion_1_item_3_head" data-parent="#m_accordion_1">
+
+                            <!--begin::Content-->
+                            <div class="tab-content  m--padding-30-desktop">
+                                <div class="m-form__section m-form__section--first">
+                                    @*<div class="m-form__heading">
+                                            <h4 class="m-form__heading-title">
+                                                Checklist of Resource Specifications
+                                            </h4>
+                                        </div>*@
+                                    <div class="form-group m-form__group m-form__group--sm row">
+                                        <div class="col-xl-12 col-lg-12">
+                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeHeader"))
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="m-separator m-separator--dashed m-separator--lg"></div>
+                                <div class="m-form__section">
+                                    <div class="m-form__heading">
+                                        <h4 class="m-form__heading-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeContent"))</h4>
+                                    </div>
+                                    <div class="form-group m-form__group m-form__group--sm row">
+                                        <div class="col-xl-12 col-lg-12">
+                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeContentAcceptedByCDRP"))
+
+                                            <ul class="list-group m--margin-10">
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeContentOne"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeContentTwo"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeContentThree"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeContentFour"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeContentFive"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeContentSix"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeContentSeven"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeContentEight"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeContentNine"))
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="m-separator m-separator--dashed m-separator--lg"></div>
+                                <div class="m-form__section">
+                                    <div class="m-form__heading">
+                                        <h4 class="m-form__heading-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructional"))</h4>
+                                    </div>
+                                    <div class="form-group m-form__group m-form__group--sm row">
+                                        <div class="col-xl-12 col-lg-12">
+                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalHeader"))
+
+                                            <ul class="list-group m--margin-10">
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalOne"))
+                                                    <ul>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalListOne"))
+                                                        </li>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalListTwo"))
+                                                            <ul>
+                                                                <li>
+                                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalListThree"))
+                                                                </li>
+                                                                <li>
+                                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalListFour"))
+                                                                </li>
+                                                                <li>
+                                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalListFive"))
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalTwo"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalThree"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalFour"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalFive"))
+                                                    <ul>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalFiveListOne"))
+                                                        </li>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalFiveListTwo"))
+                                                        </li>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalFiveListThree"))
+                                                        </li>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalFiveListFour"))
+                                                        </li>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalFiveListFive"))
+                                                        </li>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalFiveListSix"))
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalSix"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalSeven"))
+                                                    <ul>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalSevenListOne"))
+                                                        </li>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalSevenListTwo"))
+                                                        </li>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalSevenListThree"))
+                                                        </li>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalSevenListFour"))
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalEight"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalNine"))
+                                                    <ul>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalNineListOne"))
+                                                        </li>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalNineListTwo"))
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalTen"))
+                                                    <ul>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalTenListOne"))
+                                                        </li>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalTenListTwo"))
+                                                        </li>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalTenListThree"))
+                                                        </li>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalTenListFour"))
+                                                        </li>
+                                                        <li>
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalTenListFive"))
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeInstructionalEleven"))
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="m-separator m-separator--dashed m-separator--lg"></div>
+                                <div class="m-form__section">
+                                    <div class="m-form__heading">
+                                        <h4 class="m-form__heading-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnical"))</h4>
+                                    </div>
+                                    <div class="form-group m-form__group m-form__group--sm row">
+                                        <ul class="list-group m--margin-10">
+                                            <li class="list-group-item">
+                                                <i class="fa fa-check m--margin-right-10"></i>
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalOne"))
+                                            </li>
+                                            <li class="list-group-item">
+                                                <i class="fa fa-check m--margin-right-10"></i>
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalTwo"))
+                                            </li>
+                                            <li class="list-group-item">
+                                                <i class="fa fa-check m--margin-right-10"></i>
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalThree"))
+                                            </li>
+                                            <li class="list-group-item">
+                                                <i class="fa fa-check m--margin-right-10"></i>
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalFour"))
+                                                <ul>
+                                                    <li>
+                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalFourListOne"))
+                                                    </li>
+                                                    <li>
+                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalFourListTwo"))
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <i class="fa fa-check m--margin-right-10"></i>
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalFive"))
+                                            </li>
+                                            <li class="list-group-item">
+                                                <i class="fa fa-check m--margin-right-10"></i>
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalSix"))
+                                                <ul>
+                                                    <li>
+                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalSixListOne"))
+                                                    </li>
+                                                    <li>
+                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalSixListTwo"))
+                                                    </li>
+                                                    <li>
+                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalSixListThree"))
+                                                    </li>
+                                                    <li>
+                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalSixListFour"))
+                                                    </li>
+                                                    <li>
+                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalSixListFive"))
+                                                    </li>
+                                                    <li>
+                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalSixListSix"))
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <i class="fa fa-check m--margin-right-10"></i>
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalSeven"))
+                                                <ul>
+                                                    <li>
+                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalSevenListOne"))
+                                                    </li>
+                                                    <li>
+                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalSevenListTwo"))
+                                                    </li>
+                                                    <li>
+                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalSevenListThree"))
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <i class="fa fa-check m--margin-right-10"></i>
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalEight"))
+                                                <ul>
+                                                    <li>
+                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalEightListOne"))
+                                                    </li>
+                                                    <li>
+                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalEightListTwo"))
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <i class="fa fa-check m--margin-right-10"></i>
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeTechnicalNine"))
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="m-separator m-separator--dashed m-separator--lg"></div>
+                                <div class="m-form__section">
+                                    <div class="m-form__heading">
+                                        <h4 class="m-form__heading-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeSocial"))</h4>
+                                    </div>
+                                    <div class="form-group m-form__group m-form__group--sm row">
+                                        <div class="col-xl-12 col-lg-12">
+                                            <ul class="list-group m--margin-10">
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeSocialOne"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeSocialTow"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeSocialThree"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeSocialFour"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeSocialFive"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeSocialSix"))
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-check m--margin-right-10"></i>
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageReviewSubtitleThreeSocialSeven"))
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--end::Content-->
+                        </div>
+                    </div>
+
+                    <!--end::Item-->
+                </div>
+            </div>
+        </div>
+        <div class="form-group m-form__group m-form__group--sm row">
+            <div class="col-xl-12">
+                <div class="m-checkbox-inline">
+                    <label class="m-checkbox m-checkbox--solid m-checkbox--brand">
+                        @Html.CheckBoxFor(m => m.AcknowledgeAccuracyInformation, new { @class = "m-checkbox m-checkbox--solid m-checkbox--brand" })
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageValidation"))
+                        @*@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateProfileReviewPhoneAcknowledgeAccuracyInformationLabel"))*@
+                        <span></span>
+                    </label>
+
+                </div>
+                <span class="m-form__help text-danger" id="AcknowledgementNotFound"></span>
+                @* @Html.ValidationMessageFor(model => model.AcknowledgeAccuracyInformation, Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePagePhoneAcknowledgeAccuracyInformationValidationMessage")).ToString(), new { @class = "m-form__help text-danger" })*@
+            </div>
+        </div>
+    </div>
+
+}

@@ -1,0 +1,276 @@
+﻿@model IEnumerable<RLI.EntityFramework.EDM.SynchronousSession>
+@using RLI.Common.Managers
+@using RLI.EntityFramework.EDM
+@using Microsoft.AspNet.Identity
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    int CurrentLanguageIdentifier = (int)ViewBag.CurrentLanguageIdentifier;
+    AspNetUser CurrentUser = ViewBag.CurrentUser;
+    bool iscoordinator = false;
+    if ((User.IsInRole("ContentManager") || User.IsInRole("Coordinator") || User.IsInRole("HeadOfDepartment") || User.IsInRole("SchoolDirector") || User.IsInRole("SchoolPrincipal") || User.IsInRole("SeniorCoordinator")) && ViewBag.CurrentUser.Id != User.Identity.GetUserId())
+    {
+        iscoordinator = true;
+    }
+
+}
+<style>
+    .m-dropdown__wrapper {
+        top: -200px !important;
+    }
+
+    .coordinator {
+        pointer-events: none;
+        opacity: 0.5;
+        cursor: not-allowed;
+        filter: grayscale(100%);
+    }
+</style>
+
+<div class="row">
+    <div class="@(Model == null || Model.Count() == 0 ? "" : "d-none") blankslate m-auto col-12">
+        @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Teacher" || RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Student")
+        {
+            @Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
+                       { "title", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_EmptySlateTitle")).ToString() },
+                       { "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "Youdontseemtohaveanysessionsscheduled")).ToString() }
+                       , { "description", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SchedulingasessionwillallowyoutoarrangeaVirtualClasswithyourstudents")).ToString() }
+                       , { "action", true },
+                       { "actionBtnId", "createSessionButtonEmptySlateBtn" },
+                       { "actionBtnText", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageCreateSession")).ToString() } })
+        }
+        else
+        {
+            @Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
+                        { "title", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_EmptySlateTitle")).ToString() },
+                        { "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "Youdontseemtohaveanysessionsscheduled")).ToString() }
+                        , { "description", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SchedulingasessionwillallowyoutoarrangeaVirtualClasswithyourstudents")).ToString() }
+                        , { "action", false },
+                        { "actionBtnId", "" },
+                        { "actionBtnText", "" } })
+        }
+        @*<div class="mb-3">
+                @Html.Partial("~/Views/SharedSvgs/_EmptySlateIcon.cshtml")
+            </div>
+            <h3 class="mb-1">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "Youdontseemtohaveanysessionsscheduled"))</h3>
+            <p class="mb-4">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SchedulingasessionwillallowyoutoarrangeaVirtualClasswithyourstudents"))</p>
+            @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Teacher")
+            {
+                <button type="button" id="createButtonEmptySlateBtn" class="btn m-btn--pill m-btn m-btn--gradient-from-primary m-btn--gradient-to-info m--padding-top-15 m--padding-bottom-15 m--padding-left-20 m--padding-right-20 w-100-mobile">
+                    <i class="fa fa-plus m--padding-right-5"></i>
+                    <span>
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageCreateSession"))
+                    </span>
+                </button>
+            }*@
+    </div>
+
+    @foreach (var item in Model)
+    {
+
+
+        <div id="card-@item.SynchronousSessionKey" class="col-lg-6 col-md-6 col-sm-12 mt-2 mb-4">
+            <div class="grid-card">
+                <div class="row">
+                    <div class="col-lg-3 m--hidden-tablet-and-mobile">
+                        @Html.Partial("~/Views/SharedSvgs/_SynchronousLearningIcon.cshtml")
+                    </div>
+                    <div class="col-lg-8 col-10">
+                        <div class="m--font-primary">
+                            @{
+                                string gradeValue = CurrentLanguageIdentifier == 0 ? item.SchoolSubjectTeacherGrade.Grade.Grade1 : item.SchoolSubjectTeacherGrade.Grade.DataGUID.DataTranslations.Where(dt => dt.LanguageKey == CurrentLanguageIdentifier).FirstOrDefault().Value;
+                                string subjectValue = CurrentLanguageIdentifier == 0 ? item.SchoolSubjectTeacherGrade.Subject.Subject1 : item.SchoolSubjectTeacherGrade.Subject.DataGUID.DataTranslations.Where(dt => dt.LanguageKey == CurrentLanguageIdentifier).FirstOrDefault().Value;
+                            }
+                            @subjectValue
+                        </div>
+                        <div class="grid-card-head-title">
+                            <h3>
+                                <a href="javascript:GoogleDashboardSubmitForm('@item.MeetingURL?authuser=')" @*target="_blank"*@>@item.Topic</a>
+
+                            </h3>
+                        </div>
+                        <div class="grid-card-head-datetime">
+                            <i class="fa fa-calendar fa-2x m--margin-right-10 align-middle m--font-brand d-inline-block"></i>
+                            <span class="datetime align-middle text-secondary d-inline-block">@item.SessionDate.ToLongDateString() - @item.SessionDate.ToString("hh:mm tt")</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-1 col-2">
+                        <a href="javascript:void(0);" id="sessionUrlCopyButton" data-session-url="@item.MeetingURL">
+                            <i class="fa fa-copy fa-2x text-secondary"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="grid-card-head-datetime col-6">
+
+                        <span class="datetime align-middle text-secondary d-inline-block" id="latestSessionSpanElementId_@item.SynchronousSessionKey"></span>
+                    </div>
+
+
+                </div>
+                <div class="grid-card-body m--font-primary">
+                    <p>
+                        @item.Descriprion
+                    </p>
+                </div>
+                @*<div class="grid-card-footer">*@
+                <div>
+                    <div class="row">
+                        <div class="col-12 m--font-primary">
+                            @item.SchoolSubjectTeacherGrade.School.SchoolName > @gradeValue
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12" style="text-align:end;">
+                            <ul class="m-portlet__nav">
+                                <li class="m-portlet__nav-item m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" m-dropdown-toggle="hover" aria-expanded="true">
+
+                                    <a href="#" class="m-portlet__nav-link m-portlet__nav-link--icon m-portlet__nav-link--icon-xl m-dropdown__toggle">
+                                        <i class="la la-ellipsis-h m--font-primary"></i>
+
+                                    </a>
+                                    <div class="m-dropdown__wrapper">
+                                        <span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
+                                        <div class="m-dropdown__inner">
+                                            <div class="m-dropdown__body">
+                                                <div class="m-dropdown__content">
+                                                    <ul class="m-nav">
+
+                                                        <li class="m-nav__item">
+                                                            <a href="javascript:GoogleDashboardSubmitForm('@item.MeetingURL?authuser=')" @*target="_blank"*@ class="m-nav__link">
+                                                                <i class="m-nav__link-icon fa fa-link"></i>
+                                                                <span class="m-nav__link-text">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Open"))</span>
+                                                            </a>
+                                                        </li>
+                                                        @if (CurrentUser.Id == item.CreatedByUserKey)
+                                                        {
+                                                            <li class="m-nav__item @(iscoordinator ? "coordinator" : "")">
+                                                                <a href="javascript:void(0);" data-session-id="@item.SynchronousSessionKey" class="deleteSessionButton m-nav__link">
+                                                                    <i class="m-nav__link-icon fa fa-trash"></i>
+                                                                    <span class="m-nav__link-text">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageDelete"))</span>
+                                                                </a>
+                                                            </li>
+
+                                                            <li class="m-nav__item @(iscoordinator ? "coordinator" : "")">
+                                                                <a href="@Url.Action("Edit", new { id = item.SynchronousSessionKey })" class="m-nav__link">
+                                                                    <i class="m-nav__link-icon fa fa-edit"></i>
+                                                                    <span class="m-nav__link-text">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageEdit"))</span>
+                                                                </a>
+                                                            </li>
+
+                                                        }
+                                                        @*else
+                                                            {
+                                                                <li class="m-nav__item">
+                                                                    <a href="@Url.Action("MoodleLoginRedirect","Home")/?redirectTo=@item.MeetingURL" target="_blank" class="m-nav__link">
+                                                                        <i class="m-nav__link-icon fa fa-eye"></i>
+                                                                        <span class="m-nav__link-text">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageOpenSession"))</span>
+                                                                    </a>
+                                                                </li>
+
+                                                            }*@
+
+
+
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <script>
+
+    var countDownDate = new Date("@item.SessionDate").getTime();
+
+
+
+        </script>
+    }
+    <script>
+    @{
+        foreach(var item in Model)
+        {
+
+
+                <text>
+     function LatestSessionCountDown(key, date, duration)
+            {
+                // Get today's date and time
+                var now = new Date().getTime();
+
+                // Find the distance between now and the count down date
+                var distance = new Date(date).getTime() - now;
+
+                // Time calculations for days, hours, minutes and seconds
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+
+
+                // If the count down is over, write some text
+                if (distance < 0)
+                {
+                   // clearInterval(x);
+                    //$("#latestSessionCountDownContainer").hide();
+                    //document.getElementById("latestSessionSpanElementId").innerHTML = "EXPIRED";
+                    //document.getElementById("latestSessionCountDownContainer").innerHTML = " ";
+                    //$('#latestSessionCountDownContainer_' + @item.SynchronousSessionKey).empty();
+                    console.log('before get lastest session');
+
+
+
+                }
+                else
+                {
+
+                    console.log('first date: ' + countDownDate);
+                    console.log('first date: ' + hours);
+                    var displayMsg = days + "d " + hours + "h " + minutes + "m " + seconds + "s " + "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Remaining"))";
+                    if (days == 0) {
+                        displayMsg = hours + "h " + minutes + "m " + seconds + "s " + "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Remaining"))";
+                    }
+
+                    if (hours == 0 && days == 0) {
+                        displayMsg = minutes + "m " + seconds + "s " + "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Remaining"))";
+                    }
+
+                    if (minutes == 0 && hours == 0 ) {
+                        displayMsg = seconds + "s " + "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Remaining"))";
+                    }
+
+                    // Output the result in an element with id="demo"
+                    document.getElementById("latestSessionSpanElementId_" + key).innerHTML = displayMsg;
+
+                }
+
+            }
+
+     console.log('before get lastest session');
+            LatestSessionCountDown('@item.SynchronousSessionKey', '@item.MeetingDuration');
+            // Update the count down every 1 second
+            x = setInterval(function () {
+                LatestSessionCountDown('@item.SynchronousSessionKey','@item.SessionDate', @item.MeetingDuration);
+            }, 1000);
+    </text>
+            }
+    }
+
+    </script>
+</div>
+
+
+
+

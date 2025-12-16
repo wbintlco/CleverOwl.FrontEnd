@@ -1,0 +1,78 @@
+﻿@model List<RLI.WebApplication.Models.PresentialSessionsDetails>
+@using RLI.Common.Managers
+@using RLI.EntityFramework.EDM
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "PresentialSessionsPageSyPresentialSessionsIndex"));
+
+    Language currentLanguage = ViewBag.CurrentLanguage;
+}
+
+
+<table class="table table-striped- table-bordered table-hover table-checkable mt-5" id="m_table_1">
+    <thead>
+        <tr>
+            <th>
+            </th>
+            <th>
+                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "PresentialSessionsPageTableHeadGrade"))
+            </th>
+            <th>
+                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "PresentialSessionsPageTableHeadSubject"))
+            </th>
+            <th>
+                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "PresentialSessionsPageTableHeadChapter"))
+            </th>
+            <th>
+                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "PresentialSessionsPageTableHeadTopic"))
+            </th>
+            <th>
+                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "PresentialSessionsPageTableHeadTeacher"))
+            </th>
+            <th>
+                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "PresentialSessionsPageTableHeadTitle"))
+            </th>
+            <th>
+                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "PresentialSessionsPageTableHeadSessionDate"))
+            </th>
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.PresentialSessionKey
+                </td>
+                <td>
+                    @item.Grade
+                </td>
+                <td>
+                    @item.Subject
+                </td>
+                <td>
+                    @item.Chapter
+                </td>
+
+                <td>
+                    @item.Topic
+                </td>
+                <td>
+                    @item.Teacher
+                </td>
+                <td>
+                    @item.Title
+                </td>
+                <td>
+                    @item.SessionDate
+                </td>
+                <td>
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>

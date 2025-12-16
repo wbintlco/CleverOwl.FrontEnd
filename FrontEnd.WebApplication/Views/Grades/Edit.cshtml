@@ -1,0 +1,323 @@
+﻿@model FrontEnd.WebApplication.Models.GradeViewModel
+@using RLI.Common.Managers
+@using RLI.EntityFramework.EDM
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    List<DataTranslation> dataTranslations = ViewBag.DataTranslations;
+    int i = 0;
+    bool visibility = ViewBag.Visibility;
+}
+<style>
+    .select2-results__group {
+        color: #0E8BF2 !important;
+        font-size: 20px !important;
+        font-weight: bold;
+    }
+</style>
+
+<div class="m-portlet m-portlet--mobile" id="DomainsDiv">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "GradesPageGrades1"))
+                </h3>
+            </div>
+        </div>
+        <div class="m-portlet__head-tools">
+        </div>
+    </div>
+    <div class="m-portlet__body" style="padding:10px;">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "editForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="Grade1">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageGrade1"))</label>
+                <div class="col-md-12">
+                    <input class="form-control text-box single-line" type="text" name="Grade1" id="GradeName" style="width:100%" value="@Model.Grade1" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2" for="CycleKey">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageCycle"))</label>
+                <div class="col-md-12">
+                    @Html.DropDownList("CycleKey", (SelectList)ViewBag.CycleDropDown, new { style = "width:100%; disabled='disabled' ", id = "CycleKey" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2" for="GradeIndex">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageGradeIndex"))</label>
+                <div class="col-md-12">
+                    @Html.DropDownList("GradeIndex", (SelectList)ViewBag.IndexDropDown, "", new { style = "width:100%", id = "IndexDropDown" })
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2" for="CycleKey">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageVisibility1"))</label>
+                <div class="col-md-12">
+                    @{
+                        if (visibility == true)
+                        {
+                            <select id="Visibility" name="Visibility" style="width:100%">
+                                <option></option>
+                                <option value="false">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageFalse1"))</option>
+                                <option value="true" selected>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageTrue1"))</option>
+                            </select>
+                        }
+                        else
+                        {
+                            <select id="Visibility" name="Visibility" style="width:100%">
+                                <option></option>
+                                <option value="false" selected>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageFalse1"))</option>
+                                <option value="true">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageTrue1"))</option>
+                            </select>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="form-group" hidden>
+                <label class="control-label col-md-2">LanguageTransaltionKeys</label>
+                <div class="col-md-12">
+                    <input name="LanguageTransaltionKeys" id="LanguageTransaltionKeys" />
+                </div>
+            </div>
+
+            <div class="form-group" hidden>
+                <label class="control-label col-md-2">GradeNamesPerLanguage</label>
+                <div class="col-md-12">
+                    <input name="GradeNamesPerLanguage" id="GradeNamesPerLanguage" />
+                </div>
+            </div>
+
+            <div class="form-group" hidden>
+                <label class="control-label col-md-2">GradeGUID</label>
+                <div class="col-md-12">
+                    <input name="LocalGradeGUID" value="@Model.LocalGradeGUID" />
+                </div>
+            </div>
+            <div class="form-group" hidden>
+                <label class="control-label col-md-2">GradeKey</label>
+                <div class="col-md-12">
+                    <input name="GradeKey" value="@Model.GradeKey" />
+                </div>
+            </div>
+
+            <div class="m-portlet m-portlet--mobile">
+                <div class="m-portlet__head">
+                    <div class="m-portlet__head-caption">
+                        <div class="m-portlet__head-title">
+                            <h3 class="m-portlet__head-text">
+                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageGradeTranslation"))
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="m-portlet__head-tools">
+                    </div>
+                </div>
+                <div class="m-portlet__body" style="padding:10px;">
+                    <div class="form-group">
+                        <label class="control-label col-md-2" for="LanguageKey">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageLanguageTranslation1"))</label>
+                        <div class="col-md-4">
+                            <select id="translationLanguageDropdown" name="LanguageKey" style="width:100%">
+                                <option></option>
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="m-form__section m-form__section--first">
+
+                        <div id="m_repeater_1">
+                            <div class="form-group  m-form__group" id="m_repeater_1">
+
+                                <div data-repeater-list="" class="col-lg-11" id="repeaterDiv">
+                                    @{
+
+                                        foreach (var item in dataTranslations)
+                                        {
+                                            <div data-repeater-item="" id="languageTranslationRepeater_@i" class="form-group m-form__group row align-items-center">
+                                                <div class="col-md-4">
+                                                    <div class="m-form__group m-form__group--inline">
+                                                        <div class="m-form__label control-label"><label>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageLanguageTranslation1"))</label></div>
+                                                        <div class="m-form__control"><input type="text" disabled="" class="form-control m-input" placeholder="@item.Language.Language1"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="m-form__label"><label class="m-label m-label--single">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageGradeName"))</label></div>
+                                                    <div class="m-form__control"><input type="text" class="form-control m-input gradeNameClass" placeholder="Grade Name" value="@item.Value"></div>
+                                                </div>
+
+                                                <div class="d-md-none m--margin-bottom-10"></div>
+
+                                                <div class="col-md-4">
+                                                    <div class="m-form__label"><label class="m-label m-label--single" style="visibility:hidden;">Name</label></div>
+                                                    <div data-repeater-delete="" data-translationKey="@item.DataTranslationKey" data-langKey="@item.LanguageKey" data-repeaterId="languageTranslationRepeater_@i" class="btn-sm btn btn-danger m-btn m-btn--icon m-btn--pill deleteTranslationBtn"><span><i class="la la-trash-o"></i><span>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageDelete1"))</span></span></div>
+                                                </div>
+                                            </div>
+                                            i++;
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="m-form__group form-group row">
+
+                                <div class="col-lg-4">
+                                    <div data-repeater-create="" class="btn btn btn-sm btn-brand m-btn m-btn--icon m-btn--pill m-btn--wide" id="addLanguageTranslationBtn">
+                                        <span>
+                                            <i class="la la-plus"></i>
+                                            <span>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageAdd1"))</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <input type="submit" value="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageSave1"))" id="submitBtn" class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100">
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 mt-1">
+                        <a class="btn m-btn--pill btn-outline-metal m-btn m-btn--outline-2x w-100" href="@Url.Action("Index","Grades")">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageBackToGrades"))</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        }
+    </div>
+
+</div>
+
+@using (Html.BeginForm("DeleteTranslation", "Grades", FormMethod.Post, new { id = "DeleteTranslationHidden", @class = "", @style = "display:none;" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("dataTranslationKey", "")
+}
+
+
+@section Scripts {
+
+    <!--begin::Page Vendors -->
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+
+<script>
+        $(document).ready(function () {
+            $('#CycleKey').select2({
+                "disabled": true,
+            });
+
+            $('#translationLanguageDropdown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageLanguageTranslation1"))',
+                data: @Html.Raw(Json.Encode(ViewBag.LanguageKey)),
+            });
+            $('#Visibility').select2({
+            });
+            $('#IndexDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageLanguageselectIndex"))',
+            });
+            $('#IndexDropDown').append('<option value = "-1">put it here</option>');
+            var languageTranslationIndex = @i;
+        var languageTranslationArrayKeys =  @Html.Raw(ViewBag.DataTranslationKeys);
+        var languageTranslationArrayDomainsName = [];
+            $("#addLanguageTranslationBtn").click(function () {
+
+                var LanguageTranslationKey = $("#translationLanguageDropdown option:selected").val();
+                var LanguageTranslationText = $("#translationLanguageDropdown option:selected").text();
+                var lastchapterTranslationName = $(".gradeNameClass").last().val();
+                if (languageTranslationArrayKeys.includes(LanguageTranslationKey) || LanguageTranslationKey === '' || lastchapterTranslationName === '') {
+                    return;
+                }
+                languageTranslationArrayKeys.push(LanguageTranslationKey);
+
+                var html = '<div data-repeater-item="" id="languageTranslationRepeater_' + languageTranslationIndex + '" class="form-group m-form__group row align-items-center"><div class="col-md-4"><div class="m-form__group m-form__group--inline">';
+                html += '<div class="m-form__label control-label"><label>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageLanguageTranslation1"))</label></div>';
+                html += '<div class="m-form__control"><input type="text" disabled="" class="form-control m-input" placeholder="' + LanguageTranslationText + '""></div></div>';
+                html += '<div class="d-md-none m--margin-bottom-10"></div></div><div class="col-md-4"><div class="m-form__group m-form__group--inline">';
+                html += '<div class="m-form__label"><label class="m-label m-label--single">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageGradeName"))</label></div>';
+                html += '<div class="m-form__control"><input type="text" class="form-control m-input gradeNameClass" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageGradeName"))"></div></div>';
+                html += '<div class="d-md-none m--margin-bottom-10"></div></div><div class="col-md-4"><div class="m-form__label"><label class="m-label m-label--single" style="visibility:hidden;">Name</label></div>';
+                html += '<div data-repeater-delete="" data-langKey="' + LanguageTranslationKey + '" data-repeaterId="languageTranslationRepeater_' + languageTranslationIndex + '" class="btn-sm btn btn-danger m-btn m-btn--icon m-btn--pill deleteTranslationBtn"><span><i class="la la-trash-o"></i><span>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageDelete1"))</span></span></div></div></div>';
+
+                $("#repeaterDiv").append(html);
+                languageTranslationIndex++;
+                $("#translationLanguageDropdown ").val('').trigger("change");
+                $("#TranslationLanguageKeys").val(JSON.stringify(languageTranslationArrayKeys));
+
+
+            });
+
+        function removeKeyFromArray(array,i) {
+            const index = array.indexOf(i);
+             if (index > -1) {
+                array.splice(index, 1);
+             }
+        }
+
+
+            $("#submitBtn").click(function () {
+            mApp.block($("#DomainsDiv"));
+
+            event.preventDefault();
+            $('.gradeNameClass').each(function (index, value) {
+                languageTranslationArrayDomainsName.push($(this).val());
+            });
+
+            $("#LanguageTransaltionKeys").val(JSON.stringify(languageTranslationArrayKeys));
+            $("#GradeNamesPerLanguage").val(JSON.stringify(languageTranslationArrayDomainsName));
+            $('#editForm').submit();
+
+         });
+
+
+            $(document).on("click", ".deleteTranslationBtn", function () {
+                mApp.block($('#repeaterDiv'));
+
+                var dataTranslationKey = $(this).attr("data-translationKey");
+                var divToDelete = $(this).attr("data-repeaterId");
+                var langKey = $(this).attr("data-langKey");
+                if (dataTranslationKey != undefined) {
+                    $("#dataTranslationKey").val(dataTranslationKey);
+
+                    $("#DeleteTranslationHidden").ajaxSubmit({
+                        beforeSubmit: function () {
+                        },
+                        success: function (data) {
+
+                            removeKeyFromArray(languageTranslationArrayKeys, langKey);
+                            $("#" + divToDelete).remove();
+                            console.log(languageTranslationArrayKeys);
+                            mApp.unblock($('#repeaterDiv'));
+
+                        },
+                        error: function (xhr, status, error) {
+                            console.log("Error In DeleteTranslation !!!!!!!");
+                        }
+                    });
+                } else {
+
+                    removeKeyFromArray(languageTranslationArrayKeys, langKey);
+                    $("#" + divToDelete).remove();
+                    console.log(languageTranslationArrayKeys);
+                    mApp.unblock($('#repeaterDiv'));
+
+                }
+
+            });
+
+        });
+
+
+</script>
+
+
+}

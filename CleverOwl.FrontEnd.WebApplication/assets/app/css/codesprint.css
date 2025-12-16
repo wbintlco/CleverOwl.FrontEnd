@@ -1,0 +1,28 @@
+﻿
+#barcodeIndexData {
+    text-align: center;
+}
+
+#qrCodeContainer {
+    margin: auto !important;
+    text-align: center;
+}
+
+#qrCode {
+    margin: auto !important;
+    padding-bottom: 200px;
+}
+
+#qrIndexData {
+    text-align: center;
+    padding-top: 200px;
+}
+
+.noprint {
+    display: none !important;
+}
+
+#boxQRCodeContainer #qrCode {
+    margin: 0 !important;
+    text-align: left !important;
+}

@@ -1,0 +1,33 @@
+﻿@model IEnumerable<RLI.EntityFramework.EDM.Status>
+@using RLI.Common.Managers
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+
+}
+
+<div id="StatusTableDiv" class="col-lg-12" style="min-height:320px;">
+    <table id="m-table" class="table table-striped- table-bordered table-hover table-checkable dataTable no-footer dtr-inline" role="grid">
+        <thead>
+            <tr>
+                <td></td>
+                <td>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "StatusPageStatus"))</td>
+                <td>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "StatusPageActions"))</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var status in Model)
+            {
+                <tr>
+                    <td>@status.StatusKey</td>
+                    <td>@status.Status1</td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+
+
+

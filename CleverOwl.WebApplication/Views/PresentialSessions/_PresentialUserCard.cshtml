@@ -1,0 +1,36 @@
+﻿@model RLI.EntityFramework.EDM.Student
+<div class="col-md-7 col-lg-5 col-xl-4 col-10">
+    <article class="post-post-grid">
+        <div class="m-portlet m-portlet--full-height " style="margin:0">
+            <div class="m-portlet__head" style="height:100%">
+                <div class="m-portlet__body row" style="padding:25px;">
+                    <div class="m-widget3">
+                        <div class="m-widget3__item">
+                            <div class="m-widget3__header">
+                                <div class="m-widget3__user-img usericon">
+                                    <i class="far fa-3x fa-user-circle"></i>
+                                </div>
+                                <div class="m-widget3__info">
+                                    <span class="userflname">
+                                        @Model.FirstName @Model.LastName
+                                    </span>
+                                    <br>
+                                    <span class="middlename">
+                                        @Model.MiddleName
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="height:30px">
+                <div class="col-xl-8 col-6"></div>
+                <div class="col-xl-4 col-6" style="padding-bottom:10px;">
+                </div>
+            </div>
+        </div>
+    </article>
+</div>
+
+

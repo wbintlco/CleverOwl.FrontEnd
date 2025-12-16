@@ -1,0 +1,102 @@
+﻿@model FrontEnd.WebApplication.Models.LessonTypeViewModel 
+@using RLI.Common.Managers
+@using RLI.EntityFramework.EDM
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+
+}
+<style>
+    .select2-results__group {
+        color: #0E8BF2 !important;
+        font-size: 20px !important;
+        font-weight: bold;
+    }
+</style>
+
+<div class="m-portlet m-portlet--mobile" id="DomainsDiv">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageLessonDetails"))
+                </h3>
+            </div>
+        </div>
+        <div class="m-portlet__head-tools">
+        </div>
+    </div>
+    <div class="m-portlet__body" style="padding:10px;">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "editForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-2" style="padding:0px !important">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageLessonType"))</label>
+                        <div>
+                            <input class="form-control text-box single-line" type="text" name="LessonType1" id="LessonTypeNamw" style="width:100%" value="@Model.LessonType1" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-10" style="margin:0px !important">
+                    <label class="control-label col-md-2" style="padding:0px !important"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageIcon"))</label>
+                    @Html.EditorFor(model => model.IconHTML, new { htmlAttributes = new { @class = "form-control", style = "width:100%", id = "iconInput" } })
+                    @Html.ValidationMessageFor(model => model.IconHTML, Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageIconError")).ToString(), new { @class = "text-danger form-control" })
+
+                </div>
+
+                <div class="col-2">
+                    <div style="visibility:hidden">icon</div>
+                    <div style="display:flex; align-items:center; justify-content:center; min-height:40px">
+                        <i id="font" class="@Model.IconHTML fa-3x">
+
+                        </i>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" hidden>
+                <label class="control-label col-md-2">LessonTypetKey</label>
+                <div class="col-md-12">
+                    <input name="LessonTypeKey" value="@Model.LessonTypeKey" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-3 mt-1" style="padding:10px">
+                        <a class="btn m-btn--pill btn-outline-metal m-btn m-btn--outline-2x w-100" href="@Url.Action("Index","LessonTypes")">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageBackToLessonTypes"))</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+</div>
+
+
+
+@section Scripts {
+
+    <!--begin::Page Vendors -->
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+
+    <script>
+        $(document).ready(function () {
+            $("input").prop("disabled", true);
+        });
+
+
+    </script>
+
+
+}
+
+

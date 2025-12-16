@@ -1,0 +1,235 @@
+﻿@using RLI.EntityFramework.EDM
+@using RLI.Common.Managers
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    List<RLI.EntityFramework.EDM.Assignment> todayAssignments = ViewBag.TodayAssignments;
+    List<SynchronousSession> todaySessions = ViewBag.TodaySessions;
+    List<Lesson> todayLessons = ViewBag.TodayLessons;
+    List<RLI.Common.DataObjects.MoodleEventViewModel> todayEvents = ViewBag.TodayEvents;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_WhatsToday"));
+}
+<style>
+    .page-banner {
+        margin-top: 100px;
+        height: fit-content;
+        margin-bottom: 30px;
+        background-color: #ffffff;
+    }
+
+    .assignmentClass-1 {
+        fill: #292656 !important;
+    }
+
+    .assignmentClass-2 {
+        fill: #f3f3ff !important;
+    }
+
+    .assignmentClass-3 {
+        fill: #fc6930 !important;
+    }
+
+    .assignmentClass-4 {
+        fill: #f97735 !important;
+    }
+
+    .assignmentClass-5 {
+        fill: #297f96 !important;
+    }
+
+    .assignmentClass-6 {
+        fill: #61c1c6 !important;
+    }
+
+    .assignmentClass-7 {
+        fill: #2f90b2 !important;
+    }
+
+    .assignmentClass-8 {
+        fill: #7bf3ff !important;
+    }
+
+    .assignmentClass-9 {
+        fill: #41c3ff !important;
+    }
+
+    .assignmentClass-10 {
+        fill: url(#linear-gradient) !important;
+    }
+
+    .assignmentClass-11 {
+        fill: url(#linear-gradient-assignment) !important;
+    }
+</style>
+<style>
+
+    .whiteHover a {
+        color: #2b2350 !important;
+        font-size: 1.4rem;
+    }
+
+        .whiteHover a:hover {
+            color: #fff !important;
+        }
+
+    .m-widget3__info {
+        line-height: 20px !important;
+    }
+
+    .bookmarkContainer {
+        display: block;
+        position: absolute;
+        left: 0;
+        text-align: end;
+        top: 45px;
+    }
+
+        .bookmarkContainer i {
+            color: #2b2350;
+        }
+
+    .m-dropdown__inner {
+        width: 90%;
+    }
+
+    .m-portlet .m-portlet__head {
+        border-bottom: unset !important;
+    }
+
+    .post-post-grid {
+        overflow: unset !important;
+    }
+
+    .m-widget3__user-img svg {
+        width: 3.2rem;
+    }
+
+    .m-widget3__body h3 {
+        font-size: 1.4rem;
+    }
+
+    .m-portlet {
+        background-color: transparent !important;
+    }
+
+        .m-portlet .m-portlet__head .m-portlet__head-text {
+            color: #2b2350;
+        }
+
+    .la-ellipsis-h {
+        color: #292656;
+    }
+
+    @@media(max-width:991px) {
+        .BodyParent #m_aside_left {
+            display: none !important;
+        }
+
+        .messgIcon {
+            display: none;
+        }
+    }
+</style>
+
+@*<div class="comment-list" style="margin-top:100px">
+        <div class="icon" style="width:20%">
+            @Html.Partial("~/Views/SharedSvgs/_AssignmentsIcon.cshtml")
+        </div>
+
+        <div class="comment-content">
+            <h3>View details</h3>
+            <p>
+                <a href="">
+                    View details
+                </a>
+            </p>
+        </div>
+    </div>*@
+<div class="container">
+    <section class="page-banner" style="height:auto">
+        <div class="page-title-wrapper">
+            <div class="mt-3">
+                <ul class="bradcurmed">
+                    <li><a href="@Url.Action("Index", "Dashboard")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Wall"))</a></li>
+                    <li><a href="@Url.Action("Index", "WhatsToday")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_WhatsToday"))</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row m--margin-top-20-desktop">
+            <div class="col-1 m-auto messgIcon">
+                <i class="m-menu__link-icon fa fa-calendar-check mr-2" style="font-size: 3.5rem; color: #2b2350"></i>
+            </div>
+            <div class="col-lg-5 col-12 m-auto">
+                <h1 class="page-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_WhatsToday"))</h1>
+            </div>
+            <div class="col-lg-3  m-auto">
+            </div>
+            <div class="col-lg-3 col-12 m-auto">
+            </div>
+        </div>
+    </section>
+    @*<div class="row m--margin-top-20">
+        <div class="col-1 m-auto messgIcon">
+            <i class="m-menu__link-icon fa fa-calendar-check mr-2" style="font-size: 3.5rem; color: #2b2350"></i>
+        </div>
+        <div class="col-10 m-auto">
+            <h1 class="page-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_WhatsToday"))</h1>
+        </div>
+    </div>*@
+    <div class="row m--margin-top-50" style="overflow-y:hidden !important;">
+        <div class="col-12">
+            <div class="col-12 contents">
+                <article class="post-post-grid">
+                    <div class="m-portlet m-portlet--full-height " style="margin:0">
+                        <div class="m-portlet__head" style="height:100%">
+                            <div class="m-portlet__body row" style="padding:25px;">
+                                <div class="m-widget3">
+                                    <div class="m-widget3__item">
+                                        @Html.Partial("_WhatsTodaySideMenu", new Lesson(), new ViewDataDictionary { { "Locale", Locale }, { "todayAssignments", todayAssignments }, { "todaySessions", todaySessions }, { "todayEvents", todayEvents }, { "todayLessons", todayLessons } })
+
+                                        @*<div class="m-widget3__header">
+                                                <div class="m-widget3__user-img">
+                                                    @Html.Partial("~/Views/SharedSvgs/_AssignmentsIcon.cshtml")
+
+                                                </div>
+                                                <div class="m-widget3__info">
+                                                    <div class="comment-content">
+                                                        <h3>assignment name</h3>
+                                                    </div>
+                                                </div>
+                                                <span class="m-widget3__status m--font-info">
+                                                </span>
+                                            </div>
+                                            <div class="comment-content m-widget3__body" style="cursor:pointer">
+                                                <a class="m-widget3__text">
+                                                    View Details
+                                                </a>
+                                            </div>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </article>
+            </div>
+        </div>
+        
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+
+    <!--Reference the SignalR library. -->
+    @Scripts.RenderFormat("<script src='https://" + Request.Url.Host + "/{0}'></script>", "~/Scripts/jquery.signalR-2.4.1.min.js")
+    <!--Reference the autogenerated SignalR hub script. -->
+    @Scripts.RenderFormat("<script src='https://" + Request.Url.Host + "/{0}'></script>", "~/signalr/hubs")
+
+    <script>
+        $(document).ready(function () {
+            $('.RenderBody').removeClass('col-md-9');
+        });
+    </script>
+}

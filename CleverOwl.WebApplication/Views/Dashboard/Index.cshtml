@@ -1,0 +1,2629 @@
+﻿@model RLI.WebApplication.Models.TimelineViewModel
+@using RLI.EntityFramework.EDM;
+@using Microsoft.AspNet.Identity
+@using RLI.Common.Managers
+@using RLI.Common.Enums
+
+@Styles.RenderFormat("<link rel=\"preload\" href=\"{0}\" as=\"style\" onload=\"this.rel='stylesheet'\">", "~/assets/vendors/bootstrap-datetime-picker/css/bootstrap-datetimepicker.min.css")
+@Styles.RenderFormat("~/assets/vendors/perfect-scrollbar/css/perfect-scrollbar.css")
+
+@{
+    string instanceIndicator = RLI.Common.Managers.ConfigurationManager.getApplicationInstanceIndicator();
+    string applicationDefaultColor = RLI.Common.Managers.ConfigurationManager.getApplicationDefaultColor();
+    List<GetOnboardingQuestionnaire_Result> questionnaire = ViewBag.Questionnaire;
+    string instanceResourcesLibraryIndicator = RLI.Common.Managers.ConfigurationManager.getApplicationResourceLibraryInstanceIndicator();
+    string colorRedOrOrange = "#f98e47";
+
+    School currentSchool = ViewBag.CurrentSchool;
+
+    if (instanceIndicator != "cleverOwl")
+    {
+        if (currentSchool != null)
+        {
+            colorRedOrOrange = currentSchool.ThemeColor == null ? applicationDefaultColor : currentSchool.ThemeColor;
+        }
+        else
+        {
+            colorRedOrOrange = "#c00000";
+        }
+    }
+
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageWall"));
+    int content_index = 0;
+    List<SynchronousSession> todaySessions = ViewBag.TodaySessions;
+    SynchronousSession latestSession = null;
+    string subjectOfLatestSession = "";
+    string userId = ViewBag.CurrentUser.Id;
+    string GoogleMail = string.Empty;
+    List<int?> EsystemsNeeded = ViewBag.EsystemsNeeded;
+    int CurrentLanguageIdentifier = (int)ViewBag.CurrentLanguageIdentifier;
+
+
+    latestSession = Model.SynchronousSessions.FirstOrDefault();
+    using (RLIEntities db = new RLIEntities())
+    {
+        if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Teacher")
+        {
+            latestSession = db.SynchronousSessions.OrderBy(s => s.SessionDate).Where(s => s.CreatedByUserKey == userId && s.SessionDate >= DateTime.Now).FirstOrDefault();
+        }
+
+        if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Student")
+        {
+            AspNetUser currentUser = db.AspNetUsers.Where(a => a.Id == userId).FirstOrDefault();
+            int studentGradeKey = (int)currentUser.Student.GradeKey;
+            int studentSchoolKey = (int)currentUser.Student.SchoolKey;
+            latestSession = db.SynchronousSessions.OrderBy(s => s.SessionDate).Where(s => s.SchoolSubjectTeacherGrade.GradeKey == studentGradeKey && s.SchoolSubjectTeacherGrade.SchoolKey == studentSchoolKey && s.SessionDate >= DateTime.Now).FirstOrDefault();
+        }
+
+        if (latestSession != null)
+        {
+            int? SchoolSubjectTeacherGradeKey = latestSession.SchoolSubjectTeacherGradeKey;
+            var subjectRow = db.SchoolSubjectTeacherGrades.Where(s => s.SchoolSubjectTeacherGradeKey == SchoolSubjectTeacherGradeKey).FirstOrDefault().Subject;
+            subjectOfLatestSession = CurrentLanguageIdentifier == 0 ? subjectRow.Subject1 : subjectRow.DataGUID.DataTranslations.Where(dt => dt.LanguageKey == CurrentLanguageIdentifier).FirstOrDefault().Value;
+        }
+
+        int GSuite = (int)ESystemEnum.GSuite;
+        var remoteAuth = db.RemoteAuthentications.FirstOrDefault(u => u.Userkey == userId && u.ESystemKey == GSuite);
+        if (remoteAuth != null)
+        {
+            GoogleMail = remoteAuth.UserName;
+        }
+
+    }
+    string createdAt = "";
+
+    var dateTimeNow = DateTime.Now;
+
+    bool iscoordinator = false;
+    if ((User.IsInRole("ContentManager") || User.IsInRole("Coordinator") || User.IsInRole("HeadOfDepartment") || User.IsInRole("SchoolDirector") || User.IsInRole("SchoolPrincipal") || User.IsInRole("SeniorCoordinator")) && ViewBag.CurrentUser.Id != User.Identity.GetUserId())
+    {
+        iscoordinator = true;
+    }
+}
+@if (instanceIndicator == "cleverOwl")
+{
+
+    <style>
+        .page-banner .page-title {
+            margin-top: 0px !important;
+        }
+    </style>
+}
+else
+{
+    <style>
+        .page-banner .page-title {
+            margin-top: 30px !important;
+        }
+    </style>
+}
+
+<style>
+
+    /*.ps__rail-y {
+        max-height: 0px !important;
+    }
+    .ps__thumb-y{
+        max-height: 100px !important;
+    }
+    .ps__rail-y{
+        max-height:0px !important;
+    }*/
+    .dashboard-item .member-social {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        position: absolute;
+        left: 50%;
+        top: 45%;
+        -webkit-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+        transform: translateX(-50%);
+        z-index: 333;
+        opacity: 0;
+        -webkit-transition: all 0.4s ease-in-out;
+        -o-transition: all 0.4s ease-in-out;
+        transition: all 0.4s ease-in-out;
+        -webkit-transition-delay: 0.3s;
+        -o-transition-delay: 0.3s;
+        transition-delay: 0.3s;
+    }
+
+        .dashboard-item .member-social li a, .dashboard-item .member-social li button {
+            display: inline-block;
+            height: 40px;
+            width: 40px;
+            line-height: 40px;
+            text-align: center;
+            color: #fff;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            background-color: @colorRedOrOrange;
+        }
+
+
+    .dashboard-item  .member-social li {
+        display: inline-block;
+        margin-right: 5px;
+    }
+
+    html {
+        overflow-x: unset !important;
+    }
+    .sticky-top{
+        top:100px!important;
+    }
+
+    .page-banner .page-title {
+        max-width: unset !important;
+    }
+    .page-banner {
+        margin-top: 0px !important;
+    }
+    .m-login__form-divider {
+        color: @colorRedOrOrange;
+        font-weight: bold;
+    }
+
+    .timeline-component-image {
+        position: relative;
+        top: 40%;
+        left: 40%;
+        transform: translate(-50%, -50%);
+    }
+    /*.post-post-grid {
+        box-shadow: 0px 16px 14px 0px rgb(43 35 79 / 10%)!important
+    }*/
+
+    .timeline-component-action a {
+        color: #2b2350;
+    }
+
+    h3 {
+        word-break: break-word;
+    }
+     /*   div.sticky {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 80px;
+        z-index: 9;
+    }*/
+
+    .hvr-grow {
+        -moz-osx-font-smoothing: grayscale;
+        transition-duration: 0.3s;
+        transition-property: transform;
+        cursor: pointer;
+    }
+
+    .hvr-grow:hover {
+        transform: scale(1.1);
+    }
+
+
+
+
+    .dashboard-item .createAssignmentsLogoContainer svg {
+        margin-top: 25px !important;
+    }
+    .m-badge.m-badge--digitalibrary {
+        background: linear-gradient( 90deg, rgba(249,120,53,1) 0%, rgba(252,152,64,1) 50%, rgba(255,188,76,1) 100%);
+        border: 1px solid #fff;
+        color: #ffffff;
+        position: absolute;
+        top: 28px;
+        right: 48px;
+    }
+    .m-badge.m-badge--createAssignment {
+        background: linear-gradient( 90deg, rgba(249,120,53,1) 0%, rgba(252,152,64,1) 50%, rgba(255,188,76,1) 100%);
+        border: 2px solid #fff;
+        color: #ffffff;
+        position: absolute;
+        top: 67px;
+        left: 46%;
+        right: 46%;
+        font-size: 1.4rem;
+    }
+    .m-badge.m-badge--bookmark {
+        position: absolute;
+        top: -25%;
+        background: linear-gradient( 90deg, rgba(249,120,53,1) 0%, rgba(252,152,64,1) 50%, rgba(255,188,76,1) 100%);
+        line-height: 15px;
+        min-height: 15px;
+        min-width: 15px;
+    }
+    .m-badge.m-badge--messages {
+        position: absolute;
+        top: -25%;
+        background: linear-gradient( 90deg, rgba(249,120,53,1) 0%, rgba(252,152,64,1) 50%, rgba(255,188,76,1) 100%);
+        line-height: 15px;
+        min-height: 15px;
+        min-width: 15px;
+    }
+    .m-badge.m-badge--calendar {
+        position: absolute;
+        top: -25%;
+        background: linear-gradient( 90deg, rgba(249,120,53,1) 0%, rgba(252,152,64,1) 50%, rgba(255,188,76,1) 100%);
+        line-height: 15px;
+        min-height: 15px;
+        min-width: 15px;
+    }
+    .m-badge.m-badge--feed {
+        position: absolute;
+        top: -25%;
+        background: linear-gradient( 90deg, rgba(249,120,53,1) 0%, rgba(252,152,64,1) 50%, rgba(255,188,76,1) 100%);
+        line-height: 15px;
+        min-height: 15px;
+        min-width: 15px;
+    }
+
+    .progress-bar {
+        background: rgb(249,120,53);
+        background: linear-gradient( 90deg, rgba(249,120,53,1) 0%, rgba(252,152,64,1) 50%, rgba(255,188,76,1) 100%);
+    }
+
+    .post-post-grid {
+        transition: background-color 2s;
+    }
+
+
+        .post-post-grid:hover {
+            background-color: #e4e8eb;
+            box-shadow: 9px 9px 9px 0px rgb(43 35 79 / 10%) !important;
+        }
+    .progress {
+        border-radius: 1.25rem !important;
+    }
+
+    .textAlign {
+        text-align: center;
+    }
+
+    .feature-image {
+        min-height: 315px;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    #searchContainer {
+        position: relative;
+        z-index: 10;
+        padding-top: 40px;
+    }
+
+    .select2-search__field {
+        background: transparent !important;
+        border: 0 !important;
+        padding: 19px 10px 19px 30px !important;
+        font-size: 16px !important;
+        font-weight: 400 !important;
+        margin: 0 !important;
+        border-radius: 45px !important;
+        border: 1px solid #efe7e7 !important;
+        -webkit-transition: all 0.3s ease-in-out;
+        -o-transition: all 0.3s ease-in-out !important;
+        transition: all 0.3s ease-in-out !important;
+    }
+
+    .select2-container--default .select2-selection--multiple {
+    background: transparent !important;
+    border: 0 !important;
+    }
+
+    .select2-container--default.select2-container--focus .select2-selection--multiple {
+    background: transparent !important;
+    border: 0 !important;
+    }
+
+    .select2-dropdown {
+        margin-top: 10px;
+        background-color: #ffffff !important;
+        border-radius: 45px !important;
+    }
+
+    .select2-results {
+    padding: 20px !important;
+    }
+
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #fdf1f1 !important;
+    }
+
+    /*  .page-banner {
+        height: 650px;
+    }*/
+
+    .alert {
+        margin: 0;
+    }
+
+    .timeline-component-image {
+        margin: 30px;
+        width: 128px;
+    }
+
+    .timeline-component-action {
+        margin: auto;
+        text-align:center;
+    }
+
+    .widget-title .widget-span {
+        position: absolute;
+        color: initial;
+        font-size: 14px;
+        margin-left: 30px;
+        margin-top: -20px;
+        color: #615f6b;
+    }
+
+    .shortcutsContainer {
+        border-radius: 15px;
+        background:white;
+        box-shadow: 0px 6px 14px 0px rgb(43 35 79 / 10%);
+        padding:5%;
+    }
+        .shortcutsContainer:hover {
+       /*     border-radius: 30px;*/
+            background-color: #e4e8eb;
+            @*background-image: url('@((new System.UriBuilder(Request.Url.AbsoluteUri){ Path = Url.Content("~/assets/files/media/img/backgrounds/backGroundShortcuts.png"), Query = null, }).ToString())') !important;*@
+            background-repeat: no-repeat !important;
+            box-shadow: 0px 6px 14px 0px rgb(43 35 79 / 10%);
+            /* height: 105%;
+            width: 55%;*/
+            background-size: 100% 100%;
+        }
+
+
+    .m-badge.m-badge--digitalibrary {
+        top: 0% !important;
+        right: 20% !important;
+    }
+
+    .dashboard-item .quick-access svg {
+        width: 65%;
+        /*margin-top: 25px;*/
+    }
+
+
+
+    .four-contents-background {
+        height: 103%;
+    }
+    .contents{
+        padding-top:10px;
+    }
+    .page-title-wrapper .page-title {
+        font-size: 19px;
+    }
+
+    .hvr-grow {
+        padding-right: 8px;
+        padding-left: 8px;
+    }
+
+    @@media (min-width:992px){
+        .sticky-top{
+            padding-top:1px;
+        }
+
+    }
+    @@media (min-width:992px) and (max-width:1024px) {
+        .sticky-top{
+            top: 65px !important;
+            padding-bottom:40px;
+        }
+    }
+
+    .sticky .container {
+        max-height: 105px !important;
+    }
+
+    div.sticky {
+        top: 58px;
+    }
+
+    .m-badge.m-badge--digitalibrary {
+        top: 0% !important;
+        right: 20% !important;
+    }
+
+    /*.dashboard-item .quick-access .member-social {
+        left: 55%;
+    }*/
+
+    .quick-access {
+        height: auto;
+    }
+
+    .dashboard-item .quick-access .member-social li a {
+        height: 40px;
+        width: 40px;
+        line-height: 40px;
+    }
+
+    .dashboard-item .team-info {
+        padding-top: 10px;
+    }
+
+    .dashboard-item .team-info .name {
+        font-size: 14px;
+        color: #2b2350 !important;
+        font-weight: bold;
+    }
+
+
+    @@media(max-width: 1400px) {
+
+        body{
+            width: 98% !important;
+        }
+
+        .m-badge.m-badge--bookmark {
+            right: 37%;
+        }
+
+        .m-badge.m-badge--messages {
+            right: 37%;
+        }
+
+        .m-badge.m-badge--feed {
+            right: 37%;
+        }
+
+        .m-badge.m-badge--calendar {
+            right: 37%;
+        }
+        .dashboard-item .quick-access svg {
+            width: 65%;
+
+        }
+
+        .shortcutsContainer {
+            width: 100%;
+           /* height: 123%;*/
+           height:auto;
+        }
+            .shortcutsContainer:hover {
+                border-radius: 15px;
+                background-color: #e4e8eb;
+                @*background-image: url('@((new System.UriBuilder(Request.Url.AbsoluteUri){ Path = Url.Content("~/assets/files/media/img/backgrounds/backGroundShortcuts.png"), Query = null, }).ToString())') !important;*@
+                background-repeat: no-repeat !important;
+                /* height: 123%;
+            width: 100%;*/
+                background-size: 100% 100%;
+            }
+
+        .four-contents-background {
+            height: 120%;
+        }
+
+        .page-title-wrapper .page-title {
+            font-size: 19px;
+        }
+
+        .hvr-grow {
+            padding-right: 8px;
+            padding-left: 8px;
+        }
+
+        /*#appendCandidates .contents {
+            padding-right: 32px;
+            padding-left: 32px;
+        }*/
+
+        .sticky .container {
+            max-height: 105px !important;
+        }
+
+        div.sticky {
+            top: 58px;
+        }
+        .m-badge.m-badge--digitalibrary {
+            top: 0% !important;
+            right: 20% !important;
+        }
+
+        .dashboard-item .quick-access .member-social {
+            left: 55%;
+        }
+
+        .quick-access {
+            height: auto;
+        }
+
+        .dashboard-item .quick-access .member-social li a {
+            height: 25px;
+            width: 25px;
+            line-height: 25px;
+        }
+
+        .dashboard-item .team-info {
+            padding-top: 15px;
+        }
+
+            .dashboard-item .team-info .name {
+                font-size: 12px;
+            }
+
+    }
+    @@media(max-width: 991px){
+        #appendCandidates {
+            padding-top:2% !important;
+        }
+        #appendCandidates .contents {
+            padding-right: 5px !important;
+            padding-left: 5px !important;
+        }
+        html {
+            overflow-x: hidden !important;
+        }
+        .sticky-top {
+            position: relative !important;
+            top: 45px !important;
+            padding-bottom: 45px;
+        }
+        .dashboard-item .quick-access svg {
+            width: 65%;
+
+        }
+
+        .shortcutsContainer {
+            width: 100%;
+            height: auto;
+        }
+            .shortcutsContainer:hover {
+                border-radius: 15px;
+                background-color: #e4e8eb;
+                @*background-image: url('@((new System.UriBuilder(Request.Url.AbsoluteUri){ Path = Url.Content("~/assets/files/media/img/backgrounds/backGroundShortcuts.png"), Query = null, }).ToString())') !important;*@
+                background-repeat: no-repeat !important;
+                /*  height: 85%;
+            width: 100%;*/
+                background-size: 100% 100%;
+            }
+
+        .four-contents-background {
+            height: 100%;
+        }
+
+        .page-title-wrapper .page-title {
+            font-size: 19px;
+        }
+
+        .hvr-grow {
+            padding-right: 8px;
+            padding-left: 8px;
+        }
+
+        /*#appendCandidates .contents {
+            padding-right: 8px;
+            padding-left: 8px;
+        }*/
+
+        .sticky .container {
+            max-height: 105px !important;
+        }
+
+        div.sticky {
+            top: 58px;
+        }
+
+        .m-badge.m-badge--digitalibrary {
+            top: 0% !important;
+            right: 20% !important;
+            line-height: 15px;
+            min-height: 15px;
+            min-width: 15px;
+        }
+
+        .dashboard-item .quick-access .member-social {
+            left: 55%;
+        }
+
+        .quick-access {
+            height: auto;
+        }
+
+        .dashboard-item .quick-access .member-social li a {
+            height: 25px;
+            width: 25px;
+            line-height: 25px;
+        }
+
+        .dashboard-item .team-info {
+            padding-top: 15px;
+        }
+
+        .dashboard-item .team-info .name {
+            font-size: 12px;
+        }
+        .sticky-top{
+            background: unset !important;
+        }
+    }
+    @@media (max-width: 767px) {
+        .sticky-top{
+            padding-bottom: 20px !important;
+        }
+        .dashboard-item .quick-access svg {
+            width: 65%;
+
+        }
+
+        .shortcutsContainer {
+            width: 100%;
+            height: auto;
+        }
+            .shortcutsContainer:hover {
+                border-radius: 15px;
+                background-color: #e4e8eb;
+                @*background-image: url('@((new System.UriBuilder(Request.Url.AbsoluteUri){ Path = Url.Content("~/assets/files/media/img/backgrounds/backGroundShortcuts.png"), Query = null, }).ToString())') !important;*@
+                background-repeat: no-repeat !important;
+                height: 80%;
+                width: 100%;
+                background-size: 100% 100%;
+            }
+        .four-contents-background {
+            height: 90%;
+        }
+
+        .page-title-wrapper .page-title {
+            font-size: 19px !important;
+        }
+
+        .hvr-grow {
+            padding-right: 8px !important;
+            padding-left: 8px !important;
+        }
+
+        /*#appendCandidates .contents {
+            padding-right: 8px !important;
+            padding-left: 8px !important;
+        }*/
+
+        .sticky .container {
+            max-height: 105px;
+        }
+
+        div.sticky {
+            top: 58px;
+        }
+
+        .m-badge.m-badge--digitalibrary {
+            top: 0% !important;
+            right: 20% !important;
+            line-height: 15px;
+            min-height: 15px;
+            min-width: 15px;
+        }
+
+        .dashboard-item .quick-access .member-social {
+            left: 55%;
+        }
+
+        .quick-access {
+            height: auto;
+        }
+
+        .dashboard-item .quick-access .member-social li a {
+            height: 25px;
+            width: 25px;
+            line-height: 25px;
+        }
+
+        .dashboard-item .team-info {
+            padding-top: 20px;
+        }
+
+        .dashboard-item .team-info .name {
+            font-size: 12px;
+        }
+
+    }
+
+    @@media(max-width: 599px){
+        .dashboard-item .quick-access svg {
+            width: 65%;
+
+        }
+        .shortcutsContainer {
+            width: 100%;
+            height: auto;
+        }
+            .shortcutsContainer:hover {
+                border-radius: 15px;
+                background-color: #e4e8eb;
+                @*background-image: url('@((new System.UriBuilder(Request.Url.AbsoluteUri){ Path = Url.Content("~/assets/files/media/img/backgrounds/backGroundShortcuts.png"), Query = null, }).ToString())') !important;*@
+                background-repeat: no-repeat !important;
+                height: 80%;
+                width: 100%;
+                background-size: 100% 100%;
+            }
+
+        .four-contents-background {
+            height: 90%;
+        }
+
+        .page-title-wrapper .page-title {
+            font-size: 19px !important;
+        }
+
+        .hvr-grow {
+            padding-right: 8px !important;
+            padding-left: 8px !important;
+        }
+
+        /*#appendCandidates .contents {
+            padding-right: 8px !important;
+            padding-left: 8px !important;
+        }*/
+        .sticky .container {
+            max-height: 105px;
+        }
+
+        div.sticky {
+            top: 58px;
+        }
+
+        .m-badge.m-badge--digitalibrary {
+            top: 0% !important;
+            right: 20% !important;
+            line-height: 15px;
+            min-height: 15px;
+            min-width: 15px;
+        }
+
+        .dashboard-item .quick-access .member-social {
+            left: 55%;
+        }
+
+        .quick-access {
+            height: auto;
+        }
+
+        .dashboard-item .quick-access .member-social li a {
+            height: 25px;
+            width: 25px;
+            line-height: 25px;
+        }
+        .dashboard-item .team-info {
+            padding-top: 0px;
+        }
+            .dashboard-item .team-info .name {
+                font-size: 12px;
+            }
+
+        .dashboard-item .team-info {
+            padding-top: 0px;
+        }
+    }
+    @@media (max-width: 480px) {
+
+        .dashboard-item .quick-access svg {
+            width: 65%;
+        }
+        .shortcutsContainer {
+            width: 100%;
+            min-height: 75%;
+        }
+        .m-badge.m-badge--bookmark{
+            right:25%;
+        }
+        .m-badge.m-badge--messages {
+            right: 25%;
+        }
+        .m-badge.m-badge--feed {
+            right: 25%;
+        }
+        .m-badge.m-badge--calendar {
+            right: 25%;
+        }
+        .shortcutsContainer:hover {
+            border-radius: 15px;
+            background-color: #e4e8eb;
+            @*background-image: url('@((new System.UriBuilder(Request.Url.AbsoluteUri){ Path = Url.Content("~/assets/files/media/img/backgrounds/backGroundShortcuts.png"), Query = null, }).ToString())') !important;*@
+            background-repeat: no-repeat !important;
+            height: 88%;
+            width: 100%;
+            background-size: 100% 100%;
+        }
+        .four-contents-background {
+            height: 85%;
+        }
+        .dashboard-item .quick-access{
+           /* min-height:95px*/
+        }
+        .page-title-wrapper .page-title {
+            font-size: 19px !important;
+        }
+        .hvr-grow{
+            padding-right: 8px!important;
+            padding-left: 8px !important;
+        }
+        /*#appendCandidates .contents {
+            padding-right: 8px !important;
+            padding-left: 8px !important;
+        }*/
+        .dashboard-item .team-info .name {
+            font-size: 10px;
+        }
+
+        .dashboard-item .team-info {
+            padding-top: 0px;
+        }
+        .m-badge.m-badge--digitalibrary {
+            top: 0% !important;
+            right: 20% !important;
+            line-height: 15px;
+            min-height: 15px;
+            min-width: 15px;
+        }
+    }
+
+    @@media (max-width: 418px) {
+
+        .dashboard-item .quick-access svg {
+            width: 65%;
+        }
+        .shortcutsContainer {
+            width: 100%;
+            min-height: 75%;
+        }
+            .shortcutsContainer:hover {
+                border-radius: 15px;
+                background-color: #e4e8eb;
+                @*background-image: url('@((new System.UriBuilder(Request.Url.AbsoluteUri){ Path = Url.Content("~/assets/files/media/img/backgrounds/backGroundShortcuts.png"), Query = null, }).ToString())') !important;*@
+                background-repeat: no-repeat !important;
+                height: 83%;
+                width: 100%;
+                background-size: 100% 100%;
+            }
+
+        .four-contents-background {
+            height: 80%;
+        }
+
+        .page-title-wrapper .page-title {
+            font-size: 19px !important;
+        }
+
+        .hvr-grow {
+            padding-right: 4px !important;
+            padding-left: 4px !important;
+        }
+
+        /*#appendCandidates .contents {
+            padding-right: 4px !important;
+            padding-left: 4px !important;
+        }*/
+        .dashboard-item .quick-access {
+            /*min-height: 95px !important;*/
+        }
+        .dashboard-item .team-info .name {
+            font-size: 10px;
+        }
+
+        .dashboard-item .team-info {
+            padding-top: 0px;
+            min-height:30px;
+        }
+        .m-badge.m-badge--digitalibrary {
+            top: 0% !important;
+            right: 20% !important;
+            line-height: 15px;
+            min-height: 15px;
+            min-width: 15px;
+        }
+    }
+
+    @@media (max-width: 362px) {
+
+        .dashboard-item .quick-access svg {
+            width: 65%;
+        }
+        .shortcutsContainer {
+            width: 100%;
+            min-height: 75%;
+        }
+            .shortcutsContainer:hover {
+                border-radius: 15px;
+                background-color: #e4e8eb;
+                @*background-image: url('@((new System.UriBuilder(Request.Url.AbsoluteUri){ Path = Url.Content("~/assets/files/media/img/backgrounds/backGroundShortcuts.png"), Query = null, }).ToString())') !important;*@
+                background-repeat: no-repeat !important;
+                height: 83%;
+                width: 100%;
+                background-size: 100% 100%;
+            }
+        .four-contents-background {
+            height: 80%;
+        }
+        .page-title-wrapper .page-title {
+            font-size: 19px !important;
+        }
+
+        .sticky .container {
+            max-height: 90px;
+        }
+        .hvr-grow {
+            padding-right: 3px !important;
+            padding-left: 3px !important;
+        }
+
+        /*#appendCandidates .contents {
+            padding-right: 3px !important;
+            padding-left: 3px !important;
+        }*/
+        .dashboard-item .quick-access{
+            /*min-height:85px !important;*/
+        }
+        .dashboard-item .team-info .name {
+            font-size: 9px;
+        }
+
+        .dashboard-item .team-info {
+            padding-top: 0px;
+            min-height: 30px;
+        }
+        .m-badge.m-badge--digitalibrary {
+            top: 0% !important;
+            right: 20% !important;
+            line-height: 15px;
+            min-height: 15px;
+            min-width: 15px;
+        }
+    }
+
+    .contents {
+    animation: expand 0.9s ease-in-out;
+    }
+
+    .post-meta li{
+        color: #2b2350;
+        font-weight: 500;
+    }
+
+    #latestSessionCountDownContainer {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    #latestSessionCountDownContainer:hover {
+        overflow: visible;
+        word-break: break-word;
+        white-space: normal;
+    }
+
+    #appendCandidates .contents{
+        padding-right:0px;
+        padding-left:0px;
+    }
+    .fa-p::before {
+        content: "p";
+        display: block;
+        align-content: center;
+        font-size: 1.6rem;
+        transform: translate(5%, -22%) !important;
+    }
+    .adisabled {
+        pointer-events: none !important;
+        opacity: 0.5 !important;
+    }
+
+    .coordinator {
+        pointer-events: none;
+        opacity: 0.5;
+        cursor: not-allowed;
+        filter: grayscale(100%);
+    }
+</style>
+
+
+<!--==========================-->
+<!--=         Banner         =-->
+<!--==========================-->
+<!-- /.page-banner -->
+<!--========================-->
+<!--=       Dashboard      =-->
+<!--========================-->
+
+
+
+<div class="blog-post-archive" style="padding:10px;">
+    <div class="col-lg-12">
+
+        <div class="sticky-top" style="z-index: 1!important;">
+
+            <div class="row" style="background-color:#ffffff;margin-top:-10px;padding-top:10px;margin-bottom:@(latestSession != null?"none":"");z-index:10;box-shadow: 0px -20px 17px 20px white;">
+                <div class="col-12" style="text-align: center;">
+                    <div class="page-title-wrapper page-banner" style="text-align: center; height: auto; display: block; background: none;">
+                        <h1 class="page-title" style="font-size:30px;">
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, dateTimeNow.DayOfWeek.ToString())), @dateTimeNow.Day @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, dateTimeNow.ToString("MMMM")))  @dateTimeNow.Year
+                        </h1>
+                    </div>
+                </div>
+            </div>
+            @if (latestSession != null)
+            {
+                <div class="row m--padding-bottom-30-desktop" style="background-color:#ffffff; z-index: 10">
+
+                    <div class="col-12" style="text-align:center;">
+                        <div class="page-title-wrapper" style="height:auto;" id="latestSessionCountDownContainer">
+                            @subjectOfLatestSession @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageSessionStartsIn")) <a href="@latestSession.MeetingURL" target="_blank" style="color:#F97735;font-weight:bold;" id="latestSessionSpanElementId"></a>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="row" style="background-color:#ffffff;">
+                <div id="content_@content_index" class="col-12 contents p-0" style="border-radius: 20px; background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(255,255,255,1) 100 %, rgba(255,255,255,1) 100%);">
+                    <article class="four-contents-background" id="lazyScrollLoading_ImageMode" style="margin-bottom:unset; border-radius:20px;">
+
+                        <div class="row">
+                            @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Teacher")
+                            {
+                                <div class="col-lg-3 col-md-3 col-3 hvr-grow">
+                                    <div class="quick-access dashboard-item row wow pixFadeRight textAlign shortcutsContainer m--pull-left" data-type="assignment" data-wow-delay="0.3s">
+                                        <ul class="member-social">
+                                            <li class="@(iscoordinator ? "coordinator" : "")"><a href="@Url.Action("Create","Assignments")" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Create"))"><i class="fa fa-plus "></i></a></li>
+                                            <li><a href="@Url.Action("Index","Assignments")" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_View"))"><i class="fa fa-eye"></i></a></li>
+                                        </ul>
+                                        <div class="quick-access col-lg-5 col-md-5 col-12 p-0">
+                                            <span class="m-menu__link-badge"><span class="m-badge m-badge--digitalibrary" id="assignmentBadge">@ViewBag.timeLineAssignmentsCount</span></span>
+                                            @Html.Partial("~/Views/SharedSvgs/_AssignmentsIcon.cshtml")
+                                        </div>
+
+                                        <div class="team-info col-lg-7 col-md-7 col-12 m-auto p-0">
+                                            <h3 class="name m-auto">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageAssignment"))</h3>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            }
+                            else if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Student")
+                            {
+                                <div class="col-lg-3 col-md-3 col-3 hvr-grow openPageAssignment">
+                                    <div class="quick-access dashboard-item row wow pixFadeRight textAlign shortcutsContainer m--pull-left" data-type="assignment" data-wow-delay="0.3s">
+
+                                        <div class="quick-access col-lg-5 col-md-5 col-12 p-0">
+                                            <span class="m-menu__link-badge"><span class="m-badge m-badge--digitalibrary" id="assignmentBadge">@ViewBag.timeLineAssignmentsCount</span></span>
+                                            @Html.Partial("~/Views/SharedSvgs/_AssignmentsIcon.cshtml")
+                                        </div>
+
+                                        <div class="team-info col-lg-7 col-md-7 col-12 m-auto p-0">
+                                            <h3 class="name m-auto">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageAssignment"))</h3>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                @*<div class="col-lg-3 col-md-3 col-3 hvr-grow openPageAssignment">
+                                        <div class="dashboard-item row wow pixFadeRight textAlign shortcutsContainer m--pull-left" data-type="assignment" data-wow-delay="0.3s">
+                                            <div class="quick-access col-5 p-0">
+                                                <span class="m-menu__link-badge"><span class="m-badge m-badge--digitalibrary" id="assignmentBadge">@ViewBag.timeLineAssignmentsCount</span></span>
+                                                @Html.Partial("~/Views/SharedSvgs/_AssignmentsIcon.cshtml")
+
+                                                <ul class="member-social">
+                                                </ul>
+
+                                            </div>
+
+                                            <div class="team-info col-lg-7 col-md-7 col-12 m-auto p-0">
+                                                <h3 class="name m-auto">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageAssignment"))</h3>
+                                            </div>
+                                        </div>
+
+                                    </div>*@
+                            }
+
+
+                            <div class="col-lg-3 col-md-3 col-3 hvr-grow">
+                                <div class="dashboard-item row wow pixFadeRight textAlign shortcutsContainer" data-type="digitalLibrary" data-wow-delay="0.5s">
+                                    <ul class="member-social">
+                                        @if (instanceIndicator == "cleverOwl")
+                                        {
+                                            if (instanceResourcesLibraryIndicator != "K12Topics")
+                                            {
+                                                <li><a href="@Url.Action("Index", "Library", new { id = (int)RLI.Common.Enums.DigitalLibraryTypeEnum.DigitalLibraryTypeObjectiveBased })" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MenuItemObjectiveBasedCurriculum"))"><i class="fa fa-book"></i></a></li>
+                                            }
+                                            else
+                                            {
+                                                <li><a href="@Url.Action("Index", "Library" , new { id = (int)RLI.Common.Enums.DigitalLibraryTypeEnum.DigitalLibraryTypeTopicBased })" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MenuItemTopicBasedCurriculum"))"><i class="fa fa-book"></i></a></li>
+                                                <li><a href="@Url.Action("NERDC", "Library", new { id = (int)RLI.Common.Enums.DigitalLibraryTypeEnum.DigitalLibraryTypeTopicBased })" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MenuItemNERDCCurriculum"))"><i class="fa fa-book"></i></a></li>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (ViewBag.HasDigitalLibrary)
+                                            {
+                                                <li><a href="@Url.Action("Index", "DigitalLibrary", new { id = (int)RLI.Common.Enums.DigitalLibraryTypeEnum.DigitalLibraryTypeTopicBased })" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MenuItemTopicBasedCurriculum"))"><i class="fa fa-book"></i></a></li>
+                                            }
+                                        }
+                                        @*<li><a href="@Url.Action("Index", "Resources", new { id = (int)RLI.Common.Enums.DigitalLibraryTypeEnum.DigitalLibraryTypeObjectiveBased })" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_OER"))"><i class="fa fa-random"></i></a></li>*@
+                                        @*<li><a href="@Url.Action("International", "Library", new { id = (int)RLI.Common.Enums.DigitalLibraryTypeEnum.DigitalLibraryTypeTopicBased })" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MenuItemInternationalBasedCurriculum"))"><i class="fa fa-globe"></i></a></li>*@
+
+                                        @if (ViewBag.HasInternationalCurriculum)
+                                        {
+                                            <li><a href="@Url.Action("Index", "DigitalLibrary", new { id = 3 })" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MenuItemInternationalBasedCurriculum"))"><i class="fa fa-globe"></i></a></li>
+                                        }
+                                        @if (ViewBag.HasEdumedia)
+                                        {
+                                            <li><a href="@Url.Action("Index", "OpenLibrary", new { id = (int)RLI.Common.Enums.DigitalLibraryTypeEnum.DigitalLibraryTypeTopicBased })" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MenuItemTopicBasedEduMedia"))"><i class="fa fa-book"></i></a></li>
+                                        }
+                                    </ul>
+                                    <div class="quick-access col-lg-5 col-md-5 col-12 p-0">
+                                        @*@if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Student")
+                                            {
+                                                <span class="m-menu__link-badge"><span class="m-badge m-badge--digitalibrary" id="resourcesBadge">@ViewBag.timeLineLessonsCount</span></span>
+                                            }*@
+                                        @Html.Partial("~/Views/SharedSvgs/_DigitalLibraryIcon.cshtml")
+
+
+
+                                    </div>
+
+                                    <div class="team-info col-lg-7 col-md-7 col-12 m-auto p-0">
+                                        <h3 class="name m-auto">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageResources"))</h3>
+                                    </div>
+                                </div>
+
+                            </div>
+                            @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Teacher" || RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Student")
+                            {
+                                <div class="col-lg-3 col-md-3 col-3 hvr-grow">
+                                    <div class="dashboard-item row wow pixFadeRight textAlign shortcutsContainer" data-type="virtualClass" data-wow-delay="0.7s">
+                                        <ul class="member-social">
+                                            @if (ViewBag.HasVirtualClass)
+                                            {
+                                                <li class="@(iscoordinator ? "coordinator" : "")"><a href="@Url.Action("Create", "SynchronousSessions")" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Create"))"><i class="fa fa-plus"></i></a></li>
+                                                @*if (instanceIndicator != "demo-cleverowl")
+                                                {
+                                                    if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Teacher")
+                                                    {
+                                                        <li class="@(iscoordinator ? "coordinator" : "")"><a href="@Url.Action("Create", "Presentialsessions")" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Create"))"><i class="fa fa-plus fa-p"></i></a></li>
+                                                    }
+                                                }*@
+                                                <li><a href="@Url.Action("Index", "SynchronousSessions")" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_View"))"><i class="fa fa-eye"></i></a></li>
+                                            }
+
+                                            @if (ViewBag.HasPresentialSessions)
+                                            {
+                                                <li class="@(iscoordinator ? "coordinator" : "")"><a href="@Url.Action("Create", "Presentialsessions")" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Create"))"><i class="fa fa-plus fa-p"></i></a></li>
+                                            }
+                                        </ul>
+                                        <div class="quick-access col-lg-5 col-md-5 col-12 p-0">
+                                            <span class="m-menu__link-badge"><span class="m-badge m-badge--digitalibrary" id="virtualClassBadge">@ViewBag.synchronousSessionsCount</span></span>
+                                            @Html.Partial("~/Views/SharedSvgs/_SynchronousLearningIcon.cshtml")
+                                        </div>
+
+                                        <div class="team-info col-lg-7 col-md-7 col-12 m-auto p-0">
+                                            <h3 class="name m-auto">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageVirtualClass"))</h3>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            }
+                            @*else if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Student")
+                                {
+                                    <div class="col-lg-3 col-md-3 col-3 hvr-grow openSessionPage">
+                                        <div class="dashboard-item row wow pixFadeRight textAlign shortcutsContainer" data-type="virtualClass" data-wow-delay="0.7s">
+                                            <ul class="member-social">
+                                            </ul>
+
+                                            <div class="quick-access col-lg-5 col-md-5 col-12 p-0">
+                                                <span class="m-menu__link-badge"><span class="m-badge m-badge--digitalibrary" id="virtualClassBadge">@ViewBag.synchronousSessionsCount</span></span>
+                                                @Html.Partial("~/Views/SharedSvgs/_SynchronousLearningIcon.cshtml")
+                                            </div>
+
+                                            <div class="team-info col-lg-7 col-md-7 col-12 m-auto p-0">
+                                                <h3 class="name m-auto">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageVirtualClass"))</h3>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                }*@
+
+
+                        <div class="col-lg-3 col-md-3 col-3 hvr-grow">
+                            @if (instanceIndicator != "demo-cleverowl")
+                               
+                                {
+                                    <div class="dashboard-item row wow pixFadeRight textAlign shortcutsContainer  m--pull-right" data-type="resource" data-wow-delay="0.7s">
+                                        <ul class="member-social" style="top:0%">
+                                            <li><a href="@Url.Action("GoogleResource", "Utilities")" target="_blank" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LoginPartialInfoButtonLink"))"><i class="fa fa-info"></i></a></li>
+                                        </ul>
+                                        <ul class="member-social">
+                                            <li><a href="javascript:GoogleDashboardSubmitForm('https://workspace.google.com/dashboard?authuser=')" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LoginPartialDashboardButtonLink"))"><i class="fab fa-google"></i></a></li>
+
+                                            <li><a href="javascript:GoogleDashboardSubmitForm('https://classroom.google.com/?authuser=')" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Sheets"))"><i class="fas fa-chalkboard-teacher"></i></a></li>
+
+                                            <li><a href="javascript:GoogleDashboardSubmitForm('https://drive.google.com/?authuser=')" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Drive"))"><i class="fab fa-google-drive"></i></a></li>
+                                        </ul>
+                                        <div class="quick-access col-lg-5 col-md-5 col-12 p-0">
+                                            @*<span class="m-menu__link-badge"><span class="m-badge m-badge--digitalibrary">0</span></span>*@
+                                            @Html.Partial("~/Views/SharedSvgs/_CollaborationIcon.cshtml")
+
+                                        </div>
+
+                                        <div class="team-info col-lg-7 col-md-7 col-12 m-auto p-0">
+                                            <h3 class="name m-auto">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageWorkSpace"))</h3>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="dashboard-item row wow pixFadeRight textAlign shortcutsContainer  m--pull-right" data-type="resource" data-wow-delay="0.7s">
+                                        @*<ul class="member-social" style="top:0%">
+                        <li><a href="@Url.Action("GoogleResource", "Utilities")" target="_blank" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LoginPartialInfoButtonLink"))"><i class="fa fa-info"></i></a></li>
+                    </ul>*@
+                                        <ul class="member-social @(iscoordinator ? "coordinator" : "")">
+                                            @*<li><a href="javascript:GoogleDashboardSubmitForm('https://workspace.google.com/dashboard?authuser=')" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LoginPartialDashboardButtonLink"))"><i class="fab fa-google"></i></a></li>*@
+                                            @if (ViewBag.HasEGooru)
+                                            {
+                                                <li><a href="@Url.Action("GENRedirection", "Home")" class="@(EsystemsNeeded.Contains(4098) ? "" : "adisabled")" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "GenTooltip"))" target="_blank" rel="noopener noreferrer"><i class="fas fa-chalkboard-teacher"></i></a></li>
+                                            }
+                                            @if (ViewBag.HasEnergia)
+                                            {
+                                                <li><a href="@Url.Action("EenergiaSignIn", "Home")" class="@(EsystemsNeeded.Contains(4099) ? "" : "adisabled")" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "Energia"))" target="_blank"><i class="fas fa-compass"></i></a></li>
+                                            }
+                                            @*<li><a h  ref="javascript:GoogleDashboardSubmitForm('https://drive.google.com/?authuser=')" data-toggle="m-tooltip" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Drive"))"><i class="fab fa-google-drive"></i></a></li>*@
+                                        </ul>
+                                        <div class="quick-access col-lg-5 col-md-5 col-12 p-0">
+                                            @*<span class="m-menu__link-badge"><span class="m-badge m-badge--digitalibrary">0</span></span>*@
+                                            @Html.Partial("~/Views/SharedSvgs/_CollaborationIcon.cshtml")
+
+                                        </div>
+
+                                        <div class="team-info col-lg-7 col-md-7 col-12 m-auto p-0">
+                                            <h3 class="name m-auto">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageGEN"))</h3>
+                                        </div>
+                                    </div>
+                                }
+                        </div>
+                        </div>
+                        <div class="col-12 mb-1" style="text-align:center;">
+                            <button class="btn m-btn--pill btn-secondary mb-1" id="newPostsBtn">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageNewPost"))</button>
+                        </div>
+                    </article>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="appendCandidates" class="row mt-3">
+
+
+
+            @*<div id="content_@content_index" class="col-12 contents">
+                    <article class="post-post-grid" id="lazyScrollLoading_ImageMode">
+                        <div class="m-alert m-alert--icon alert fade show col-12" role="alert">
+
+                            <div class="m-alert__text">
+                                <span class="pull-left mr-1 ml-1">
+                                    <strong class="m-2">Today's progress</strong>  46%
+                                </span>
+                                <div class="m-widget12__progress mt-2">
+
+                                    <div class="progress m-progress--md">
+                                        <div class="progress-bar m--bg-warning" role="progressbar" style="width: 46%;" aria-valuenow="46" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </article>
+                </div>*@
+            @if (Model == null || Model.Timelines.Count == 0)
+            {
+
+                @Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
+                        { "title", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_EmptySlateTitle")).ToString() },
+                        { "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageYouDontSeemToHaveAnyEvents")).ToString() }
+                        , { "description", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageYoucanusethefourpillarsabovetostartfillingyourtimeline")).ToString() }
+                        , { "action", false },
+                        { "actionBtnId", "" },
+                        { "actionBtnText", "" } })
+                @*<div class="blankslate m-auto col-12">
+                        <div class="mb-3">
+                            @Html.Partial("~/Views/SharedSvgs/_EmptySlateIcon.cshtml")
+                        </div>
+                        <h3 class="mb-1">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageYouDontSeemToHaveAnyEvents."))</h3>
+                        <p class="mb-4">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageYoucanusethefourpillarsabovetostartfillingyourtimeline."))</p>
+
+                    </div>*@
+            }
+            else
+            {
+                @Html.Partial("_TimelineComponent", Model)
+            }
+
+
+            <div id="timeLineLazyLoadingDivId" class="col-12 contents" style="min-height:25px;padding-left:0px;padding-right:0px;"></div>
+
+        </div>
+
+    </div>
+</div><!-- /.dashboard -->
+@*@if (Model != null || Model.Timelines.Count != 0)
+    {
+        <div class="row" style="visibility:hidden;height:350px;">
+            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageEmpty"))
+        </div>
+    }*@
+
+<div class="modal fade" id="m_modal_snooze" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageSnooze"))</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="recipient-name" class="form-control-label">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageSnoozeTo")):</label>
+                        <input id="snoozeDate" type="text" value="" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageSetDateAndTime"))" style="width:100%; cursor:pointer">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="saveSnoozeBtn" class="btn btn-primary">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageSave"))</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageClose"))</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm("GetNextTimelineItems", "Dashboard", FormMethod.Post, new { id = "GetNextTimelineItemsHidden" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("skipItems", "")
+}
+
+@using (Html.BeginForm("BookmarkPathComponent", "Dashboard", FormMethod.Post, new { id = "BookmarkPathComponentForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("componentPathKey", "")
+}
+
+@using (Html.BeginForm("RemovePathBookmark", "Bookmark", FormMethod.Post, new { id = "RemoveBookmarkPathComponentForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("path_Key", "")
+}
+
+@using (Html.BeginForm("BookmarkAssignmentComponent", "Dashboard", FormMethod.Post, new { id = "BookmarkAssignmentComponentForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("componentKey", "")
+}
+
+@using (Html.BeginForm("RemoveBookmark", "Bookmark", FormMethod.Post, new { id = "RemoveBookmarkAssignmentComponentForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("assignment_Key", "")
+}
+
+@using (Html.BeginForm("BookmarkLessonComponent", "Dashboard", FormMethod.Post, new { id = "BookmarkLessonComponentForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("lessKey", "")
+}
+
+@using (Html.BeginForm("RemoveLessonBookmark", "Bookmark", FormMethod.Post, new { id = "RemoveBookmarkLessonComponentForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("lesson_Key", "")
+}
+
+@using (Html.BeginForm("SnoozeLessonComponent", "Dashboard", FormMethod.Post, new { id = "SnoozeLessonComponentForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("lessId", "")
+    @Html.Hidden("snoozeLessonDate", "")
+}
+
+@using (Html.BeginForm("SnoozeEventComponent", "Dashboard", FormMethod.Post, new { id = "SnoozeEventComponentForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("evId", "")
+    @Html.Hidden("snoozeEventDate", "")
+}
+
+@using (Html.BeginForm("SnoozeAssignmentComponent", "Dashboard", FormMethod.Post, new { id = "SnoozeAssignmentComponentForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("asId", "")
+    @Html.Hidden("snoozeAssignmentDate", "")
+}
+
+
+@using (Html.BeginForm("BookmarkSynchronousSessionsComponent", "Dashboard", FormMethod.Post, new { id = "BookmarkSynchronousSessionsComponentForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("synchronousSessionKey", "")
+}
+
+@using (Html.BeginForm("RemoveSessionBookmark", "Bookmark", FormMethod.Post, new { id = "RemoveBookmarkSynchronousSessionsComponentForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("session_key", "")
+}
+
+@using (Html.BeginForm("SnoozeSynchronousSessionsComponent", "Dashboard", FormMethod.Post, new { id = "SnoozeSynchronousSessionsComponentForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("syncSessionKey", "")
+    @Html.Hidden("syncSessionSnoozeDate", "")
+}
+
+@using (Html.BeginForm("BookmarkEventsComponent", "Dashboard", FormMethod.Post, new { id = "BookmarkEventsComponentForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("eventKey", "")
+}
+
+@using (Html.BeginForm("RemoveEventBookmark", "Bookmark", FormMethod.Post, new { id = "RemoveBookmarkEventsComponentForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("event_key", "")
+}
+
+@using (Html.BeginForm("GetTimelineData", "Dashboard", FormMethod.Post, new { id = "GetTimelineDataForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("newTimelineKey", "")
+}
+
+@using (Html.BeginForm("RefreshBadges", "Dashboard", FormMethod.Post, new { id = "RefreshBadgesForm" }))
+{
+    @Html.AntiForgeryToken()
+}
+
+@using (Html.BeginForm("GetLatestSession", "Dashboard", FormMethod.Post, new { id = "GetLatestSessionForm" }))
+{
+    @Html.AntiForgeryToken()
+}
+
+@using (Html.BeginForm("GetUserConversations", "Messages", FormMethod.Post, new { id = "GetUserConversationsForLeftMenu" }))
+{
+    @Html.AntiForgeryToken()
+}
+
+@using (Html.BeginForm("GetNewBookmarks", "Bookmark", FormMethod.Post, new { id = "GetNewBookmarksHidden" }))
+{
+    @Html.AntiForgeryToken()
+}
+
+@using (Html.BeginForm("RefreshWhatsToday", "Dashboard", FormMethod.Post, new { id = "RefreshWhatsTodayHidden" }))
+{
+    @Html.AntiForgeryToken()
+}
+
+@using (Html.BeginForm("ExternalLogin", "Account", new { ReturnUrl = "https://demo.cleverowl.com/signin-google" }, FormMethod.Post, new { id = "external_login", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("provider", "Google")
+}
+
+@if (questionnaire != null && questionnaire.Count != 0)
+{
+    <!--begin::Modal-->
+    <div class="modal fade" id="m_modal_4" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document" style="max-width:95%;">
+            <div class="modal-content" style="background-color:rgb(255 255 255 / 90%);">
+                <div class="modal-header">
+
+                </div>
+                <div class="modal-body">
+                    @Html.Partial("_QuestionaireWizardNew", (List<RLI.EntityFramework.EDM.GetOnboardingQuestionnaire_Result>)questionnaire)
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+    @Scripts.Render("~/assets/vendors/perfect-scrollbar/dist/perfect-scrollbar.js")
+
+
+    <!--Reference the SignalR library. -->
+    @Scripts.RenderFormat("<script src='https://" + Request.Url.Host + "/{0}'></script>", "~/Scripts/jquery.signalR-2.4.1.min.js")
+    <!--Reference the autogenerated SignalR hub script. -->
+    @Scripts.RenderFormat("<script src='https://" + Request.Url.Host + "/{0}'></script>", "~/signalr/hubs")
+
+    @Scripts.Render("~/assets/vendors/bootstrap-datepicker/dist/js/bootstrap-datepicker.js")
+
+
+    @if (questionnaire != null && questionnaire.Count != 0)
+    {
+        @Scripts.Render("~/assets/wizard/wizard.js")
+    }
+
+    <script>
+        $(document).ready(function () {
+          @if (questionnaire != null && questionnaire.Count != 0)
+        {
+            <text>
+        $('#m_modal_4').modal({
+            backdrop: 'static',
+            keyboard: false
+        })
+        initSurvey();
+        </text>
+        }
+            //$("#m_aside_left").scroll(function () {
+            //    ps.update();
+            //});
+
+            //var psCandidates = new PerfectScrollbar('#appendCandidates', {
+            //    wheelSpeed: 2,
+            //    wheelPropagation: true,
+            //    minScrollbarLength: 20
+            //});
+
+            //psCandidates.perfectScrollbar('update');
+
+            //$("#appendCandidates").perfectScrollbar("update");
+            // or just with selector string
+            //const ps = new PerfectScrollbar('#m_aside_left');
+
+            var currentLanguage = "en";
+            @{
+                if(CurrentLanguageIdentifier == 4)
+                {
+                    <text> currentLanguage = "en"; </text>
+                } else if(CurrentLanguageIdentifier == 3)
+                {
+                    <text> currentLanguage = "ar"; </text>
+                } else if(CurrentLanguageIdentifier == 62)
+                {
+                    <text> currentLanguage = "fr"; </text>
+                }
+            }
+
+            $("#snoozeDate").datetimepicker({
+                format: "yyyy-mm-ddTh:ii",
+                startDate: new Date(),
+                showMeridian: true,
+                todayHighlight: true,
+                autoclose: true,
+                language: currentLanguage
+            });
+
+
+            $("#m_aside_left_toggle").hide();
+            $("#m_aside_left").addClass("m-aside-left--on");
+            $("#m_aside_left").attr("style", "width:25% !important");
+
+            $(".leftSideMenu").addClass("col-lg-3 col-md-3");
+            $(".rightSideBody").addClass("col-lg-9 col-md-9");
+            $(".rightSideBody").removeClass("col-lg-12");
+
+
+            $('.RenderBody ').removeClass('col-md-9');
+            //$(function () {
+            //    // Reference the auto-generated proxy for the hub.
+            //    var moodleSignalRManager = $.connection.moodleSignalRManager;
+            //    // Create a function that the hub can call back to display messages.
+            //    moodleSignalRManager.client.addNewTimelineDataToPage = function (type, payload) {
+            //        console.log('addNEw');
+            //        console.log(type);
+            //        console.log(payload);
+            //        GetNewTimelineData(payload);
+            //        RefreshBadges();
+            //        clearInterval(x);
+            //        GetLatestSession();
+            //        RefreshWhatsToday();
+            //    };
+
+            //    moodleSignalRManager.client.addNewMessageToPage = function (type, payload) {
+            //        console.log('GetUserConversationsForLeftMenu');
+            //        GetUserConversationsForLeftMenu();
+            //    };
+
+            //    moodleSignalRManager.client.addNewBookmarkDataToPage = function (type, payload) {
+            //        console.log(type);
+            //        GetNewBookmarks();
+            //    };
+
+            //    // Start the connection.
+            //    $.connection.hub.start().done(function () {
+            //        console.log('connection.hub.start()');
+            //    });
+            //    var count = 0;
+            //    if (count == 0) {
+            //        console.log('im here');
+            //        $("#newPostsBtn").hide();
+            //        //GetNewTimelineData();
+            //        count++;
+            //    }
+
+            //});
+            var x;
+            @if (latestSession != null)
+    {
+                <text>
+            console.log('first date: ' + "@latestSession.SessionDate");
+            var countDownDate = new Date("@latestSession.SessionDate").getTime();
+            LatestSessionCountDown();
+            // Update the count down every 1 second
+            x = setInterval(function () {
+                LatestSessionCountDown();
+            }, 1000);
+
+            function LatestSessionCountDown() {
+                // Get today's date and time
+                var now = new Date().getTime();
+
+                // Find the distance between now and the count down date
+                var distance = countDownDate - now;
+
+                // Time calculations for days, hours, minutes and seconds
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+
+
+                // If the count down is over, write some text
+                if (distance < 0) {
+                    clearInterval(x);
+                    //$("#latestSessionCountDownContainer").hide();
+                    //document.getElementById("latestSessionSpanElementId").innerHTML = "EXPIRED";
+                    //document.getElementById("latestSessionCountDownContainer").innerHTML = " ";
+                    $('#latestSessionCountDownContainer').empty();
+                    console.log('before get lastest session');
+                    GetLatestSession();
+
+
+                } else {
+
+                    console.log('first date: ' + countDownDate);
+                    console.log('first date: ' + hours);
+                    var displayMsg = days + "d " + hours + "h " + minutes + "m ";// + seconds + "s";
+                    if (days == 0) {
+                        displayMsg = hours + "h " + minutes + "m ";// + seconds + "s";
+                    }
+
+                    if (hours == 0 && days == 0) {
+                        displayMsg = minutes + "m ";// + seconds + "s";
+                    }
+
+                    if (minutes == 0) {
+                        displayMsg = '@subjectOfLatestSession' + 'session' + '<a href="@latestSession.MeetingURL" target="_blank" style="color:#F97735;font-weight:bold;" id="latestSessionSpanElementId">started</a>';
+                        document.getElementById("latestSessionCountDownContainer").innerHTML = displayMsg;
+                        return;
+                    }
+
+                    document.getElementById("latestSessionSpanElementId").innerHTML = displayMsg;
+
+                    //if (hours != 0) {
+                    //    // Output the result in an element with id="demo"
+                    //    document.getElementById("latestSessionSpanElementId").innerHTML = hours + "h " + minutes
+                    //        + "m";
+                    //} else {
+                    //    // Output the result in an element with id="demo"
+                    //    document.getElementById("latestSessionSpanElementId").innerHTML = minutes + "m";
+                    //}
+
+                }
+            }
+            </text>
+    }
+
+
+            function GetLatestSession() {
+                console.log("GetLatestSession");
+                $("#GetLatestSessionForm").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        console.log("GetLatestSessionForm");
+                        console.log(data);
+                        if (data != 404) {
+                            console.log('session: ' + data.subjectOfLatestSession);
+                            $("#latestSessionCountDownContainer").html("");
+                            $("#latestSessionCountDownContainer").html(data.subjectOfLatestSession + ' ' + "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageSessionStartIn"))" +' <a href="' + data.sessionUrl + '" target="_blank" style="color:#F97735;font-weight:bold;" id="latestSessionSpanElementId">' + GetLatestSessionCountDown(new Date(data.latestSessionDate).getTime()) + '</a>');
+                            countDownDate = new Date(data.latestSessionDate).getTime();//new Date("latestSessionData.SessionDate)").getTime();
+
+                            x = setInterval(function () {
+                                LatestSessionCountDown();
+                            }, 1000);
+                        }
+
+
+                    },
+                    error: function (xhr, status, error) {
+                        // mApp.unprogress(currentElement);
+                        clearInterval(x);
+                        $("#latestSessionCountDownContainer").hide();
+                        document.getElementById("latestSessionSpanElementId").innerHTML = "EXPIRED";
+                        console.log('errorr');
+                        console.log("Error In GetLatestSession !!!!!!!");
+                    }
+                });
+            }
+
+            function GetLatestSessionCountDown(countDownDate) {
+                // Get today's date and time
+                var now = new Date().getTime();
+                console.log('date in getLatestSessionCountdown: ' + countDownDate);
+                // Find the distance between now and the count down date
+                var distance = countDownDate - now;
+
+                // Time calculations for days, hours, minutes and seconds
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                // Output the result in an element with id="demo"
+                return hours + "h "
+                    + minutes + "m " + seconds + "s ";
+
+                //// If the count down is over, write some text
+                //if (distance < 0) {
+                //    clearInterval(x);
+                //    $("#latestSessionCountDownContainer").hide();
+                //    document.getElementById("latestSessionSpanElementId").innerHTML = "EXPIRED";
+
+
+
+                //}
+            }
+
+
+
+              @*function RefreshWhatsToday() {
+
+                  $("#RefreshWhatsTodayHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == "error") {
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageErrorOccurPleaseTryAgainLater"))", "error");
+                        return;
+                    }
+                    $('#WhatsTodaySideMenuContainer').empty();
+                    $('#WhatsTodaySideMenuContainer').append(data);
+                },
+                error: function (xhr, status, error) {
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageErrorOccurPleaseTryAgainLater"))", "error");
+                    console.log("Error In RefreshWhatsTodayHidden !!!!!!!");
+
+                }
+            });
+        }*@
+
+            @*function GetNewBookmarks() {
+
+                $("#GetNewBookmarksHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == "error") {
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageErrorOccurPleaseTryAgainLater"))", "error");
+                        return;
+                    }
+                    $('#bookmarksSideMenuContainer').empty();
+                    $('#bookmarksSideMenuContainer').append(data);
+                },
+                error: function (xhr, status, error) {
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageErrorOccurPleaseTryAgainLater"))", "error");
+                    console.log("Error In GetNewBookmarksHidden !!!!!!!");
+
+                }
+            });
+        }*@
+        @*function GetUserConversationsForLeftMenu() {
+            console.log('int the GetUserConversations()');
+
+            $("#GetUserConversationsForLeftMenu").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == "error") {
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageErrorOccurPleaseTryAgainLater"))", "error");
+                        return;
+                    }
+                    $('#leftMenuMessagesPart').empty();
+                    $('#leftMenuMessagesPart').append(data);
+
+                },
+                error: function (xhr, status, error) {
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageErrorOccurPleaseTryAgainLater"))", "error");
+                    console.log("Error In GetUserConversationsForLeftMenu !!!!!!!");
+                    mApp.unblock('#m_nav');
+                }
+            });
+        }*@
+        //function RefreshBadges() {
+        //    $("#RefreshBadgesForm").ajaxSubmit({
+        //        beforeSubmit: function () {
+        //        },
+        //        success: function (data) {
+        //            $("#virtualClassBadge").text(data.synchronousSessionsCount);
+        //            $("#resourcesBadge").text(data.timeLineLessonsCount);
+        //            $("#assignmentBadge").text(data.timeLineAssignmentsCount);
+
+        //        },
+        //        error: function (xhr, status, error) {
+        //            // mApp.unprogress(currentElement);
+        //            console.log("Error In RefreshBadgesForm !!!!!!!");
+        //        }
+        //    });
+       // }
+
+        //var TimelineDataGlobal="";
+        //function GetNewTimelineData(newTimelineKey) {
+
+        //    $("#newTimelineKey").val(newTimelineKey);
+        //    $("#GetTimelineDataForm").ajaxSubmit({
+        //        beforeSubmit: function () {
+        //        },
+        //        success: function (data) {
+        //            $("#newPostsBtn").show();
+        //            TimelineDataGlobal = data + TimelineDataGlobal;
+
+        //        },
+        //        error: function (xhr, status, error) {
+        //           // mApp.unprogress(currentElement);
+        //            console.log("Error In GetTimelineDataForm !!!!!!!");
+        //        }
+        //    });
+        //}
+
+        //$("#newPostsBtn").click(function () {
+        //    $('.blankslate').hide();
+        //    var newPostRow = '<div class="m-login__form-divider newPostDivider col-12"><div class="m-divider"><span></span><span>new post</span><span></span></div></div>';
+        //    TimelineDataGlobal += newPostRow;
+        //    $('#appendCandidates').prepend(TimelineDataGlobal);
+        //    TimelineDataGlobal = "";
+
+        //    $("#scrollToTopBtn").click();
+
+        //    //setTimeout(function () {
+        //    //    $(".m-login__form-divider").delay(100).fadeOut(3000);
+        //    //    $(".m-login__form-divider").remove();
+        //    //}, 3000);
+
+        //    $("#newPostsBtn").hide();
+
+        //})
+
+    })
+
+
+        var skipItems = 1;
+        var allowGetNextTimelineComponents = true;
+        $(window).scroll(function () {
+            if ($(window).scrollTop() + $(window).height() >= $(window).height() - 10) {
+                if (allowGetNextTimelineComponents == true) {
+                    getNextTimelineItems();
+                }
+            }
+            try {
+                var lastNewPostsOffsetTop = $('.m-login__form-divider').eq(0).offset().top - 600;
+                var currentPosition = $(document).scrollTop();
+                if (currentPosition > lastNewPostsOffsetTop) {
+                    $(".newPostDivider").delay(100).fadeOut(3000);
+                    console.log("new post ru7eeeeee");
+                    // $(".m-login__form-divider").remove();
+                }
+            } catch {
+
+            }
+        });
+        function getNextTimelineItems() {
+            allowGetNextTimelineComponents = false;
+            mApp.block($('#timeLineLazyLoadingDivId'));
+            $("#skipItems").val(skipItems);
+            $("#GetNextTimelineItemsHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == "404") {
+                        console.log('end of feed');
+                        mApp.unblock($('#timeLineLazyLoadingDivId'));
+                        allowGetNextTimelineComponents = false;
+                        var endOfFeedRow = '<div class="m-login__form-divider col-12"><div class="m-divider"><span></span><span>' + "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageYourexperiencewithCleverOwlhasstartedin")) @ViewBag.StartedDateOfUser" + '<br/><div style="width:100%; text-align:center">' + "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageEndofFeed"))" + '</div></span><span></span></div></div>';
+                        $('#appendCandidates').append(endOfFeedRow);
+                    } else if (data == "500") {
+                        console.log('oops');
+                        allowGetNextTimelineComponents = true;
+                        mApp.unblock($('#timeLineLazyLoadingDivId'));
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageErrorOccurPleaseTryAgainLater"))", 'error');
+                    } else {
+                        mApp.unblock($('#timeLineLazyLoadingDivId'));
+                        $('#appendCandidates').append('<div class="newData w-100">' + data + '</div>');
+                        $('.newData').last().hide().fadeIn(1500);
+                        $('#timeLineLazyLoadingDivId').remove();
+                        $('#appendCandidates').append("<div id='timeLineLazyLoadingDivId' class='col-12 contents' style='min-height: 25px'></div>");
+                        allowGetNextTimelineComponents = true;
+
+                        skipItems++;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    allowGetNextAssignments = true;
+                    mApp.unblock($('#timeLineLazyLoadingDivId'));
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardPageErrorOccurPleaseTryAgainLater"))", 'error');
+                }
+            });
+
+        }
+
+        const today = new Date();
+        //const tomorrow = new Date(today);
+        //tomorrow.setDate(tomorrow.getDate() + 1);
+        //tomorrow.setSeconds(0, 0);
+
+        const tday = today.toISOString();
+        const tdayDateTimeArr = tday.split('.');
+
+        //const tmrw = tomorrow.toISOString();
+        //const tmrwDateTimeArr = tmrw.split('.');
+        document.getElementById("snoozeDate").min = tdayDateTimeArr[0];
+       // $("#scrollDiv").css("height",screen.height);
+
+        $("#dueDate").keydown(function (event) {
+                return false;
+            });
+
+   $("#footer").hide();
+
+    var cur_index = 10;
+    var eventFired = false;
+    var i = @content_index - 1;
+    var loader_index = 0;
+    @*function getCandidates() {
+        $("#index").val(cur_index);
+        $("#grade").val(@ViewBag.grade);
+        $("#subject").val(@ViewBag.subject);
+        $("#topic").val(@ViewBag.topic);
+        $("#tag").val(@ViewBag.tag);
+        mApp.block($('#loader_' + loader_index));
+                    $("#getCandidatesForm").ajaxSubmit({
+                        beforeSubmit: function () {
+                        },
+                        success: function (data) {
+                            if (data == "empty") {
+                                mApp.unblock($('#loader_' + loader_index));
+                                //eventFired = false;
+                            } else {
+                                cur_index += 10;
+                                i++;
+                                var html = '';
+                                $.each(data, function (index, value) {
+                                    html += '<div id="content_' + i + '" style="display:none" class="col-lg-6 contents">';
+                                    html += '<article class="post-post-grid" id="lazyScrollLoading_ImageMode">';
+                                    html += '<div class="feature-image">';
+                                    html += '<a href="' + value.URL + '">';
+                                    html += '<img loading="lazy" class="resourceThumbnail" src="@Url.Action("Screenshot", "Files")/' + value.candidateKey + '" alt="">';
+                                    html += '</a>';
+                                    html += '</div>';
+                                    html += '<div class="blog-content">';
+                                    html += '<ul class="post-meta">';
+                                    html += '<li><a href="#">' + value.topic + '</a></li>';
+                                    html += '</ul>';
+                                    html += '<h3 class="entry-title"><a href="' + value.URL + '" target="_blank">' + value.title + '</a></h3>';
+                                    html += '<div class="author">';
+                                    html += '<img loading="lazy" src="@Url.Content("~/assets/files/media/img/icons/curriculum_mesh@2x.png")" alt="author">';
+                                    html += '<a href="#" class="author-link">' + value.grade + ' > ' + value.subject + '</a>';
+                                    html += '</div>';
+                                    html += '</div>';
+                                    html += '</article>';
+                                    html += '</div>';
+
+                                });
+                                html += '<div class="col-12" id="loader_' + (loader_index + 1) + '"></div>'
+                                $('#appendCandidates').append(html);
+                                $('.contents').show(2000);
+                                mApp.unblock($('#loader_' + loader_index));
+                                loader_index++;
+                                eventFired = false;
+                            }
+
+                        },
+                        error: function (xhr, status, error) {
+                            eventFired = false;
+                            console.log("Error In GetCandidates !!!!!!!");
+                        }
+                    });
+    }*@
+
+    //$('document').ready(function () {
+    //        $(window).scrollTop(0);
+    //        $(window).scroll(function () {
+    //                var lastContentOffsetTop = $('#content_' + i + '').offset().top;
+    //                var currentPosition = $(document).scrollTop();
+    //                if (currentPosition > lastContentOffsetTop && eventFired === false) {
+    //                    eventFired = true;
+    //                    getCandidates();
+    //                }
+    //        });
+
+
+
+
+
+    //    });
+
+        $('.resourceThumbnail').on("error", function () {
+            this.src ="@Url.Content("~/assets/files/media/img/others/resource_image_placeholder.jpg")";
+        });
+
+        $('#quicksearch_input').select2({
+            ajax: {
+                url: '@Url.Action("Search", "Resources")',
+                dataType: 'json',
+                type: 'POST',
+                delay: 250,
+                cache: true,
+                allowClear: true,
+                multiple: true,
+                maximumSelectionLength: 1,
+                data: function (params) {
+                    var query = {
+                        query: params.term,
+                         __RequestVerificationToken : $('@Html.AntiForgeryToken()').val()
+                    }
+
+                    return query;
+                },
+                processResults: function (data, params) {
+                    return {
+                        results: data
+                    };
+                }
+            },
+            placeholder: 'Search...',
+            escapeMarkup: function (markup) { return markup; },
+            minimumInputLength: 3,
+            maximumSelectionLength: 1,
+            templateSelection: function (data) {
+
+                return data.text;
+            }
+        });
+
+        $('#quicksearch_input').on('select2:select', function (e) {
+
+            $('#quicksearch_input').prop("disabled", true);
+
+            window.location = e.params.data.location;
+
+        });
+
+    //initLessonComponent();
+
+
+    $(document).click((event) => {
+        if (!$(event.target).closest('.dashboard-item').length) {
+            $(".member-social").css("bottom", "0px");
+            $(".member-social").css("opacity", "0");
+        }
+    });
+
+    $(".member-social").css("display", "none");
+    var deviceType = checkDeviceType();
+    $(window).resize(function () {
+        deviceType = checkDeviceType();
+    });
+    $(".dashboard-item").hover(function () {
+        if (deviceType == "mobile") {
+            var type = $(this).attr('data-type');
+            if (type == "assignment") {
+                window.location.href = "@Url.Action("Index", "Assignments")";
+            } else if (type == "digitalLibrary") {
+                @if (instanceIndicator == "cleverOwl")
+{
+    <text>
+        window.location.href = "@Url.Action("Index", "DigitalLibrary", new { id = (int)RLI.Common.Enums.DigitalLibraryTypeEnum.DigitalLibraryTypeTopicBased })";
+    </text>
+}
+else
+{
+    <text>
+        window.location.href = "@Url.Action("Index", "DigitalLibrary", new { id = (int)RLI.Common.Enums.DigitalLibraryTypeEnum.DigitalLibraryTypeTopicBased })";
+    </text>
+}
+
+            } else if (type == "virtualClass") {
+                window.location.href = "@Url.Action("Index", "SynchronousSessions")";
+            } else if (type == "resource") {
+                window.location.href = "https://accounts.google.com/";
+            }
+
+        } else {
+            $(".member-social").css("bottom", "0px");
+            $(".member-social").css("opacity", "0");
+            $(this).find(".member-social").css("display", "inline-flex");
+            $(this).find(".member-social").css("bottom", "40px");
+            $(this).find(".member-social").css("opacity", "1");
+        }
+    }, function () {
+        $(".member-social").css("display", "none");
+    });
+
+        $(document).on("click", ".pathBookmarkBtn", function () {
+            event.preventDefault();
+
+            var currentElement = $(this);
+            var pathKey = $(this).attr("data-pathKey");
+            mApp.block(currentElement.closest(".m-portlet"));
+            mApp.progress($(this));
+            $("#componentPathKey").val(pathKey);
+            $("#BookmarkPathComponentForm").ajaxSubmit({
+                        beforeSubmit: function () {
+                        },
+                success: function (data) {
+                    mApp.unprogress(currentElement);
+                    if (data == 200) {
+                        currentElement.removeClass("pathBookmarkBtn");
+                        currentElement.addClass("pathRemoveBookmarkBtn");
+                        currentElement.html('<i class="m-nav__link-icon fa fa-bookmark"></i><span class="m-nav__link-text">' + RemoveBookmarkBtnText + '</span>');
+                        $(".bookmarkContainer_" + pathKey).show();
+                        mApp.unblock(currentElement.closest(".m-portlet"));
+
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            mApp.unprogress(currentElement);
+                            console.log("Error In BookmarkPathComponentForm !!!!!!!");
+                        }
+                    });
+        })
+
+        $(document).on("click", ".pathRemoveBookmarkBtn", function () {
+            event.preventDefault();
+
+            var currentElement = $(this);
+            var pathKey = $(this).attr("data-pathKey");
+            mApp.block(currentElement.closest(".m-portlet"));
+            mApp.progress($(this));
+            $("#path_Key").val(pathKey);
+            $("#RemoveBookmarkPathComponentForm").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    mApp.unprogress(currentElement);
+                    if (data == 200) {
+
+                        currentElement.removeClass("pathRemoveBookmarkBtn");
+                        currentElement.addClass("pathBookmarkBtn");
+                        currentElement.html('<i class="m-nav__link-icon fa fa-bookmark"></i><span class="m-nav__link-text">' + BookmarkBtnText + '</span>');
+                        $(".bookmarkContainer_" + pathKey).hide();
+                        mApp.unblock(currentElement.closest(".m-portlet"));
+                    }
+                },
+                error: function (xhr, status, error) {
+                    mApp.unprogress(currentElement);
+                    console.log("Error In RemoveBookmarkPathComponentForm !!!!!!!");
+                }
+            });
+        })
+
+        $(document).on("click", ".assignmentRemoveBookmarkBtn", function () {
+            event.preventDefault();
+
+            var currentElement = $(this);
+            var assignmentKey = $(this).attr("data-assignmentKey");
+            mApp.block(currentElement.closest(".m-portlet"));
+            mApp.progress($(this));
+            $("#assignment_Key").val(assignmentKey);
+            $("#RemoveBookmarkAssignmentComponentForm").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    mApp.unprogress(currentElement);
+                    if (data == 200) {
+
+                        currentElement.removeClass("assignmentRemoveBookmarkBtn");
+                        currentElement.addClass("assignmentBookmarkBtn");
+                        currentElement.html('<i class="m-nav__link-icon fa fa-bookmark"></i><span class="m-nav__link-text">' + BookmarkBtnText +'</span>');
+                        $(".bookmarkContainer_" + assignmentKey).hide();
+                        mApp.unblock(currentElement.closest(".m-portlet"));
+                    }
+                },
+                error: function (xhr, status, error) {
+                    mApp.unprogress(currentElement);
+                    console.log("Error In RemoveBookmarkAssignmentComponentForm !!!!!!!");
+                }
+            });
+        })
+
+    var RemoveBookmarkBtnText = '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_RemoveBookmark"))';
+    var BookmarkBtnText = '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Bookmark"))';
+        $(document).on("click", ".assignmentBookmarkBtn", function () {
+            event.preventDefault();
+
+            var currentElement = $(this);
+            var assignmentKey = $(this).attr("data-assignmentKey");
+            mApp.block(currentElement.closest(".m-portlet"));
+            mApp.progress($(this));
+            $("#componentKey").val(assignmentKey);
+            $("#BookmarkAssignmentComponentForm").ajaxSubmit({
+                        beforeSubmit: function () {
+                        },
+                success: function (data) {
+                    mApp.unprogress(currentElement);
+                    if (data == 200) {
+                        currentElement.removeClass("assignmentBookmarkBtn");
+                        currentElement.addClass("assignmentRemoveBookmarkBtn");
+                        currentElement.html('<i class="m-nav__link-icon fa fa-bookmark"></i><span class="m-nav__link-text">' + RemoveBookmarkBtnText + '</span>');
+                        $(".bookmarkContainer_" + assignmentKey).show();
+                        mApp.unblock(currentElement.closest(".m-portlet"));
+
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            mApp.unprogress(currentElement);
+                            console.log("Error In BookmarkAssignmentComponentForm !!!!!!!");
+                        }
+                    });
+        })
+        $(document).on("click", ".lessonRemoveBookmarkBtn", function () {
+            event.preventDefault();
+
+            var currentElement = $(this);
+            var lessonKey = $(this).attr("data-LessonKey");
+
+            mApp.progress($(this));
+            $("#lesson_Key").val(lessonKey);
+            $("#RemoveBookmarkLessonComponentForm").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    mApp.unprogress(currentElement);
+                    if (data == 200) {
+                        currentElement.removeClass("lessonRemoveBookmarkBtn");
+                        currentElement.addClass("btn btn-primary m-btn m-btn--icon m-btn--pill lessonBookmarkBtn");
+                        currentElement.html('<span><i class="fa fa-bookmark"></i><span>Bookmark</span></span>');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    mApp.unprogress(currentElement);
+                    console.log("Error In RemoveBookmarkLessonComponentForm !!!!!!!");
+                }
+            });
+        })
+        $(document).on("click", ".lessonBookmarkBtn", function () {
+            event.preventDefault();
+
+            var currentElement = $(this);
+            var lessonKey = $(this).attr("data-LessonKey");
+
+            mApp.progress($(this));
+            $("#lessKey").val(lessonKey);
+            $("#BookmarkLessonComponentForm").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    mApp.unprogress(currentElement);
+                    if (data == 200) {
+                        currentElement.removeClass("btn btn-primary m-btn m-btn--icon m-btn--pill lessonBookmarkBtn");
+                        currentElement.addClass("lessonRemoveBookmarkBtn");
+                        currentElement.html('<i class="fa fa-bookmark fa-2x"></i>');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    mApp.unprogress(currentElement);
+                    console.log("Error In BookmarkLessonComponentForm !!!!!!!");
+                }
+            });
+        })
+
+        function SnoozeLesson() {
+            mApp.progress(currentElementSnoozeBtn);
+            $("#lessId").val(GlobalLessonKey);
+            $("#snoozeLessonDate").val($("#snoozeDate").val());
+            $("#SnoozeLessonComponentForm").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    mApp.unprogress(currentElementSnoozeBtn);
+                    if (data == 200) {
+                        currentElementSnoozeBtn.hide();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    mApp.unprogress(currentElementSnoozeBtn);
+                    console.log("Error In SnoozeLessonComponentForm !!!!!!!");
+                }
+            });
+    }
+
+    function SnoozeEvent() {
+        mApp.progress(currentElementSnoozeBtn);
+        $("#evId").val(GlobalEventKey);
+        $("#snoozeEventDate").val($("#snoozeDate").val());
+        $("#SnoozeEventComponentForm").ajaxSubmit({
+            beforeSubmit: function () {
+            },
+            success: function (data) {
+                mApp.unprogress(currentElementSnoozeBtn);
+                if (data == 200) {
+                    currentElementSnoozeBtn.hide();
+                }
+            },
+            error: function (xhr, status, error) {
+                mApp.unprogress(currentElementSnoozeBtn);
+                console.log("Error In SnoozeEventComponentForm !!!!!!!");
+            }
+        });
+        }
+
+    function SnoozeAssignment() {
+            console.log("SnoozeAssignment");
+            console.log(GlobalAssignmentKey);
+            mApp.progress(currentElementSnoozeBtn);
+            $("#asId").val(GlobalAssignmentKey);
+            $("#snoozeAssignmentDate").val($("#snoozeDate").val());
+            $("#SnoozeAssignmentComponentForm").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    console.log("SnoozeAssignment ==>> success");
+                    console.log(data);
+                    mApp.unprogress(currentElementSnoozeBtn);
+                    if (data == 200) {
+                        currentElementSnoozeBtn.hide();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    mApp.unprogress(currentElementSnoozeBtn);
+                    console.log("Error In SnoozeAssignmentComponentForm !!!!!!!");
+                }
+            });
+        }
+
+    function SnoozeSession() {
+        console.log("SnoozeSession");
+        console.log(GlobalSessionKey);
+            mApp.progress(currentElementSnoozeBtn);
+            $("#syncSessionKey").val(GlobalSessionKey);
+            $("#syncSessionSnoozeDate").val($("#snoozeDate").val());
+            $("#SnoozeSynchronousSessionsComponentForm").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    console.log("SnoozeSession==>> success");
+                    console.log(data);
+                    mApp.unprogress(currentElementSnoozeBtn);
+                    if (data == 200) {
+                        currentElementSnoozeBtn.hide();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    mApp.unprogress(currentElementSnoozeBtn);
+                    console.log("Error In SnoozeSynchronousSessionsComponentForm !!!!!!!");
+                }
+            });
+        }
+
+        function checkDeviceType() {
+            const ua = navigator.userAgent;
+            if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+                return "tablet";
+            }
+            else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+
+
+                return "mobile";
+            }
+            return "desktop";
+        }
+
+        var currentElementSnoozeBtn;
+        var GlobalLessonKey;
+        var GlobalEventKey;
+        var GlobalAssignmentKey;
+       var GlobalSessionKey
+        var GlobalComponent;
+
+        $(document).on("click", ".lessonSnoozeBtn", function () {
+            event.preventDefault();
+            GlobalComponent = "Lesson";
+             currentElementSnoozeBtn = $(this);
+             GlobalLessonKey = $(this).attr("data-LessonKey");
+            $("#m_modal_snooze").modal("show");
+        })
+
+    $(document).on("click", ".assignmentSnoozeBtn", function () {
+        event.preventDefault();
+        GlobalComponent = "Assignment";
+        currentElementSnoozeBtn = $(this);
+        GlobalAssignmentKey = $(this).attr("data-assignmentKey");
+        $("#m_modal_snooze").modal("show");
+    })
+
+        $(document).on("click", ".eventSnoozeBtn", function () {
+            event.preventDefault();
+            GlobalComponent = "Event";
+            currentElementSnoozeBtn = $(this);
+            GlobalEventKey = $(this).attr("data-eventId");
+            $("#m_modal_snooze").modal("show");
+        })
+
+        $(document).on("click", ".synchronousSessionSnoozeBtn", function () {
+            event.preventDefault();
+            GlobalComponent = "Session";
+            currentElementSnoozeBtn = $(this);
+            GlobalSessionKey = $(this).attr("data-synchronousSessionKey");
+            $("#m_modal_snooze").modal("show");
+        })
+
+
+        $(document).on("click", "#saveSnoozeBtn", function () {
+            event.preventDefault();
+            if ($("#snoozeDate").val() != '') {
+                console.log($("#snoozeDate").val());
+                $("#m_modal_snooze").modal("hide");
+            if (GlobalComponent == "Lesson") {
+                    SnoozeLesson();
+            }
+
+            if (GlobalComponent == "Event") {
+                SnoozeEvent();
+            }
+
+            if (GlobalComponent == "Assignment") {
+                SnoozeAssignment();
+            }
+
+            if (GlobalComponent == "Session") {
+                SnoozeSession();
+            }
+           }
+        })
+
+    $(document).on("click", ".synchronousSessionRemoveBookmarkBtn", function () {
+        event.preventDefault();
+
+        var currentElement = $(this);
+        var synchronousSessionKey = $(this).attr("data-synchronousSessionKey");
+        mApp.block(currentElement.closest(".m-portlet"));
+        mApp.progress($(this));
+        $("#session_key").val(synchronousSessionKey);
+        $("#RemoveBookmarkSynchronousSessionsComponentForm").ajaxSubmit({
+            beforeSubmit: function () {
+            },
+            success: function (data) {
+                mApp.unprogress(currentElement);
+                if (data == 200) {
+
+                    currentElement.removeClass("synchronousSessionRemoveBookmarkBtn");
+                    currentElement.addClass("synchronousSessionBookmarkBtn");
+                    currentElement.html('<i class="m-nav__link-icon fa fa-bookmark"></i><span class="m-nav__link-text">' + BookmarkBtnText + '</span>');
+                    $(".synchronousBookmarkContainer_" + synchronousSessionKey).hide();
+                    mApp.unblock(currentElement.closest(".m-portlet"));
+                }
+            },
+            error: function (xhr, status, error) {
+                mApp.unprogress(currentElement);
+                console.log("Error In RemoveBookmarkSynchronousSessionsComponentForm !!!!!!!");
+            }
+        });
+    })
+
+    $(document).on("click", ".synchronousSessionBookmarkBtn", function () {
+        event.preventDefault();
+
+        var currentElement = $(this);
+        var synchronousSessionKey = $(this).attr("data-synchronousSessionKey");
+        mApp.block(currentElement.closest(".m-portlet"));
+        mApp.progress($(this));
+        $("#synchronousSessionKey").val(synchronousSessionKey);
+        $("#BookmarkSynchronousSessionsComponentForm").ajaxSubmit({
+            beforeSubmit: function () {
+            },
+            success: function (data) {
+                mApp.unprogress(currentElement);
+                if (data == 200) {
+                    currentElement.removeClass("synchronousSessionBookmarkBtn");
+                    currentElement.addClass("synchronousSessionRemoveBookmarkBtn");
+                    currentElement.html('<i class="m-nav__link-icon fa fa-bookmark"></i><span class="m-nav__link-text">' + RemoveBookmarkBtnText + '</span>');
+                    $(".synchronousBookmarkContainer_" + synchronousSessionKey).show();
+                    mApp.unblock(currentElement.closest(".m-portlet"));
+                }
+            },
+            error: function (xhr, status, error) {
+                mApp.unprogress(currentElement);
+                console.log("Error In BookmarkSynchronousSessionsComponentForm !!!!!!!");
+            }
+        });
+    })
+    $(document).on("click", ".eventRemoveBookmarkBtn", function () {
+        event.preventDefault();
+
+        var currentElement = $(this);
+        var eventKey = $(this).attr("data-eventId");
+        mApp.block(currentElement.closest(".m-portlet"));
+        mApp.progress($(this));
+        $("#event_key").val(eventKey);
+        $("#RemoveBookmarkEventsComponentForm").ajaxSubmit({
+            beforeSubmit: function () {
+            },
+            success: function (data) {
+                mApp.unprogress(currentElement);
+                if (data == 200) {
+
+                    currentElement.removeClass("eventRemoveBookmarkBtn");
+                    currentElement.addClass("eventBookmarkBtn");
+                    currentElement.html('<i class="m-nav__link-icon fa fa-bookmark"></i><span class="m-nav__link-text">' + BookmarkBtnText + '</span>');
+                    $(".eventsBookmarkContainer_" + eventKey).hide();
+                    mApp.unblock(currentElement.closest(".m-portlet"));
+                }
+            },
+            error: function (xhr, status, error) {
+                mApp.unprogress(currentElement);
+                console.log("Error In RemoveBookmarkEventsComponentForm !!!!!!!");
+            }
+        });
+    })
+
+    $(document).on("click", ".eventBookmarkBtn", function () {
+        event.preventDefault();
+
+        var currentElement = $(this);
+        var eventKey = $(this).attr("data-eventId");
+        mApp.block(currentElement.closest(".m-portlet"));
+        mApp.progress($(this));
+        $("#eventKey").val(eventKey);
+        $("#BookmarkEventsComponentForm").ajaxSubmit({
+            beforeSubmit: function () {
+            },
+            success: function (data) {
+                mApp.unprogress(currentElement);
+                if (data == 200) {
+
+                    currentElement.removeClass("eventBookmarkBtn");
+                    currentElement.addClass("eventRemoveBookmarkBtn");
+                    currentElement.html('<i class="m-nav__link-icon fa fa-bookmark"></i><span class="m-nav__link-text">' + RemoveBookmarkBtnText + '</span>');
+                    $(".eventsBookmarkContainer_" + eventKey).show();
+                    mApp.unblock(currentElement.closest(".m-portlet"));
+                }
+            },
+            error: function (xhr, status, error) {
+                mApp.unprogress(currentElement);
+                console.log("Error In BookmarkEventsComponentForm !!!!!!!");
+            }
+        });
+    })
+    $(document).on("click", ".openPageAssignment", function () {
+        console.log('here');
+        var href = "@Url.Action("Index", "Assignments")";
+        window.location.replace(href);
+    });
+    $(document).on("click", ".openSessionPage", function () {
+        var href = "@Url.Action("Index", "SynchronousSessions")";
+        window.location.replace(href);
+    });
+
+        //function GoToGoogle() {
+        //    console.log("clicked google button for workspace!!!");
+
+        //    // $("#newTimelineKey").val(newTimelineKey);
+        //    $("#provider").val("Google");
+        //    $("#external_login").ajaxSubmit({
+        //        beforeSubmit: function () {
+        //        },
+        //        success: function (data) {
+        //            console.log("success google button !!!");
+        //        },
+        //        error: function (xhr, status, error) {
+        //            console.log("Error In external_login !!!!!!!");
+        //        }
+        //    });
+
+        //};
+
+    </script>
+}

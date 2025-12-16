@@ -1,0 +1,2262 @@
+﻿@using RLI.EntityFramework.EDM
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+
+}
+
+@using RLI.Common.Managers
+@Styles.Render("~/assets/vendors/custom/datatables/datatables.bundle.css")
+@{
+    Language currentLanguage = ViewBag.CurrentLanguage;
+    AspNetUser currentUser = ViewBag.CurrentUser;
+}
+@if (!currentLanguage.IsRTL)
+{ 
+    <style>
+        .rotate {
+            transform: rotateZ(20deg);
+        }
+    </style>
+}
+@if (currentLanguage.IsRTL)
+{
+    <style>
+        .rotateLeft{
+            transform:rotateZ(-15deg)
+        }
+        .pushLeft{
+            margin-right:30px
+        }
+        .rotate {
+            transform: rotateZ(-50deg);
+        }
+        
+    </style>
+}
+<style>
+    input[type="file"] {
+        display: none;
+    }
+
+    .overlay {
+        position: fixed; /* Sit on top of the page content */
+        display: none; /*display hidden by default*/
+        width: 100%; /* Full width (cover the whole page) */
+        height: 100%; /* Full height (cover the whole page) */
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgb(0,0,0,0.5); /* Black background with opacity */
+        z-index: 999999; /* Specify a stack order in case you're using a different order for other elements */
+    }
+
+
+
+    .text {
+        font-size: 20px;
+        color: white;
+    }
+
+    .m-portlet__head1 {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+        flex-direction: row;
+        -webkit-box-align: stretch;
+        -ms-flex-align: stretch;
+        align-items: stretch;
+        -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0;
+        padding: 0 2.2rem;
+        height: 5.1rem;
+        position: relative;
+    }
+
+    .m-portlet1 {
+        box-shadow: 0px 1px 15px 1px rgb(69 65 78 / 8%);
+    }
+
+    .m-portlet__body1 {
+    }
+
+    .text-white {
+        word-break: break-all;
+    }
+</style>
+<div id="overlay-tutorial">
+    <div id="tutorial">
+        <div id="overlayPC" class="overlay">
+            <div id="indicator_0" style="height:150px;">
+                <div id="profile" class="row" style="margin-top:70px;">
+                    <div class="col-8"></div>
+                    <div class="col-3 text-white"><i class="fas fa-long-arrow-alt-up fa-6x"></i></div>
+                </div>
+                <div class="row" style="margin-top:7px">
+                    <div class="col-8"></div>
+                    <div class="col-3 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemProfileIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicator_1" style="height:150px; display:none">
+                <div id="profile" class="row" style="margin-top:60px; ">
+                    <div class="col-4"></div>
+                    <div class="col-3 text-white"><i class="fas fa-long-arrow-alt-up fa-6x"></i></div>
+                </div>
+                <div class="row" style="margin-top:10px">
+                    <div class="col-4"></div>
+                    <div class="col-3 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemWaysOfLearningIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicator_2" style="height:150px;  display:none">
+                <div id="profile" class="row" style="margin-top:60px;">
+                    <div class="col-9"></div>
+                    <div class="col-2 text-white rotateLeft"><i class="fas fa-long-arrow-alt-up fa-6x"></i></div>
+                </div>
+                <div class="row" style="margin-top:7px">
+                    <div class="col-9"></div>
+                    <div class="col-3 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemLanguagesIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicator_3" style="height:150px; display:none">
+                <div id="profile" class="row" style="margin-top:60px; margin-right:10px">
+                    <div class="col-11"></div>
+                    <div class="col-1 text-white"><i class="fas fa-long-arrow-alt-up fa-6x"></i></div>
+                </div>
+                <div class="row" style="margin-top:7px">
+                    <div class="col-10"></div>
+                    <div class="col-2 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemNotificationsIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicator_4" style="height:150px; display:none">
+                <div id="profile" class="row" style="margin-top:60px">
+                    <div class="col-1 text-white" style="margin-left:65px;">
+                        <i class="fas fa-long-arrow-alt-up fa-6x pushLeft" style="transform: rotateZ(-20deg)"></i>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px">
+                    <div class="col-3 text-white" style="margin-left:15px; ">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemMenuIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicator_5" style="height:150px; display:none">
+                <div id="profile" class="row" style="margin-top:110px">
+                    <div class="col-2"></div>
+                    <div class="col-1 text-white"><i class="fas fa-long-arrow-alt-left fa-5x flip"></i></div>
+                    <div class="col-4 text-white" style="align-self:center">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDigitalLibraryIndicator"))</div>
+                </div>
+
+            </div>
+            <div id="carousel-example-1z" class="carousel slide carousel-fade" data-ride="carousel" style="height:150px" data-interval="false">
+                <!--Indicators-->
+                <ol class="carousel-indicators">
+                    <li id="carousel_0" data-target="#carousel-example-1z" data-slide-to="0" class="active"></li>
+                    <li id="carousel_1" data-target="#carousel-example-2z" data-slide-to="1"></li>
+                    <li id="carousel_2" data-target="#carousel-example-3z" data-slide-to="2"></li>
+                    <li id="carousel_3" data-target="#carousel-example-4z" data-slide-to="3"></li>
+                    <li id="carousel_4" data-target="#carousel-example-5z" data-slide-to="4"></li>
+                    <li id="carousel_5" data-target="#carousel-example-6z" data-slide-to="5"></li>
+                </ol>
+                <!--/.Indicators-->
+                <!--Slides-->
+                <div class="carousel-inner" role="listbox">
+                    <!--First slide-->
+                    <div id="carousel-item_0" class="carousel-item active">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:90%">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 class="text-info" style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemProfileSubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/First slide-->
+                    <!--Second slide-->
+                    <div id="carousel-item_1" class="carousel-item">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:90%">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemWaysOfLearningSubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/Second slide-->
+                    <!--Third slide-->
+                    <div id="carousel-item_2" class="carousel-item">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemLanguagesSubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/Third slide-->
+                    <!--Fourth slide-->
+                    <div id="carousel-item_3" class="carousel-item">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemNotificationsSubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/Fourth slide-->
+                    <!--Fifth slide-->
+                    
+                    <div id="carousel-item_4" class="carousel-item">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemMenuSubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/Fifth slide-->
+                    <!--Sixth slide-->
+                    <div id="carousel-item_5" class="carousel-item">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 class="text-info" style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDigitalLibrarySubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/Sixth slide-->
+                </div>
+                <!--/.Slides-->
+                <!--Controls-->
+                <a id="slide_prev_btn" class="carousel-control-prev" href="#carousel-example-1z" role="button">
+                    <span aria-hidden="true"> <i class="fas fa-chevron-left fa-4x flip"></i></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a id="slide_next_btn" class="carousel-control-next" href="#carousel-example-1z" role="button">
+                    <span aria-hidden="true"> <i class="fas fa-chevron-right fa-4x flip"></i></span>
+                    <span class="sr-only">Next</span>
+                </a>
+                <!--/.Controls-->
+            </div>
+            <div class="row closeOverlay" style="position:relative; display:none;">
+                <div class="col-4"></div>
+
+                <div class="col-4">
+                        <div style="text-align:center">
+                            <label class="m-radio m-radio--state-success" style="color:white">
+                                <input id="radioPC" type="radio" name="example_2" value="1" style="word-break:break-all">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemUnderstoodRadioBtn"))
+                                <span></span>
+                            </label>
+                        </div>
+                </div>
+
+
+                <div class="col-5"></div>
+            </div>
+            <div class="row closeOverlay" style="position:relative; display:none;">
+                <div class="col-4"></div>
+                <div class="col-4">
+                    <div style="display:flex; align-items:center; justify-content:center">
+                        <div>
+                            <div id="closeOverlayBtn" class="btn m-btn--pill btn-success m-btn m-btn--outline-2x">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDoneBtn"))</div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <!--Overlay For PC Large-->
+        <div id="overlayPCL" class="overlay">
+            <div id="indicatorL_0" style="height:150px;">
+                <div id="profile" class="row" style="margin-top:60px; margin-left:10px">
+                    <div class="col-7"></div>
+                    <div class="col-3 text-white" style="display:flex; justify-content: center; align-items: center;">
+                        <div><i class="fas fa-long-arrow-alt-up fa-5x rotate" style="align-self:center;"></i></div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:7px">
+                    <div class="col-8"></div>
+                    <div class="col-2 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemProfileIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicatorL_1" style="height:150px; display:none">
+                <div id="profile" class="row" style="margin-top:60px; ">
+                    <div class="col-3"></div>
+                    <div class="col-1 text-white" style="display:flex; align-items:center; justify-content:center">
+                        <div><i class="fas fa-long-arrow-alt-up fa-5x"></i></div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px">
+                    <div class="col-3"></div>
+                    <div class="col-3 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemWaysOfLearningIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicatorL_2" style="height:150px;  display:none">
+                <div id="profile" class="row" style="margin-top:60px;">
+                    <div class="col-9"></div>
+                    <div class="col-1 text-white rotateLeft" style="display:flex; align-items:center; justify-content:center">
+                        <i class="fas fa-long-arrow-alt-up fa-5x"></i>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:7px">
+                    <div class="col-8"></div>
+                    <div class="col-3 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemLanguagesIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicatorL_3" style="height:150px; display:none">
+                <div id="profile" class="row" style="margin-top:60px; margin-right:10px">
+                    <div class="col-11"></div>
+                    <div class="col-1 text-white"><i class="fas fa-long-arrow-alt-up fa-5x rotateLeft"></i></div>
+                </div>
+                <div class="row" style="margin-top:7px">
+                    <div class="col-10"></div>
+                    <div class="col-2 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemNotificationsIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicatorL_4" style="height:150px; display:none">
+                <div id="profile" class="row" style="margin-top:60px">
+                    <div class="col-3 text-white pushLeft " style="margin-left:65px;"><i class="fas fa-long-arrow-alt-up fa-5x"></i></div>
+                </div>
+                <div class="row" style="margin-top:10px">
+                    <div class="col-3 text-white" style="margin-left:15px;">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemMenuIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicatorL_5" style="height:150px; display:none">
+                <div id="profile" class="row" style="margin-top:112px">
+                    <div class="col-2"></div>
+                    <div class="col-1 text-white"><i class="fas fa-long-arrow-alt-left fa-5x flip"></i></div>
+                    <div class="col-4 text-white" style="align-self:center">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDigitalLibraryIndicator"))</div>
+                </div>
+
+            </div>
+            <div id="carousel-example-1z" class="carousel slide carousel-fade" data-ride="carousel" style="height:150px" data-interval="false">
+                <!--Indicators-->
+                <ol class="carousel-indicators">
+                    <li id="carouselL_0" data-target="#carousel-example-1z" data-slide-to="0" class="active"></li>
+                    <li id="carouselL_1" data-target="#carousel-example-2z" data-slide-to="1"></li>
+                    <li id="carouselL_2" data-target="#carousel-example-3z" data-slide-to="2"></li>
+                    <li id="carouselL_3" data-target="#carousel-example-4z" data-slide-to="3"></li>
+                    <li id="carouselL_4" data-target="#carousel-example-5z" data-slide-to="4"></li>
+                    <li id="carouselL_5" data-target="#carousel-example-6z" data-slide-to="5"></li>
+                </ol>
+                <!--/.Indicators-->
+                <!--Slides-->
+                <div class="carousel-inner" role="listbox">
+                    <!--First slide-->
+                    <div id="carousel-itemL_0" class="carousel-item active">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:90%">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 class="text-info" style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemProfileSubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/First slide-->
+                    <!--Second slide-->
+                    <div id="carousel-itemL_1" class="carousel-item">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:90%">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemWaysOfLearningSubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/Second slide-->
+                    <!--Third slide-->
+                    <div id="carousel-itemL_2" class="carousel-item">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemLanguagesSubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/Third slide-->
+                    <!--Fourth slide-->
+                    <div id="carousel-itemL_3" class="carousel-item">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemNotificationsSubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/Fourth slide-->
+                    <!--Fifth slide-->
+                    <div id="carousel-itemL_4" class="carousel-item">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemMenuSubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/Fifth slide-->
+                    <!--Sixth slide-->
+                    <div id="carousel-itemL_5" class="carousel-item">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 class="text-info" style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDigitalLibrarySubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/Sixth slide-->
+                </div>
+                <!--/.Slides-->
+                <!--Controls-->
+                <a id="slide_prev_btn_L" class="carousel-control-prev" href="#carousel-example-1z" role="button">
+                    <span aria-hidden="true"> <i class="fas fa-chevron-left fa-4x flip"></i></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a id="slide_next_btn_L" class="carousel-control-next" href="#carousel-example-1z" role="button">
+                    <span aria-hidden="true"> <i class="fas fa-chevron-right fa-4x flip"></i></span>
+                    <span class="sr-only">Next</span>
+                </a>
+                <!--/.Controls-->
+            </div>
+            <div class="row closeOverlayL" style="position:relative; display:none;">
+                <div class="col-4"></div>
+                <div class="col-5">
+                    <div style="text-align:center">
+                        <label class="m-radio m-radio--state-success" style="color:white">
+                            <input id="radioPCL" type="radio" name="example_2" value="1"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemUnderstoodRadioBtn"))
+                            <span></span>
+                        </label>
+                    </div>
+                    
+                </div>
+                <div class="col-5"></div>
+            </div>
+            <div class="row closeOverlayL" style="position:relative; display:none;">
+                <div class="col-5"></div>
+                <div class="col-2" style="display:flex; align-items:center;justify-content:center">
+                    <div><div id="closeOverlayBtnL" class="btn m-btn--pill btn-success m-btn m-btn--outline-2x w-100 ">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDoneBtn"))</div></div>
+                </div>
+
+                <div class="col-5"></div>
+            </div>
+        </div>
+        <!--/Overlay For PC Large-->
+        <!--Overlay For Mobile-->
+
+        <div id="overlayM" class="overlay">
+
+            <div id="indicatorM_1" style="display:none; margin-top:110px; margin-left:10px">
+                <div class="row">
+                    <div class="col-6"></div>
+                    <div class="col-1 text-white"><i class="fas fa-long-arrow-alt-up fa-4x"></i></div>
+                </div>
+                <div class="row">
+                    <div class="col-2"></div>
+                    <div class="col-7 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemWaysOfLearningIndicator"))</div>
+                </div>
+            </div>
+
+            <div id="indicatorM_3" style="display:none">
+                <div class="row" style="margin-top:60px;">
+                    <div class="col-10"></div>
+                    <div class="col-1 text-white" style="margin-left:10px"><i class="fas fa-long-arrow-alt-up fa-4x rotate"></i></div>
+                </div>
+                <div class="row" style="margin-top:7px">
+                    <div class="col-8"></div>
+                    <div class="col-4 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemNotificationsIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicatorM_4" style=" display:none">
+                <div class="row" style="margin-top:60px; margin-right:10px">
+                    <div class="col-9"></div>
+                    <div class="col-1 text-white"><i class="fas fa-long-arrow-alt-up fa-4x"></i></div>
+                </div>
+                <div class="row" style="margin-top:7px">
+                    <div class="col-7"></div>
+                    <div class="col-4 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemMenuIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicatorM_5" style="display:none">
+                <div id="profile" class="row" style="margin-top:50px">
+                    <div class="col-1"></div>
+                    <div class="col-7 text-white" style="align-self:center">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDigitalLibraryIndicator"))</div>
+                </div>
+                <div class="row">
+                    <div class="col-1"></div>
+                    <div class="col-2 text-white"><i class="fas fa-long-arrow-alt-down fa-4x"></i></div>
+                </div>
+            </div>
+            <div id="carousel-example-1z" class="carousel slide carousel-fade" data-ride="carousel" style="height:150px" data-interval="false" data-next="false">
+                <!--Indicators-->
+                <ol class="carousel-indicators">
+                    <li id="carouselM-toggle_0" data-target="#carouselM-example-1z" data-slide-to="0" class="active"></li>
+                    <li id="carouselM-toggle_1" data-target="#carouselM-example-2z" data-slide-to="1"></li>
+                    <li id="carouselM-toggle_2" data-target="#carouselM-example-3z" data-slide-to="2"></li>
+                    <li id="carouselM-toggle_3" data-target="#carouselM-example-4z" data-slide-to="3"></li>
+                    <li id="carouselM-toggle_4" data-target="#carouselM-example-5z" data-slide-to="4"></li>
+                    <li id="carouselM-toggle_5" data-target="#carouselM-example-5z" data-slide-to="5"></li>
+                </ol>
+                <!--/.Indicators-->
+                <!--Slides-->
+                <div class="carousel-inner" role="listbox" style="">
+                    <!--First slide-->
+                    <div id="carouselM-item_0" class="carousel-item active">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 class="text-info" style="color:#0E8BF2;font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemProfileSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/First slide-->
+                    <!--Second slide-->
+                    <div id="carouselM-item_1" class="carousel-item">
+                        <div class="view">
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemWaysOfLearningSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Second slide-->
+                    <!--Third slide-->
+                    <div id="carouselM-item_2" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemLanguagesSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Third slide-->
+                    <!--Fourth slide-->
+                    <div id="carouselM-item_3" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemNotificationsSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Fourth slide-->
+                    <!--Fifth slide-->
+                    <div id="carouselM-item_4" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemMenuSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Fifth slide-->
+                    <!--Sixth slide-->
+                    <div id="carouselM-item_5" class="carousel-item">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 class="text-info" style="color:#0E8BF2;font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDigitalLibrarySubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/Sixth slide-->
+                </div>
+                <!--/.Slides-->
+                <div id="indicatorM_0">
+                    <div class="row" style="margin-top:45px; margin-left:10px">
+                        <div class="col-3 text-white" style="word-break:break-all;">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemProfileIndicator"))</div>
+
+                        <div class="col-2 text-white"><i class="fas fa-long-arrow-alt-right fa-4x flip"></i></div>
+                    </div>
+
+                </div>
+                <div id="indicatorM_2" style="margin-top:120px; display:none">
+                    <div class="row">
+                        <div class="col-6"></div>
+                        <div class="col-6 text-white"><i class="fas fa-long-arrow-alt-up fa-4x"></i></div>
+                    </div>
+                    <div class="row" style="margin-top:7px">
+                        <div class="col-5"></div>
+                        <div class="col-7 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemLanguagesIndicator"))</div>
+                    </div>
+                </div>
+
+                <!--Controls-->
+                <a id="slide_prev_btn_M" class="carousel-control-prev" href="#carousel-example-1z" role="button">
+                    <span aria-hidden="true"> <i class="fas fa-chevron-left fa-3x flip"></i></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a id="slide_next_btn_M" class="carousel-control-next" href="#carousel-example-1z" role="button">
+                    <span aria-hidden="true"> <i class="fas fa-chevron-right fa-3x flip"></i></span>
+                    <span class="sr-only">Next</span>
+                </a>
+                <!--/.Controls-->
+            </div>
+            <div class="row closeOverlayM" style="position:relative; display:none;">
+                <div class="col-2"></div>
+                <div class="col-6">
+                    <label class="m-radio m-radio--state-success" style="color:white">
+                        <input id="radioM" type="radio" name="example_2" value="1"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemUnderstoodRadioBtn"))
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+            <div class="row closeOverlayM" style="position:relative; display:none;">
+                <div class="col-4"></div>
+                <div id="closeOverlayBtnM" class="col-3" style="text-align:center">
+
+                    <button class="btn m-btn--pill btn-success m-btn m-btn--outline-2x ">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDoneBtn")) </button>
+                </div>
+            </div>
+        </div>
+        <!--/Overlay For Mobile-->
+        <!--Overlay For Mobile extra small-->
+
+        <div id="overlayMS" class="overlay">
+
+            <div id="indicatorMS_1" style="display:none; margin-top:110px; margin-left:10px">
+                <div class="row">
+                    <div class="col-3"></div>
+                    <div class="col-2 text-white"><i class="fas fa-long-arrow-alt-up fa-4x"></i></div>
+                </div>
+                <div class="row">
+                    <div class="col-2"></div>
+                    <div class="col-6 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemWaysOfLearningIndicator"))</div>
+                </div>
+
+            </div>
+
+            <div id="indicatorMS_3" style="display:none">
+                <div class="row" style="margin-top:60px;">
+                    <div class="col-9"></div>
+                    <div class="col-1 text-white" style="margin-left:10px; display:flex; align-items:center; justify-content:center">
+                        <i class="fas fa-long-arrow-alt-up fa-4x rotate" ></i>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:7px">
+                    <div class="col-8"></div>
+                    <div class="col-4 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemNotificationsIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicatorMS_4" style=" display:none">
+                <div class="row" style="margin-top:60px; margin-right:10px">
+                    <div class="col-8"></div>
+                    <div class="col-1 text-white"><i class="fas fa-long-arrow-alt-up fa-4x"></i></div>
+                </div>
+                <div class="row" style="margin-top:7px">
+                    <div class="col-6"></div>
+                    <div class="col-4 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemMenuIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicatorMS_5" style="display:none">
+                <div id="profile" class="row" style="margin-top:50px">
+                    <div class="col-1"></div>
+                    <div class="col-7 text-white" style="align-self:center">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDigitalLibraryIndicator"))</div>
+                </div>
+                <div class="row">
+                    <div class="col-1"></div>
+                    <div class="col-2 text-white"><i class="fas fa-long-arrow-alt-down fa-4x"></i></div>
+                </div>
+            </div>
+            <div id="carousel-example-1z" class="carousel slide carousel-fade" data-ride="carousel" style="height:150px" data-interval="false" data-next="false">
+                <!--Indicators-->
+                <ol class="carousel-indicators">
+                    <li id="carouselMS-toggle_0" data-target="#carouselMS-example-1z" data-slide-to="0" class="active"></li>
+                    <li id="carouselMS-toggle_1" data-target="#carouselMS-example-2z" data-slide-to="1"></li>
+                    <li id="carouselMS-toggle_2" data-target="#carouselMS-example-3z" data-slide-to="2"></li>
+                    <li id="carouselMS-toggle_3" data-target="#carouselMS-example-4z" data-slide-to="3"></li>
+                    <li id="carouselMS-toggle_4" data-target="#carouselMS-example-5z" data-slide-to="4"></li>
+                    <li id="carouselMS-toggle_5" data-target="#carouselMS-example-5z" data-slide-to="5"></li>
+                </ol>
+                <!--/.Indicators-->
+                <!--Slides-->
+                <div class="carousel-inner" role="listbox" style="">
+                    <!--First slide-->
+                    <div id="carouselMS-item_0" class="carousel-item active">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 class="text-info" style="color:#0E8BF2;font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemProfileSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/First slide-->
+                    <!--Second slide-->
+                    <div id="carouselMS-item_1" class="carousel-item">
+                        <div class="view">
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemWaysOfLearningSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Second slide-->
+                    <!--Third slide-->
+                    <div id="carouselMS-item_2" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemLanguagesSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Third slide-->
+                    <!--Fourth slide-->
+                    <div id="carouselMS-item_3" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemNotificationsSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Fourth slide-->
+                    <!--Fifth slide-->
+                    <div id="carouselMS-item_4" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemMenuSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Fifth slide-->
+                    <!--Sixth slide-->
+                    <div id="carouselMS-item_5" class="carousel-item">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 class="text-info" style="color:#0E8BF2;font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDigitalLibrarySubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/Sixth slide-->
+                </div>
+                <!--/.Slides-->
+                <div id="indicatorMS_0">
+                    <div class="row" style="margin-top:45px; margin-left:10px">
+                        <div class="col-2 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemProfileIndicator"))</div>
+
+                        <div class="col-2 text-white"><i class="fas fa-long-arrow-alt-right fa-4x flip"></i></div>
+                    </div>
+
+                </div>
+                <div id="indicatorMS_2" style="margin-top:120px; display:none">
+                    <div class="row">
+                        <div class="col-6"></div>
+                        <div class="col-6 text-white"><i class="fas fa-long-arrow-alt-up fa-4x"></i></div>
+                    </div>
+                    <div class="row" style="margin-top:7px">
+                        <div class="col-5"></div>
+                        <div class="col-7 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemLanguagesIndicator"))</div>
+                    </div>
+                </div>
+
+                <!--Controls-->
+                <a id="slide_prev_btn_MS" class="carousel-control-prev" href="#carousel-example-1z" role="button">
+                    <span aria-hidden="true"> <i class="fas fa-chevron-left fa-4x flip"></i></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a id="slide_next_btn_MS" class="carousel-control-next" href="#carousel-example-1z" role="button">
+                    <span aria-hidden="true"> <i class="fas fa-chevron-right fa-4x flip"></i></span>
+                    <span class="sr-only">Next</span>
+                </a>
+                <!--/.Controls-->
+            </div>
+            <div class="row closeOverlayMS" style="position:relative; display:none;">
+                <div class="col-3"></div>
+                <div class="col-6">
+                    <label class="m-radio m-radio--state-success" style="color:white">
+                        <input id="radioMS" type="radio" name="example_2" value="1"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemUnderstoodRadioBtn"))
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+            <div class="row closeOverlayMS" style="position:relative; display:none;">
+                <div class="col-5"></div>
+                <div class="col-3"><div id="closeOverlayBtnMS" class="btn m-btn--pill btn-success m-btn m-btn--outline-2x  ">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDoneBtn"))</div></div>
+
+            </div>
+        </div>
+        <!--/Overlay For Mobile-->
+        <!--Overlay For Tablet-->
+        <div id="overlayT" class="overlay">
+
+            <div id="indicatorT_1" style="display:none; margin-top:75px;">
+                <div class="row">
+                    <div class="col-4"></div>
+                    <div class="col-3 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemWaysOfLearningIndicator"))</div>
+                    <div class="col-2 text-white"><i class="fas fa-long-arrow-alt-right fa-4x flip"></i></div>
+
+                </div>
+            </div>
+
+            <div id="indicatorT_3" style="display:none">
+                <div class="row" style="margin-top:60px;">
+                    <div class="col-11"></div>
+                    <div class="col-1 text-white"><i class="fas fa-long-arrow-alt-up fa-4x rotate"></i></div>
+                </div>
+                <div class="row" style="margin-top:7px">
+                    <div class="col-8"></div>
+                    <div class="col-4 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemNotificationsIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicatorT_4" style="display:none">
+                <div class="row" style="margin-top:60px;">
+                    <div class="col-10"></div>
+                    <div class="col-1 text-white"><i class="fas fa-long-arrow-alt-up fa-4x rotate"></i></div>
+                </div>
+                <div class="row" style="margin-top:7px">
+                    <div class="col-7"></div>
+                    <div class="col-4 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemMenuIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicatorT_5" style="display:none">
+                <div id="profile" class="row" style="margin-top:60px">
+                    <div class="col-1"></div>
+                    <div class="col-7 text-white" style="align-self:center">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDigitalLibraryIndicator"))</div>
+                </div>
+                <div class="row">
+                    <div class="col-1"></div>
+                    <div class="col-2 text-white"><i class="fas fa-long-arrow-alt-down fa-4x"></i></div>
+                </div>
+            </div>
+            <div id="carousel-example-1z" class="carousel slide carousel-fade" data-ride="carousel" style="height:150px" data-interval="false" data-next="false">
+                <!--Indicators-->
+                <ol class="carousel-indicators">
+                    <li id="carouselT-toggle_0" data-target="#carouselT-example-1z" data-slide-to="0" class="active"></li>
+                    <li id="carouselT-toggle_1" data-target="#carouselT-example-2z" data-slide-to="1"></li>
+                    <li id="carouselT-toggle_2" data-target="#carouselT-example-3z" data-slide-to="2"></li>
+                    <li id="carouselT-toggle_3" data-target="#carouselT-example-4z" data-slide-to="3"></li>
+                    <li id="carouselT-toggle_4" data-target="#carouselT-example-5z" data-slide-to="4"></li>
+                    <li id="carouselT-toggle_5" data-target="#carouselT-example-5z" data-slide-to="5"></li>
+                </ol>
+                <!--/.Indicators-->
+                <!--Slides-->
+                <div class="carousel-inner" role="listbox" style="">
+                    <!--First slide-->
+                    <div id="carouselT-item_0" class="carousel-item active">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 class="text-info" style="color:#0E8BF2;font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemProfileSubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/First slide-->
+                    <!--Second slide-->
+                    <div id="carouselT-item_1" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemWaysOfLearningSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Second slide-->
+                    <!--Third slide-->
+                    <div id="carouselT-item_2" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemLanguagesSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Third slide-->
+                    <!--Fourth slide-->
+                    <div id="carouselT-item_3" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemNotificationsSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Fourth slide-->
+                    <!--Fifth slide-->
+                    <div id="carouselT-item_4" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemMenuSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Fifth slide-->
+                    <!--Sixth slide-->
+                    <div id="carouselT-item_5" class="carousel-item">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 class="text-info" style="color:#0E8BF2;font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDigitalLibrarySubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/Sixth slide-->
+                </div>
+                <!--/.Slides-->
+                <div id="indicatorT_0">
+                    <div class="row" style="margin-top:45px">
+                        <div class="col-4"></div>
+                        <div class="col-3 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemProfileIndicator"))</div>
+                        <div class="col-2 text-white"><i class="fas fa-long-arrow-alt-right fa-5x flip"></i></div>
+                    </div>
+
+                </div>
+                <div id="indicatorT_2" style="margin-top:100px; display:none">
+
+                    <div class="row">
+                        <div class="col-4"></div>
+                        <div class="col-3 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemLanguagesIndicator"))</div>
+                        <div class="col-2 text-white"><i class="fas fa-long-arrow-alt-right fa-4x flip"></i></div>
+
+                    </div>
+                </div>
+
+                <!--Controls-->
+                <a id="slide_prev_btn_T" class="carousel-control-prev" href="#carousel-example-1z" role="button">
+                    <span aria-hidden="true"> <i class="fas fa-chevron-left fa-4x flip"></i></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a id="slide_next_btn_T" class="carousel-control-next" href="#carousel-example-1z" role="button">
+                    <span aria-hidden="true"> <i class="fas fa-chevron-right fa-4x flip"></i></span>
+                    <span class="sr-only">Next</span>
+                </a>
+                <!--/.Controls-->
+            </div>
+            <div class="row closeOverlayT" style="position:relative; display:none;">
+                <div class="col-4"></div>
+                <div class="col-6">
+                    <label class="m-radio m-radio--state-success" style="color:white">
+                        <input id="radioT" type="radio" name="example_2" value="1"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemUnderstoodRadioBtn"))
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+            <div class="row closeOverlayT" style="position:relative; display:none;">
+                <div class="col-5"></div>
+                <div class="col-3"><div id="closeOverlayBtnT" class="btn m-btn--pill btn-success m-btn m-btn--outline-2x ">Done</div></div>
+
+            </div>
+        </div>
+        <!--/Overlay For Tablet-->
+        <!--Overlay For IpadPro-->
+        <div id="overlayIpadPro" class="overlay">
+
+            <div id="indicatorIpadPro_1" style="display:none; margin-top:75px;">
+                <div class="row">
+                    <div class="col-5"></div>
+                    <div class="col-3 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemWaysOfLearningIndicator"))</div>
+                    <div class="col-2 text-white"><i class="fas fa-long-arrow-alt-right fa-4x flip"></i></div>
+
+                </div>
+            </div>
+
+            <div id="indicatorIpadPro_3" style="display:none">
+                <div class="row" style="margin-top:60px;">
+                    <div class="col-11"></div>
+                    <div class="col-1 text-white" style="display:flex;">
+                        <i class="fas fa-long-arrow-alt-up fa-4x rotate " ></i>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:7px">
+                    <div class="col-8"></div>
+                    <div class="col-4 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemNotificationsIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicatorIpadPro_4" style="display:none;">
+                <div class="row" style="margin-top:60px;">
+                    <div class="col-10"></div>
+                    <div class="col-1 text-white"><i class="fas fa-long-arrow-alt-up fa-4x rotate" ></i></div>
+                </div>
+                <div class="row" style="margin-top:7px">
+                    <div class="col-7"></div>
+                    <div class="col-4 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemMenuIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicatorIpadPro_5" style="display:none">
+                <div id="profile" class="row" style="margin-top:60px">
+                    <div class="col-1"></div>
+                    <div class="col-7 text-white" style="align-self:center">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDigitalLibraryIndicator"))</div>
+                </div>
+                <div class="row">
+                    <div class="col-1"></div>
+                    <div class="col-2 text-white"><i class="fas fa-long-arrow-alt-down fa-4x"></i></div>
+                </div>
+            </div>
+            <div id="carousel-example-1z" class="carousel slide carousel-fade" data-ride="carousel" style="height:150px" data-interval="false" data-next="false">
+                <!--Indicators-->
+                <ol class="carousel-indicators">
+                    <li id="carouselIpadPro-toggle_0" data-target="#carouselIpadPro-example-1z" data-slide-to="0" class="active"></li>
+                    <li id="carouselIpadPro-toggle_1" data-target="#carouselIpadPro-example-2z" data-slide-to="1"></li>
+                    <li id="carouselIpadPro-toggle_2" data-target="#carouselIpadPro-example-3z" data-slide-to="2"></li>
+                    <li id="carouselIpadPro-toggle_3" data-target="#carouselIpadPro-example-4z" data-slide-to="3"></li>
+                    <li id="carouselIpadPro-toggle_4" data-target="#carouselIpadPro-example-5z" data-slide-to="4"></li>
+                    <li id="carouselIpadPro-toggle_5" data-target="#carouselIpadPro-example-5z" data-slide-to="5"></li>
+                </ol>
+                <!--/.Indicators-->
+                <!--Slides-->
+                <div class="carousel-inner" role="listbox" style="">
+                    <!--First slide-->
+                    <div id="carouselIpadPro-item_0" class="carousel-item active">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 class="text-info" style="color:#0E8BF2;font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemProfileSubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/First slide-->
+                    <!--Second slide-->
+                    <div id="carouselIpadPro-item_1" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemWaysOfLearningSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Second slide-->
+                    <!--Third slide-->
+                    <div id="carouselIpadPro-item_2" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemLanguagesSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Third slide-->
+                    <!--Fourth slide-->
+                    <div id="carouselIpadPro-item_3" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemNotificationsSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Fourth slide-->
+                    <!--Fifth slide-->
+                    <div id="carouselIpadPro-item_4" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemMenuSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Fifth slide-->
+                    <!--Sixth slide-->
+                    <div id="carouselIpadPro-item_5" class="carousel-item">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 class="text-info" style="color:#0E8BF2;font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDigitalLibrarySubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/Sixth slide-->
+                </div>
+                <!--/.Slides-->
+                <div id="indicatorIpadPro_0">
+                    <div class="row" style="margin-top:45px">
+                        <div class="col-5"></div>
+                        <div class="col-3 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemProfileIndicator"))</div>
+                        <div class="col-2 text-white"><i class="fas fa-long-arrow-alt-right fa-4x flip"></i></div>
+                    </div>
+
+                </div>
+                <div id="indicatorIpadPro_2" style="margin-top:100px; display:none">
+
+                    <div class="row">
+                        <div class="col-5"></div>
+                        <div class="col-3 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemLanguagesIndicator"))</div>
+                        <div class="col-2 text-white"><i class="fas fa-long-arrow-alt-right fa-4x flip"></i></div>
+
+                    </div>
+                </div>
+
+                <!--Controls-->
+                <a id="slide_prev_btn_IpadPro" class="carousel-control-prev" href="#carousel-example-1z" role="button">
+                    <span aria-hidden="true"> <i class="fas fa-chevron-left fa-4x flip"></i></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a id="slide_next_btn_IpadPro" class="carousel-control-next" href="#carousel-example-1z" role="button">
+                    <span aria-hidden="true"> <i class="fas fa-chevron-right fa-4x flip"></i></span>
+                    <span class="sr-only">Next</span>
+                </a>
+                <!--/.Controls-->
+            </div>
+            <div class="row closeOverlayIpadPro" style="position:relative; display:none;">
+                <div class="col-4"></div>
+                <div class="col-3">
+                    <label class="m-radio m-radio--state-success" style="color:white">
+                        <input id="radioTL" type="radio" name="example_2" value="1"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemUnderstoodRadioBtn"))
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+            <div class="row closeOverlayIpadPro" style="position:relative; display:none; margin-right:70px">
+                <div class="col-4"></div>
+                <div class="col-4" style="text-align:center"><button id="closeOverlayBtnIpadPro" class="btn m-btn--pill btn-success m-btn m-btn--outline-2x">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDoneBtn"))</button></div>
+
+            </div>
+        </div>
+        <!--/Overlay For IpadPro-->
+        <!---Overlay Surface Duo-->
+        <div id="overlaySD" class="overlay">
+
+            <div id="indicatorSD_1" style="display:none; margin-top:75px;">
+                <div class="row">
+                    <div class="col-2"></div>
+                    <div class="col-3 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemWaysOfLearningIndicator"))</div>
+                    <div class="col-2 text-white"><i class="fas fa-long-arrow-alt-right fa-4x flip"></i></div>
+
+                </div>
+            </div>
+
+            <div id="indicatorSD_3" style="display:none">
+                <div class="row" style="margin-top:60px;">
+                    <div class="col-11"></div>
+                    <div class="col-1 text-white"><i class="fas fa-long-arrow-alt-up fa-4x "></i></div>
+                </div>
+                <div class="row" style="margin-top:7px">
+                    <div class="col-8"></div>
+                    <div class="col-4 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemNotificationsIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicatorSD_4" style="display:none">
+                <div class="row" style="margin-top:60px;">
+                    <div class="col-9"></div>
+                    <div class="col-1 text-white rotate"><i class="fas fa-long-arrow-alt-up fa-4x"></i></div>
+                </div>
+                <div class="row" style="margin-top:7px">
+                    <div class="col-7"></div>
+                    <div class="col-4 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemMenuIndicator"))</div>
+                </div>
+            </div>
+            <div id="indicatorSD_5" style="display:none">
+                <div id="profile" class="row" style="margin-top:60px">
+                    <div class="col-1"></div>
+                    <div class="col-7 text-white" style="align-self:center">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDigitalLibraryIndicator"))</div>
+                </div>
+                <div class="row">
+                    <div class="col-1"></div>
+                    <div class="col-2 text-white"><i class="fas fa-long-arrow-alt-down fa-4x"></i></div>
+                </div>
+            </div>
+            <div id="carousel-example-1z" class="carousel slide carousel-fade" data-ride="carousel" style="height:150px" data-interval="false" data-next="false">
+                <!--Indicators-->
+                <ol class="carousel-indicators">
+                    <li id="carouselSD-toggle_0" data-target="#carouselSD-example-1z" data-slide-to="0" class="active"></li>
+                    <li id="carouselSD-toggle_1" data-target="#carouselSD-example-2z" data-slide-to="1"></li>
+                    <li id="carouselSD-toggle_2" data-target="#carouselSD-example-3z" data-slide-to="2"></li>
+                    <li id="carouselSD-toggle_3" data-target="#carouselSD-example-4z" data-slide-to="3"></li>
+                    <li id="carouselSD-toggle_4" data-target="#carouselSD-example-5z" data-slide-to="4"></li>
+                    <li id="carouselSD-toggle_5" data-target="#carouselSD-example-5z" data-slide-to="5"></li>
+                </ol>
+                <!--/.Indicators-->
+                <!--Slides-->
+                <div class="carousel-inner" role="listbox" style="">
+                    <!--First slide-->
+                    <div id="carouselSD-item_0" class="carousel-item active">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 class="text-info" style="color:#0E8BF2;font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemProfileSubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/First slide-->
+                    <!--Second slide-->
+                    <div id="carouselSD-item_1" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemWaysOfLearningSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Second slide-->
+                    <!--Third slide-->
+                    <div id="carouselSD-item_2" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemLanguagesSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Third slide-->
+                    <!--Fourth slide-->
+                    <div id="carouselSD-item_3" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemNotificationsSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Fourth slide-->
+                    <!--Fifth slide-->
+                    <div id="carouselSD-item_4" class="carousel-item">
+                        <div class="view">
+
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center" style="top:50%">
+
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 style="color:#0E8BF2; font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemMenuSubTitle"))</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--/Fifth slide-->
+                    <!--Sixth slide-->
+                    <div id="carouselSD-item_5" class="carousel-item">
+                        <div class="view">
+                            <!-- Mask & flexbox options-->
+                            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+                                <!-- Content -->
+                                <div class="text-center mx-5 wow fadeIn">
+                                    <h3 class="text-info" style="color:#0E8BF2;font-weight:bold;">
+                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemTitle"))
+                                    </h3>
+                                    <p class="text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDigitalLibrarySubTitle"))</p>
+                                </div>
+                                <!-- Content -->
+                            </div>
+                            <!-- Mask & flexbox options-->
+                        </div>
+                    </div>
+                    <!--/Sixth slide-->
+                </div>
+                <!--/.Slides-->
+                <div id="indicatorSD_0">
+                    <div class="row" style="margin-top:45px">
+                        <div class="col-3"></div>
+                        <div class="col-3 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemProfileIndicator"))</div>
+                        <div class="col-2 text-white"><i class="fas fa-long-arrow-alt-right fa-4x flip"></i></div>
+                    </div>
+
+                </div>
+                <div id="indicatorSD_2" style="margin-top:70px; display:none">
+
+                    <div class="row">
+                        <div class="col-2"></div>
+                        <div class="col-3 text-white">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemLanguagesIndicator"))</div>
+                        <div class="col-2 text-white"><i class="fas fa-long-arrow-alt-right fa-4x flip"></i></div>
+
+                    </div>
+                </div>
+
+                <!--Controls-->
+                <a id="slide_prev_btn_SD" class="carousel-control-prev" href="#carousel-example-1z" role="button">
+                    <span aria-hidden="true"> <i class="fas fa-chevron-left fa-4x flip"></i></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a id="slide_next_btn_SD" class="carousel-control-next" href="#carousel-example-1z" role="button">
+                    <span aria-hidden="true"> <i class="fas fa-chevron-right fa-4x flip"></i></span>
+                    <span class="sr-only">Next</span>
+                </a>
+                <!--/.Controls-->
+            </div>
+            <div class="row closeOverlaySD" style="position:relative; display:none;">
+                <div class="col-4"></div>
+                <div class="col-4">
+                    <label class="m-radio m-radio--state-success" style="color:white">
+                        <input id="radioSD" type="radio" name="example_2" value="1"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemUnderstoodRadioBtn"))
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+            <div class="row closeOverlaySD">
+                <div class="col-4"></div>
+                <div class="col-4" style="text-align:center"><button id="closeOverlayBtnSD" class="btn m-btn--pill btn-success m-btn m-btn--outline-2x">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OverlayTutorialItemDoneBtn"))</button></div>
+            </div>
+        </div>
+        <!---/Overlay Surface Duo-->
+    </div>
+</div>
+
+
+<div class="m-portlet m-portlet--mobile">
+
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-text">
+                <h3>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageAccessRecordReport"))</h3>
+            </div>
+        </div>
+
+    </div>
+    <div class="m-portlet_body" style="padding:10px">
+        <div class="m-portlet m-portlet--mobile">
+            <form>
+                <div class="m-portlet__head">
+                    <div class="m-portlet__head-caption">
+                        <div class="m-portlet__head-text">
+                            <h3>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageFilter"))</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-portlet_body" style="padding:10px">
+                    <div class="row">
+                        <div class="col-md-4">
+
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageSchool:"))
+                            @Html.DropDownList("grade", (SelectList)ViewBag.Schools, "", new { style = "width:100%", id = "schoolsDL" })
+
+
+                        </div>
+                        <div class="col-md-4">
+
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageTeacher:"))
+                            <select id="teachersDL" style="width:100% ">
+                                <option></option>
+                                <option vlaue="1">teacher1</option>
+                                <option vlaue="2">teacher2</option>
+                            </select>
+
+
+                        </div>
+                        <div class="col-md-4">
+
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageStudent:"))
+                            <select id="studentsDL" style="width:100%">
+                                <option></option>
+                                <option vlaue="1">student1</option>
+                                <option vlaue="2">student2</option>
+                            </select>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="padding:10px">
+                    <div class="col-3"></div>
+                    <div class="col-3"></div>
+                    <div class="col-3">
+                        <button type="button" id="applyBtn" class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100" style="margin-top: 20px">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageApply"))</button>
+                    </div>
+                    <div class="col-3">
+                        <button id="clearBtn" type="button" class="btn m-btn--pill btn-outline-metal m-btn m-btn--outline-2x w-100" style="margin-top:20px">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageClear"))</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="m-portlet m-portlet--mobile teacherBlock" style="display:none">
+                    <div class="m-portlet__head">
+                        <div class="m-portlet__head-caption">
+                            <div class="m-portlet__head-text">
+                                <h3>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageTeacherRecord"))</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m-portlet_body" style="padding:10px">
+                        <div class="teacherChart" style="height:400px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="m-portlet m-portlet--mobile studentBlock" style="display:none">
+                    <div class="m-portlet__head">
+                        <div class="m-portlet__head-caption">
+                            <div class="m-portlet__head-text">
+                                <h3>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageStudentRecord"))</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m-portlet_body" style="padding:10px">
+                        <div class="studentChart" style="height:400px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="m-portlet m-portlet--mobile teacherBlock" style="display:none">
+                    <div class="m-portlet__head">
+                        <div class="m-portlet__head-caption">
+                            <div class="m-portlet__head-text">
+                                <h3>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageDataTableForTeacher"))</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="m-portlet_body" style="padding:10px">
+                        <div>
+                            <table id="teacherTable">
+                                <thead>
+                                    <tr>
+                                        <td>Lesson Name</td>
+                                        <td>Count</td>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="m-portlet m-portlet--mobile studentBlock" style="display:none">
+
+                    <div class="m-portlet__head">
+                        <div class="m-portlet__head-caption">
+                            <div class="m-portlet__head-text">
+                                <h3>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageDataTableForStudent"))</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m-portlet_body" style="padding:10px">
+                        <div>
+                            <table id="studentTable">
+                                <thead>
+                                    <tr>
+                                        <td>Lesson Name</td>
+                                        <td>Count</td>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+    @Scripts.Render("~/assets/amcharts4/core.js")
+    @Scripts.Render("~/assets/amcharts4/charts.js")
+    @Scripts.Render("~/assets/amcharts4/themes/frozen.js")
+    @Scripts.Render("~/assets/amcharts4/themes/animated.js")
+    @Scripts.Render("~/assets/vendors/custom/datatables/datatables.bundle.js")
+
+<script>
+        //function to hide the overflow
+        function hideOverflow() {
+            $('html, body').css({
+                overflow: 'hidden',
+                height: '100%'
+            });
+        }
+        //function to reset the overflow
+        function resetOverFlow() {
+            $('html, body').css({
+                overflow: 'auto',
+                height: 'auto'
+            });
+        }
+
+        // funtion to detect the screen width and show the overlay for PC
+        function getScreenTypeAndShowOverlay(html) {
+            $("#m_aside_header_menu_mobile_toggle").removeClass("m-brand__toggler--active");
+            $("#m_header_menu").removeClass("m-aside-header-menu-mobile--on");
+            $('#m_aside_left').removeClass("m-aside-left--on");
+            $('#tutorial').remove();
+            $('#overlay-tutorial').append(html);
+            width = $(window).width();
+            if (width > 1500) {
+                showOverlay('pcL');
+            } else if (width > 1023 && width <= 1500) {
+                showOverlay('pc');
+            } else if (width >= 800 && width < 1024) {
+                showOverlay('ipadPro');
+            } else if (width >= 600 && width < 800) {
+                showOverlay('ipad');
+            } else if (width >= 450 && width < 600) {
+                showOverlay('phoneL');
+            } else if (width < 450) {
+                showOverlay('phone');
+            }
+
+        }
+        var displayOverlay = true;
+
+        $(document).ready(function () {
+            @if(currentUser.StatusKey != 19)
+            {
+                <text>setOverlay();</text>
+            }
+             @*$.ajax({
+                url: '@Url.Action("getUserStatus", "ReportsTest")',
+                 type: 'POST',
+                dataType = 'json',
+                data: {
+
+                    __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+
+                },
+                success: function (data) {
+                    console.log('get status success');
+                    if (data != 19) {
+                        setOverlay();
+                    }
+                }
+            });*@
+
+
+        });
+
+        function setOverlay() {
+            var html_overlay = $('#overlay-tutorial').html();
+
+            $(window).resize(function () {                 // detect each
+                getScreenTypeAndShowOverlay(html_overlay);// time the
+            });                                          // window changes
+
+            var isMobile = navigator.userAgent.match(/(iPhone|iPod|Android|BlackBerry|Nokia)/); //detect if the user is on a phone
+            var isTablet = navigator.userAgent.match(/(iPad)/);                                //detect if the user is on a Tablet or ipad
+            var screenType;
+            if (isMobile) {
+                var width = window.screen.width;
+                if (width >= 450) {
+                    screenType = 'phoneL';
+                } else if (width > 300 && width < 450) {
+                    screenType = 'phone';
+                } else {
+                    screenType = 'phoneS';
+                }
+                showOverlay(screenType);
+            } else if (isTablet) {
+                var height = window.screen.height;
+                var width = window.screen.width;
+                if (width > 768 && height > 1024) {
+                    screenType = 'ipadPro';
+                } else {
+                    screenType = 'ipad';
+                }
+                showOverlay(screenType);
+            } else {
+                getScreenTypeAndShowOverlay(html_overlay);
+            }
+        }
+
+        // function that display the overlay tutorial
+        function showOverlay(screenType) {
+            if (displayOverlay == true) {
+                if (screenType == 'phone') {
+                    showMobileOverlay('overlayM', 'indicatorM_', 'carouselM-item_', 'carouselM-toggle_', 'slide_next_btn_M', 'slide_prev_btn_M', 'closeOverlayM', 'closeOverlayBtnM', 'radioM');
+                } else if (screenType == 'phoneL') {
+                    showMobileOverlay('overlaySD', 'indicatorSD_', 'carouselSD-item_', 'carouselSD-toggle_', 'slide_next_btn_SD', 'slide_prev_btn_SD', 'closeOverlaySD', 'closeOverlayBtnSD', 'radioSD');
+                } else if (screenType == 'phoneS') {
+                    showMobileOverlay('overlayMS', 'indicatorMS_', 'carouselMS-item_', 'carouselMS-toggle_', 'slide_next_btn_MS', 'slide_prev_btn_MS', 'closeOverlayMS', 'closeOverlayBtnMS');
+                } else if (screenType == 'ipad') {
+                    showTabletOverlay('overlayT', 'indicatorT_', 'carouselT-item_', 'carouselT-toggle_', 'slide_next_btn_T', 'slide_prev_btn_T', 'closeOverlayT', 'closeOverlayBtnT', 'radioT');
+                } else if (screenType == 'ipadPro') {
+                    showTabletOverlay('overlayIpadPro', 'indicatorIpadPro_', 'carouselIpadPro-item_', 'carouselIpadPro-toggle_', 'slide_next_btn_IpadPro', 'slide_prev_btn_IpadPro', 'closeOverlayIpadPro', 'closeOverlayBtnIpadPro', 'radioTL');
+                } else if (screenType == 'pc') {
+                    showPcOverlay('overlayPC', 'indicator_', 'carousel-item_', 'carousel_', 'slide_next_btn', 'slide_prev_btn', 'closeOverlay', 'closeOverlayBtn', 'radioPC');
+                } else if (screenType == 'pcL') {
+                    showPcOverlay('overlayPCL', 'indicatorL_', 'carousel-itemL_', 'carouselL_', 'slide_next_btn_L', 'slide_prev_btn_L', 'closeOverlayL', 'closeOverlayBtnL', 'radioPCL');
+                }
+            }
+        }
+
+        // function responsible for the mobile screen overlay(small)
+        function showMobileOverlay(overlayId, indicatorId, carouselItemId, carouselId, slideNextBtnId, slidePrevBtnId, overlayEndClass, doneBtnId, radioID) {
+            console.log('mobile');
+            hideOverflow();
+            $('#' + overlayId).show();
+            $("#m_aside_header_menu_mobile_toggle").addClass("m-brand__toggler--active");
+            $("#m_header_menu").addClass("m-aside-header-menu-mobile--on");
+            var slide_to_index = 0;
+            $('.carousel-inner').css('margin-top', '130px');
+            $('#' + slidePrevBtnId).hide();
+            $('#' + slideNextBtnId).click(function () {
+                if (slide_to_index == 2) {
+                    $("#m_aside_header_menu_mobile_toggle").removeClass("m-brand__toggler--active");
+                    $("#m_header_menu").removeClass("m-aside-header-menu-mobile--on");
+                }
+                if (slide_to_index == 1) {
+                    $('.carousel-inner').css('margin-top', '160px');
+                } else {
+                    $('.carousel-inner').css('margin-top', '0px');
+                }
+                mApp.block($('#' + overlayId));
+                $('#' + slidePrevBtnId).show();
+                if (slide_to_index < 6) {
+                    $('#' + indicatorId + slide_to_index).hide();
+                    $('#' + carouselItemId + slide_to_index).removeClass("active");
+                    $('#' + carouselId + slide_to_index).removeClass("active");
+                    ++slide_to_index;
+                    $('#' + carouselItemId + slide_to_index).addClass("active");
+                    $('#' + carouselId + slide_to_index).addClass("active");
+                    $('#' + indicatorId + slide_to_index).show();
+                }
+                if (slide_to_index == 5) {
+                    $('#m_aside_left').addClass("m-aside-left--on");
+                    $('#' + slideNextBtnId).hide();
+                    $('.' + overlayEndClass).show();
+                }
+
+                mApp.unblock($('#' + overlayId));
+
+            });
+            $('#' + slidePrevBtnId).click(function () {
+                mApp.block($('#' + overlayId));
+                if (slide_to_index == 5) {
+                    $('#m_aside_left').removeClass("m-aside-left--on");
+                }
+                if (slide_to_index == 3) {
+                    $('.carousel-inner').css('margin-top', '160px');
+                    $("#m_aside_header_menu_mobile_toggle").addClass("m-brand__toggler--active");
+                    $("#m_header_menu").addClass("m-aside-header-menu-mobile--on");
+                } else if (slide_to_index == 1) {
+                    $('.carousel-inner').css('margin-top', '130px');
+                } else {
+                    $('.carousel-inner').css('margin-top', '0px');
+                }
+                $('#' + slideNextBtnId).show();
+                $('.' + overlayEndClass).hide();
+                if (slide_to_index > 0) {
+                    $('#' + indicatorId + slide_to_index).hide();
+                    $('#' + carouselItemId + slide_to_index).removeClass("active");
+                    $('#' + carouselId + slide_to_index).removeClass("active");
+                    --slide_to_index;
+                    $('#' + carouselItemId + slide_to_index).addClass("active");
+                    $('#' + carouselId + slide_to_index).addClass("active");
+                    $('#' + indicatorId + slide_to_index).show();
+                }
+                if (slide_to_index == 0) {
+                    $('#' + slidePrevBtnId).hide();
+                }
+                mApp.unblock($('#'+overlayId));
+            });
+            $('#' + doneBtnId).click(function () {
+                if ($('#' + radioID).is(':checked')) {
+                    console.log('clicked');
+                    $('#' + overlayId).remove();
+                    resetOverFlow();
+                    $("#m_aside_header_menu_mobile_toggle").removeClass("m-brand__toggler--active");
+                    $("#m_header_menu").removeClass("m-aside-header-menu-mobile--on");
+                    $('#m_aside_left').removeClass("m-aside-left--on");
+                    displayOverlay = false;
+                    callAjax();
+                }
+            });
+        }
+        // function responsible for the Tablet screen overlay (medium)
+        function showTabletOverlay(overlayId, indicatorId, carouselItemId, carouselId, slideNextBtnId, slidePrevBtnId, overlayEndClass, doneBtnId, radioID) {
+            hideOverflow();
+            $('#' + overlayId).show();
+            $("#m_aside_header_menu_mobile_toggle").addClass("m-brand__toggler--active");
+            $("#m_header_menu").addClass("m-aside-header-menu-mobile--on");
+            var slide_to_index = 0;
+            $('#' + slidePrevBtnId).hide();
+            $('.carousel-inner').css('margin-top', '130px');
+            $('#' + slideNextBtnId).click(function () {
+                if (slide_to_index == 2) {
+                    $("#m_aside_header_menu_mobile_toggle").removeClass("m-brand__toggler--active");
+                    $("#m_header_menu").removeClass("m-aside-header-menu-mobile--on");
+                }
+                if (slide_to_index == 1) {
+                    $('.carousel-inner').css('margin-top', '130px');
+                } else {
+                    $('.carousel-inner').css('margin-top', '0px');
+                }
+                mApp.block($('#' + overlayId));
+                $('#' + slidePrevBtnId).show();
+                if (slide_to_index < 6) {
+                    $('#' + indicatorId + slide_to_index).hide();
+                    $('#' + carouselItemId + slide_to_index).removeClass("active");
+                    $('#' + carouselId + slide_to_index).removeClass("active");
+                    ++slide_to_index;
+                    $('#' + carouselItemId + slide_to_index).addClass("active");
+                    $('#' + carouselId + slide_to_index).addClass("active");
+                    $('#' + indicatorId + slide_to_index).show();
+                }
+                if (slide_to_index == 5) {
+                    $('#m_aside_left').addClass("m-aside-left--on");
+                    $('#' + slideNextBtnId).hide();
+                    $('.' + overlayEndClass).show();
+                }
+                mApp.unblock($('#' + overlayId));
+
+            });
+            $('#' + slidePrevBtnId).click(function () {
+                mApp.block('#' + overlayId);
+                if (slide_to_index == 5) {
+                    $('#m_aside_left').removeClass("m-aside-left--on");
+                } else if (slide_to_index == 3) {
+                    $("#m_aside_header_menu_mobile_toggle").removeClass("m-brand__toggler--active");
+                    $("#m_header_menu").addClass("m-aside-header-menu-mobile--on");
+                    $('.carousel-inner').css('margin-top', '130px');
+                } else if (slide_to_index == 1) {
+                    $('.carousel-inner').css('margin-top', '130px');
+                } else {
+                    $('.carousel-inner').css('margin-top', '0px');
+                }
+                $('#' + slideNextBtnId).show();
+                $('.' + overlayEndClass).hide();
+                if (slide_to_index > 0) {
+                    $('#' + indicatorId + slide_to_index).hide();
+                    $('#' + carouselItemId + slide_to_index).removeClass("active");
+                    $('#' + carouselId + slide_to_index).removeClass("active");
+                    --slide_to_index;
+                    $('#' + carouselItemId + slide_to_index).addClass("active");
+                    $('#' + carouselId + slide_to_index).addClass("active");
+                    $('#' + indicatorId + slide_to_index).show();
+                }
+                if (slide_to_index == 0) {
+                    $('#' + slidePrevBtnId).hide();
+                }
+                mApp.unblock($('#' + overlayId));
+            });
+            $('#' + doneBtnId).click(function () {
+                if ($('#' + radioID).is(':checked')) {
+                    $('#' + overlayId).remove();
+                    resetOverFlow();
+                    $("#m_aside_header_menu_mobile_toggle").removeClass("m-brand__toggler--active");
+                    $("#m_header_menu").removeClass("m-aside-header-menu-mobile--on");
+                    $('#m_aside_left').removeClass("m-aside-left--on");
+                    displayOverlay = false;
+                    callAjax();
+                }
+            });
+        }
+        // function responsible for the pc screen overlay (large)
+        function showPcOverlay(overlayId, indicatorId, carouselItemId, carouselId, slideNextBtnId, slidePrevBtnId, overlayEndClass, doneBtnId, radioID) {
+
+            hideOverflow();
+            $('#'+overlayId).show();
+            var slide_to_index = 0;
+            $('#' +slidePrevBtnId).hide();
+            $('#' +slideNextBtnId).click(function () {
+                mApp.block($('#' + overlayId));
+                $('#' +slidePrevBtnId).show();
+                if (slide_to_index < 6) {
+                    $('#' +indicatorId + slide_to_index).hide();
+                    $('#' +carouselItemId + slide_to_index).removeClass("active");
+                    $('#' +carouselId + slide_to_index).removeClass("active");
+                    ++slide_to_index;
+                    $('#' +carouselItemId + slide_to_index).addClass("active");
+                    $('#' +carouselId + slide_to_index).addClass("active");
+                    $('#' +indicatorId + slide_to_index).show();
+                }
+                if (slide_to_index == 5) {
+                    $('#m_aside_left').addClass("m-aside-left--on");
+                    $('#' +slideNextBtnId).hide();
+                    $('.' +overlayEndClass).show();
+                }
+                mApp.unblock($('#' + overlayId));
+            });
+            $('#' +slidePrevBtnId).click(function () {
+                mApp.block($('#' + overlayId));
+                $('#' +slideNextBtnId).show();
+                $('.' +overlayEndClass).hide();
+                if (slide_to_index == 5) {
+                    $('#m_aside_left').removeClass("m-aside-left--on");
+                }
+                if (slide_to_index > 0) {
+                    $('#' +indicatorId + slide_to_index).hide();
+                    $('#' +carouselItemId + slide_to_index).removeClass("active");
+                    $('#' +carouselId + slide_to_index).removeClass("active");
+                    --slide_to_index;
+                    $('#' +carouselItemId + slide_to_index).addClass("active");
+                    $('#' +carouselId + slide_to_index).addClass("active");
+                    $('#' +indicatorId + slide_to_index).show();
+                }
+                if (slide_to_index == 0) {
+                    $('#' +slidePrevBtnId).hide();
+                }
+
+                mApp.unblock($('#' + overlayId));
+            });
+            $('#' + doneBtnId).click(function () {
+                if($('#' + radioID).is(':checked')) {
+                    $('#' + overlayId).remove();
+                    resetOverFlow();
+                    $('#m_aside_left').removeClass("m-aside-left--on");
+                    displayOverlay = false;
+                    callAjax();
+                }
+            });
+        }
+
+        function callAjax() {
+            $.ajax({
+                url: '@Url.Action("TutorialFinished", "ReportsTest")',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+
+                    __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+
+                },
+                success: function (data) {
+                    console.log('success');
+                }
+            });
+        }
+
+        function initTable(data, tableId) {
+            table = $('#' + tableId).DataTable({
+                "data": JSON.parse(data),
+                "columns": [
+                    { "data": "Lesson Name" },
+                    { "data": "Count" },
+
+                ]
+            });
+        }
+        initTable("[]", "teacherTable");
+        initTable("[]", "studentTable");
+        $(document).ready(function () {
+            $('#schoolsDL').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageChooseSchool"))'
+            });
+            $('#teachersDL').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageChooseTeacher"))'
+            });
+            $('#studentsDL').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageChooseStudent"))'
+            });
+
+
+            am4core.ready(function () {
+
+                // Themes begin
+                am4core.useTheme(am4themes_animated);
+                // Themes end
+
+                // Create chart instance
+                var chart = am4core.create("teacherChart", am4charts.PieChart3D);
+                chart.legend = new am4charts.Legend();
+                chart.radius = am4core.percent(100);
+                // Add data
+                chart.data = [{
+                    "lesson": "lesson name 1",
+                    "count": 5
+                }, {
+                    "lesson": "lesson name 2",
+                    "count": 3
+                }, {
+                    "lesson": "lesson name 3",
+                    "count": 2
+                }, {
+                    "lesson": "lesson 4",
+                    "count": 16
+                }, {
+                    "lesson": "lesson 5",
+                    "count": 13
+                }, {
+                    "lesson": "lesson 6",
+                    "count": 12
+                }, {
+                    "lesson": "lesson 7",
+                    "count": 9
+                }];
+
+                // Add and configure Series
+                var pieSeries = chart.series.push(new am4charts.PieSeries());
+                pieSeries.dataFields.value = "count";
+                pieSeries.dataFields.category = "lesson";
+                pieSeries.slices.template.stroke = am4core.color("#fff");
+                pieSeries.slices.template.strokeWidth = 1;
+                pieSeries.slices.template.strokeOpacity = 1;
+
+                // This creates initial animation
+                pieSeries.hiddenState.properties.opacity = 1;
+                pieSeries.hiddenState.properties.endAngle = -90;
+                pieSeries.hiddenState.properties.startAngle = -90;
+
+                chart.exporting.menu = new am4core.ExportMenu();
+                chart.exporting.menu.align = "left";
+                chart.exporting.menu.verticalAlign = "top"
+                var chart2 = am4core.create("studentChart", am4charts.PieChart3D);
+                chart2.legend = new am4charts.Legend();
+                chart2.radius = am4core.percent(100);
+                // Add data
+                chart2.data = [{
+                    "lesson": "lesson name 1",
+                    "count": 5
+                }, {
+                    "lesson": "lesson name 2",
+                    "count": 3
+                }, {
+                    "lesson": "lesson name 3",
+                    "count": 2
+                }, {
+                    "lesson": "lesson 4",
+                    "count": 16
+                }, {
+                    "lesson": "lesson 5",
+                    "count": 13
+                }, {
+                    "lesson": "lesson 6",
+                    "count": 12
+                }, {
+                    "lesson": "lesson 7",
+                    "count": 9
+                }];
+
+                // Add and configure Series
+                var pieSeries2 = chart2.series.push(new am4charts.PieSeries());
+                pieSeries2.dataFields.value = "count";
+                pieSeries2.dataFields.category = "lesson";
+                pieSeries2.slices.template.stroke = am4core.color("#fff");
+                pieSeries2.slices.template.strokeWidth = 1;
+                pieSeries2.slices.template.strokeOpacity = 1;
+
+                // This creates initial animation
+                pieSeries2.hiddenState.properties.opacity = 1;
+                pieSeries2.hiddenState.properties.endAngle = -90;
+                pieSeries2.hiddenState.properties.startAngle = -90;
+
+                chart2.exporting.menu = new am4core.ExportMenu();
+                chart2.exporting.menu.align = "left";
+                chart2.exporting.menu.verticalAlign = "top"
+
+            }); // end am4core.ready()
+
+            $('#applyBtn').on('click', function () {
+                var teacher = $('#teachersDL').val();
+                var students = $('#studentsDL').val();
+                if (teacher != "") {
+                    $('.teacherBlock').fadeIn(1000);
+                }
+                if (students != "") {
+                    $('.studentBlock').fadeIn(1000)
+                }
+            });
+
+            $('#clearBtn').on('click', function () {
+                $('#schoolsDL').val(null).trigger('change');
+                $('#teachersDL').val(null).trigger('change');
+                $('#studentsDL').val(null).trigger('change');
+                $('.teacherBlock').fadeOut(1000);
+                $('.studentBlock').fadeOut(1000);
+            });
+
+        });
+
+</script>
+
+}
+

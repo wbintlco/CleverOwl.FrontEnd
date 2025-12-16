@@ -1,0 +1,1006 @@
+﻿@using RLI.EntityFramework.EDM
+@using RLI.WebApplication.Models
+@model RLI.WebApplication.Models.LessonPlanViewModel
+@{
+    ViewBag.Title = "Details";
+}
+
+@using RLI.Common.Managers
+
+@{
+    Dictionary<string,string> Locale = ViewBag.Locale;
+    IEnumerable<RLI.EntityFramework.EDM.Lesson> Lessons = ViewBag.Lessons;
+    string[] objectives = ViewBag.objectivesArray;
+    List<string> domains = ViewBag.domainsArray;
+    List<PlanViewModel> activities = ViewBag.plans;
+
+
+}
+
+@Styles.Render("~/assets/vendors/summernote/dist/summernote.css")
+@Styles.Render("~/assets/vendors/masonry/css/default.css")
+@Styles.Render("~/assets/vendors/masonry/css/component.css")
+
+<style>
+    html, body {
+        height: 100%;
+    }
+
+    .full-height {
+        height: 100%;
+    }
+
+
+    .modal-full {
+        min-width: 99%;
+        margin-left: 10px
+    }
+
+        .modal-full .modal-content {
+            min-height: 100vh;
+        }
+
+    /*.lessonCard {
+        cursor: pointer;
+    }
+
+        .lessonCard:hover {
+            border: 5px solid #0E8BF2 !important;
+        }*/
+</style>
+<div class="m-portlet m-portlet--mobile" id="WholePageDiv">
+    <div class="m-portlet__head" style="height:100px">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-text">
+                <h3>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageLessonPlan"))</h3>
+            </div>
+        </div>
+        <div class="m-portlet__head-tools">
+            <div class="m-portlet__nav">
+                <div class="m-portlet__nav-item logo">
+                    <i class="fas fa-graduation-cap fa-7x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="m-portlet__body" style="padding:20px">
+        <div class="m-portlet__head">
+            <div class="m-portlet__head-caption">
+                <div class="m-portlet__head-title">
+                    <span class="m-portlet__head-icon m--hide">
+                        <i class="la la-gear"></i>
+                    </span>
+                    <h3 class="m-portlet__head-text" style="color: #0E8BF2 !important">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPage1General"))
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="m-form__section">
+            <div class="row" style="margin-top: 20px">
+                <div class="col-md-6">
+                    <div class="form-group m-form__group">
+                        <label class="col-form-lable">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageLessonTitle"))</label>
+                        <div>
+                            <input name="title" id="title" value="@Model.title" type="text" class="form-control m-input" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageEnterLessonTitle"))">
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group m-form__group">
+                        <label class="col-form-lable">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageGrade"))</label>
+                        <div>
+                            @Html.DropDownList("grade", (SelectList)ViewBag.Grades, "", new { style = "width:100%", id = "gradeDropDown", @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="m-form__seperator m-form__seperator--dashed" style="margin: 20px"></div>
+            <div class="row" style="margin-top:20px">
+                <div class="col-md-6">
+                    <div class="form-group m-form__group">
+                        <label class="col-form-lable">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageSubject"))</label>
+                        <div>
+                            @Html.DropDownList("subject", (SelectList)ViewBag.Subjects, "", new { style = "width:100%", id = "subjectDropDown" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group m-form__group">
+                        <label class="col-form-lable">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageTime"))</label>
+                        <div class="input-group timepicker">
+                            <input name="time" id="time" value="@Model.time" class="form-control m-input" type="number" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageSelectTime"))" />
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <i class="la la-clock-o"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="m-form__seperator m-form__seperator--dashed" style="margin:20px"></div>
+            <div class="row" style="margin-top:20px">
+                <div class="col-md-6">
+                    <div class="form-group m-form__group">
+                        <label class="col-form-lable">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageLessonOverview"))</label>
+                        <div class="form-control richTextEditorDiv">
+                            @Html.Raw(RLI.Common.Managers.UtilitiesManager.Base64Decode(Model.lessonOverView))
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group m-form__group">
+                        <label class="col-form-lable">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageCreationDate"))</label>
+                        <div>
+                            <input name="creationDate" id="creationDate" value="@Model.creationDate" type="text" class="form-control m-input" disabled="disabled" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="m-portlet__head">
+            <div class="m-portlet__head-caption">
+                <div class="m-portlet__head-title">
+                    <span class="m-portlet__head-icon m--hide">
+                        <i class="la la-gear"></i>
+                    </span>
+                    <h3 class="m-portlet__head-text" style="color: #0E8BF2 !important">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPage2Objective"))
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div id="loader" class="m-form__section" style="padding:20px;">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-12">
+                    <label for="example_input_full_name">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageObjective"))</label>
+                    @foreach (var obj in objectives)
+                    {
+                        <input class="form-control mt-1" value="@obj" />
+                    }
+                </div>
+                <div class="col-lg-6 col-md-6 col-12">
+                    <label for="example_input_full_name">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageStandards"))</label>
+                    @foreach (var dom in domains)
+                    {
+                        <input class="form-control mt-1" value="@dom" />
+                    }
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="m-portlet__head">
+            <div class="m-portlet__head-caption">
+                <div class="m-portlet__head-title">
+                    <span class="m-portlet__head-icon m--hide">
+                        <i class="la la-gear"></i>
+                    </span>
+                    <h3 class="m-portlet__head-text" style="color: #0E8BF2 !important">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPage3Plan"))
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="m-form__section" style="padding:20px;">
+            <div class="form-group m-form__group">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <label>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPagePlan"))</label>
+                        @{
+                            string activity = "";
+
+                            foreach (var act in activities)
+                            {
+                                <input class="form-control mt-1" value="@act.planValue" />
+                            }
+                        }
+
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <label>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageAssessment"))</label>
+                        <div class="form-control richTextEditorDiv">
+                            @Html.Raw(RLI.Common.Managers.UtilitiesManager.Base64Decode(Model.assessment))
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+            </div>
+            <div class="form-group m-form__group">
+                <div class="col-lg-12" id="recentlessonsContainer">
+                    @Html.Partial("~/Views/Library/_LessonsGrid.cshtml", Lessons)
+
+                </div>
+            </div>
+        </div>
+
+
+</div>
+
+</div>
+@*<div class="modal fade" id="m_modal_1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top:80px; overflow:auto">
+    <div class="modal-dialog modal-full" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Digital Library</h1>
+                <div>
+                    <button type="button" class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x" id="saveDLLessons">Save</button>
+                    <button id="modal_cancel_btn" type="button" class="btn m-btn--pill btn-outline-metal m-btn m-btn--outline-2x" data-dismiss="modal">Cancel</button>
+                </div>
+
+
+            </div>
+            <div class="modal-body" id="modalBody">
+                <span class="col-12" id="selectedLessons">0 selected lessons</span>
+                <div class="col-lg-12" id="recentlessonsContainer">
+                    @Html.Partial("~/Views/Library/_LessonsGrid.cshtml", Lessons)
+
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>*@
+@using (Html.BeginForm("SavePlan", "LessonPlan", FormMethod.Post, new { id = "SavePlanHidden", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("jsonData", "")
+}
+
+@using (Html.BeginForm("getDomains", "LessonPlan", FormMethod.Post, new { id = "getDomainHidden", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("objectiveKey", "")
+}
+@using (Html.BeginForm("GetDropDown", "LessonPlan", FormMethod.Post, new { id = "getDropDownHidden", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("tableName", "")
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/masonry/js/modernizr.custom.js")
+    @Scripts.Render("~/assets/vendors/masonry/js/masonry.pkgd.min.js")
+    @Scripts.Render("~/assets/vendors/masonry/js/imagesloaded.pkgd.js")
+    @Scripts.Render("~/assets/vendors/masonry/js/classie.js")
+    @Scripts.Render("~/assets/vendors/masonry/js/AnimOnScroll.js")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+    @Scripts.Render("~/assets/vendors/jquery-validation/dist/jquery.validate.js")
+    @Scripts.Render("~/assets/vendors/summernote/dist/summernote.js")
+
+    @Scripts.Render("~/assets/vendors/bootstrap-timepicker/js/bootstrap-timepicker.js")
+    @Scripts.Render("~/assets/vendors/js/framework/components/plugins/forms/bootstrap-timepicker.init.js")
+
+
+    <script>
+        $("input").prop("disabled", true);
+        $("select").prop("disabled", true);
+        $(".richTextEditorDiv").prop("disabled", true);
+        $(".lessonCard__header_Overlay").hide();
+        $(".extendedMenuAnchor").hide();
+        
+        function loadMasonry()
+        {
+            //new AnimOnScroll(document.getElementById('grid'), {
+            //     minDuration: 0.4,
+            //    maxDuration: 0.7,
+            //    viewportFactor: 0.2
+            //});
+
+            new AnimOnScroll(document.getElementById('grid'), {
+                 minDuration: 0.4,
+                maxDuration: 0.7,
+                viewportFactor: 0.2
+            });
+
+
+
+            masonryFitContent();
+        }
+
+        loadMasonry();
+
+        function masonryFitContent() {
+
+            var currentWindowWidth = $(window).width();
+            var numberOfCards = parseInt((currentWindowWidth * 0.85) / 300);
+            numberOfCards = currentWindowWidth < 700 ? 1 : numberOfCards;
+            numberOfCards = currentWindowWidth > 1200 ? 4 : numberOfCards;
+
+            var gridthWidth = numberOfCards * 300;
+
+            $("#grid_1").width(gridthWidth);
+
+                $("#grid_2").width(gridthWidth);
+
+
+        }
+
+        $(window).resize(function () {
+            masonryFitContent();
+
+        });
+
+        $(".lessonTypeFilterButton").click(function () {
+
+            $('.lessonTypeFilterButton').removeClass('active');
+            $(this).addClass('active');
+
+            var grade = $(this).data('id');
+
+            $('.subjectFilterButton').prop('disabled', true);
+
+            $('#gradeAllButton').prop('disabled', false);
+            setSubjectActive($('#gradeAllButton'));
+
+
+            if (!grade) {
+
+                grade = 'All';
+            }
+
+            $('.grade' + grade.toString()).prop('disabled', false);
+
+            resetTopicSelector();
+
+            console.log("i called reload Grid: lessonTypeFilterButton!!!!");
+
+            reloadGrid();
+
+            $('html, body').animate({
+                scrollTop: $(".scrollTopOfFilter").offset().top
+            }, 1000);
+
+
+
+        });
+
+         $(".subjectFilterButton").click(function () {
+
+             setSubjectActive($(this));
+
+             resetTopicSelector();
+
+             console.log("i called reload Grid: $('.subjectFilterButton').click(function ()!!!!");
+
+             reloadGrid();
+         });
+
+        function resetTopicSelector() {
+
+            topicSelector.val(null).trigger("change");
+            topicSelector.select2('destroy');
+            initTopicSelector();
+        }
+
+        function setSubjectActive(selector) {
+
+            $('.subjectFilterButton').removeClass('active');
+
+            $(selector).attr('disabled', false);
+
+            $(selector).addClass('active');
+        }
+
+        function invokeLoadingMode() {
+
+            $('#topicSelectorLoader').show();
+            topicSelector.prop('disabled', true);
+
+            $('.lessonTypeFilterButton').each(function (index, element) {
+                mApp.unprogress($(element));
+            });
+
+            $('.subjectFilterButton').each(function (index, element) {
+                mApp.unprogress($(element));
+            });
+
+            mApp.progress($('.lessonTypeFilterButton.active'));
+            mApp.progress($('.subjectFilterButton.active'));
+        }
+
+        function revokeLoadingMode() {
+
+            //$('#topicSelectorLoader').hide();
+            //topicSelector.prop('disabled', false);
+
+            //$('.lessonTypeFilterButton').each(function (index, element) {
+            //    mApp.unprogress($(element));
+            //});
+
+            //$('.subjectFilterButton').each(function (index, element) {
+            //    mApp.unprogress($(element));
+            //});
+
+          //  mApp.unprogress($('.lessonTypeFilterButton.active'));
+            //mApp.unprogress($('.subjectFilterButton.active'));
+        }
+
+        function loadContent(grade, subject, chapter) {
+            grade = $("#gradeDropDown option:selected").val();
+            subject = $("#subjectDropDown option:selected").val();
+          ;
+
+            if (!grade) {
+                grade = "";
+            }
+            if (!subject) {
+                subject = "";
+            }
+            if (!chapter) {
+                chapter = "";
+            }
+
+             $.ajax({
+                type: 'POST',
+                url: "@Url.Action("LookupLessons", "Library")?" + 'grade=' + grade.toString() + '&subject=' + subject.toString(),//
+                data: { __RequestVerificationToken : $('@Html.AntiForgeryToken()').val() },
+                beforeSend: function (data) {
+                   // invokeLoadingMode();
+                },
+                 success: function (data) {
+
+                     $('#recentlessonsContainer').html(data);
+
+                    loadMasonry();
+
+                    revokeLoadingMode();
+                    initCard();
+                    $("#grid").find("li").addClass("shown");
+                    $(".lessonCard__header_Overlay").hide();
+                   $(".lessonCard__header_Overlay_Studenthare").hide();
+                     mApp.unblock($("#modalBody"));
+                     if (selectedLessonsArray.length != 0) {
+                         $.each(selectedLessonsArray, function (index, value) {
+                             var thisElement = $("#lessonCard_" + value);
+                            thisElement.addClass("selectedItem");
+                            thisElement.css("border", "5px solid #34bfa3");
+                         });
+                     }
+                },
+                error: function () {
+
+                    revokeLoadingMode();
+
+                    swal("Error", "We couldn't lookup requested lessons, please try again.", "error");
+
+                }
+            });
+
+        }
+
+    function validURL(str) {
+        var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+            '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+            '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+            '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+        return !!pattern.test(str);
+    }
+
+    //display objectives function
+
+    function displayData(index) {
+        mApp.block($("#loader"));
+        $('#objectiveKey').val($('#select_' + index).val());
+        $("#getDomainHidden").ajaxSubmit({
+            beforeSubmit: function () {
+            },
+            success: function (data) {
+                mApp.unblock($("#loader"));
+                $('#domain_' + index).append(
+                    data
+                );
+            },
+            error: function (xhr, status, error) {
+                 console.log("Error In getDropDownHidden !!!!!!!");
+            }
+            });
+    }
+
+    function initializeSelect2(selectElementObj) {
+        if (selectElementObj.attr("data-type") == "typeDD") {
+            selectElementObj.select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageSelectPlan"))'
+            });
+        } else if (selectElementObj.attr("data-type") == "dlDD") {
+            selectElementObj.select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageChooseADLPlan"))'
+            });
+        } else {
+            selectElementObj.select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageSelectObjective"))',
+            });
+        }
+    }
+
+    function getDropDownFunction(tableNameString, index, dropDownType) {
+
+        var html = "";
+        $('#tableName').val(tableNameString)
+        $("#getDropDownHidden").ajaxSubmit({
+            beforeSubmit: function () {
+            },
+            success: function (data) {
+                $.each(data, function (key, value) {
+                    html += '<option value=""></option>'
+                    html += '<option value = ' + value.id + '>' + value.text + '</option>'
+                });
+                $('#'+dropDownType+''+ index).append(html);
+
+            },
+            error: function (xhr, status, error) {
+                console.log("Error In getDropDownHidden !!!!!!!");
+            }
+        });
+    }
+    function getHtmlForAppendPlan(index) {
+        html1 = '<div class="col-8 planBlock_' + index +'" style="padding-bottom:20px">'
+                        html1 +='<div style="padding-bottom:10px">'
+                        html1 +='<select id="typeDropDown' + index + '" class="form-control m-input selectTypeDD" data-index="' + index + '" data-type="typeDD" style="width:100%"></select>'
+                        html1 +='<span class="m-form__help">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPagePleaseChooseAPlan"))</span>'
+                        html1 +='</div>'
+                        html1 +='<div id="freeText'+index+'" style="display:none">'
+                        html1 +='<input id="textIn'+index+'" type="text" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageEnterAFreeText"))" data-value="3" data-index="'+index+'" class="form-control m-input planClass" style="width:100%" />'
+                        html1 +='<span class="m-form__help">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPagePleaseEnterAFreeText"))</span>'
+                        html1 +='</div>'
+                        html1 +='<div id="sync'+index+'" style="display:none">'
+                        html1 +='<input id="syncIn'+index+'" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageEnterALink"))" data-value="2" data-index="'+index+'" class="form-control m-input planClass" type="url" />'
+                        html1 +='<span id="span'+index+'" style="color:red; display:none">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageEnterValidUrl"))</span>'
+                        html1 +='<span class="m-form__help">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPagePleaseEnterAUrl"))</span>'
+                        html1 +='</div>'
+                        html1 +='<div id="dl'+index+'" style="display:none">'
+                        html1 +='<select id="dlIn'+index+'" class="form-control m-input planClass" data-value="1" data-index="'+index+'" data-type="dlDD" style="width:100%">'
+                        html1 +='<option></option>'
+                        html1 +='<option value="14">dl1</option>'
+                        html1 +='</select>'
+                        html1 +='<span class="m-form__help">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPagePleaseChooseADL"))</span>'
+                        html1 +='</div>'
+                        html1 +='</div>'
+                        html1 += '<div class="col-2 planBlock_' + index +'">'
+                        html1 += '<div class="btn btn btn-sm btn-brand m-btn m-btn--icon m-btn--pill m-btn--wide btn-danger remove_Btn2 mt-2" data-index="' + index + '">X</div>'
+                        html1 += '<div class="m-form__seperator m-form__seperator--dashed"></div>'
+        html1 += '</div>'
+        return html1;
+    }
+
+
+    $(document).ready(function () {
+        var mobile = (/iphone|ipod|android|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+        if (mobile) {
+            $('.logo').hide();
+            $('.m-portlet__head').css('height', '70px');
+        }
+        var invalidChars = [
+        "-",
+        "+",
+        "e",
+        ];
+        $('#time').keypress(function (e) {
+
+            if (invalidChars.includes(e.key)) {
+                e.preventDefault();
+            }
+            });
+         $('#lessonOv').summernote({
+                height: 200,
+                toolbar: [
+                    // [groupName, [list of button]]
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['font', ['strikethrough', 'superscript', 'subscript']],
+                    ['fontsize', ['fontsize']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']]
+                ]
+           });
+            $('#assessment').summernote({
+                height: 200,
+                toolbar: [
+                    // [groupName, [list of button]]
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['font', ['strikethrough', 'superscript', 'subscript']],
+                    ['fontsize', ['fontsize']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']]
+                ]
+             });
+
+            //get current date
+            var now = new Date();
+            var months = ['January',
+                'February',
+                'March',
+                'April',
+                'May',
+                'June',
+                'July',
+                'August',
+                'September',
+                'October',
+                'November',
+                'December'];
+            var day = ("0" + now.getDate()).slice(-2);
+            var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+        var today = (day) + " " + (months[month - 1]) + " " + now.getFullYear();
+        @if(Model.creationDate!=null){
+            <text>
+        $('#creationDate').val('@DateTime.Parse(Model.creationDate).ToString("dd MMMM yyyy")');
+        </text>
+        }
+        else
+        {
+ <text>
+        $('#creationDate').val(today);
+        </text>
+        }
+
+
+
+            //init select2
+            $('#gradeDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageSelectGrade"))'
+            });
+            $('#subjectDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageSelectSubject"))'
+            });
+            $('#select_0').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageSelectObjective"))'
+            });
+
+            $("#typeDropDown0").select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageSelectPlan"))'
+            });
+            $('#dlIn0').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageChooseADLPlan"))'
+            });
+
+            //init function for select2
+
+        var objectiveValues = []; //array for the objectives value selected
+        var j = 0;
+        var index = 0;
+        var lastInput = []; // array used to get the last input data entered by the user
+        $('#select_0').attr('data-index', '0');
+
+        $(document).on('change', '.objectiveDropDown', function () {//get the selected select value from the objective DL and save them in the 'objectiveValues' Array
+            $(this).attr('disabled', 'disabled');
+            var id = $(this).attr("data-index");
+            var v = $('#select_' + j + ' option:selected').val();
+            $('#objectiveKey').val(v);
+            objectiveValues[id] = v;
+            j++;
+
+            html = '<div id="objective_'+j+'" class="col-8"><select id="select_' + j + '" data-index="' + j + '" class="objectiveDropDown" style="width:100% !important; position:relative !important"></select></div>'
+            html += '<div id="delete_' + j +'" class="col-2 remove_btn" style="margin-top:27px"><span id="'+j+'" class="btn btn btn-sm btn-brand m-btn m-btn--icon m-btn--pill m-btn--wide btn-danger remove_btn">X</span></div>'
+           htmlDomain = '<div id="domain_' + j + '" class="col-12" style="margin-top:27px"></div>'
+                $("#appendDomainDiv").append(htmlDomain);
+
+            $('#divRepeater').append(html);
+
+            getDropDownFunction("objectives", j, "select_");
+            initializeSelect2($("#select_" + j));
+            displayData(j-1);
+        });
+
+
+
+        //remove objectives dropList
+        var displayAddBtnPermission = false;
+        $(document).on('click', '.remove_btn', function () {
+            var index = $(this).attr("id");
+            var value = $('#select_' + index).val();
+            console.log(value);
+                if (value == "") {
+                    displayAddBtnPermission = true;
+                }
+
+            $('#objective_' + index + '').remove();
+            $('#delete_' + index + '').remove();
+            $('#domain_' + index + '').remove();
+
+                delete objectiveValues[index];
+                displayData();
+                if (displayAddBtnPermission) {
+                    $('#plusBtn').append('<div class="btn btn-sm btn-brand m-btn m-btn--icon m-btn--pill m-btn--wide btn-primary add_Btn"><i class="la la-plus"></i></div>');
+                    displayAddBtnPermission = false;
+                }
+            });
+
+            $(document).on('click', '.add_Btn',function () {
+                j++;
+                html = '<div id="objective_'+j+'" class="col-8"><select id="select_' + j + '" data-index="' + j + '" class="objectiveDropDown" style="width:100% !important; position:relative !important"></select></div>'
+                html += '<div id="delete_' + j +'" class="col-2 remove_btn" style="margin-top:27px"><span id="'+j+'" class="btn btn btn-sm btn-brand m-btn m-btn--icon m-btn--pill m-btn--wide btn-danger remove_btn">X</span></div>'
+                htmlDomain = '<div id="domain_' + j + '" class="col-12" style="margin-top:27px"></div>'
+                $("#appendDomainDiv").append(htmlDomain);
+                $('#divRepeater').append(html);
+                getDropDownFunction("objectives", j, "select_");
+                initializeSelect2($("#select_" + j));
+                $(this).hide();
+
+            });
+
+
+            //on select2 change => display the selected input type
+        $(document).on('change', '.selectTypeDD', function () {
+            console.log("shouldnt be here the second time");
+                $(this).attr("disabled", "disabled");
+                var dataIndex = $(this).attr("data-index");
+                var v = $(this).val();
+                console.log(v);
+            if (v == 3) {
+                console.log("freetext!!!!!!!!");
+                    $('#freeText' + dataIndex).show();
+                    lastInput[dataIndex] = $('#textIn' + dataIndex).attr('id');
+                } else if (v == 2) {
+                    $('#sync' + dataIndex).show();
+                    lastInput[dataIndex] = $('#syncIn' + dataIndex).attr('id');
+            } else {
+                var grade = $("#gradeDropDown option:selected").val();
+                var subject = $("#subjectDropDown option:selected").val();
+                if (grade != '' && subject != '') {
+
+                    if (selectedLessonsArray.length != 0) {
+                          $("#typeDropDown" + index).prop("disabled", false);
+                    $("#typeDropDown" + index).val('');
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageError"))", "You have already chosen a lesson from the Digital Library","error");
+                        return;
+                    }
+                    $("#selectedLessons").text(selectedLessonsCount + " selected lessons");
+
+                    $('#m_modal_1').modal('show');
+                    $('#recentlessonsContainer').empty();
+                    mApp.block($("#modalBody"));
+                    $(".blockMsg").css("position", "relative");
+                    setTimeout(function () {
+                        loadContent();
+                        // loadMasonry();
+
+                    }, 2000);
+                    lastInput[dataIndex] = $('#dlIn' + dataIndex).attr('id');
+                } else {
+                    $("#typeDropDown" + index).prop("disabled", false);
+                    $("#typeDropDown" + index).val('');
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageError"))", "must select grade and subject", "error");
+                }
+
+                }
+         });
+
+            $('#modal_cancel_btn').on('click', function () {
+                $('#typeDropDown' + index).val(null).trigger('change');
+                $('#typeDropDown' + index).prop('disabled', false);
+            });
+
+            $("#typeDropDown0").attr("data-index", "0");
+            //on btn2 click => add Plan
+        $(document).on('click', '.add_Btn2', function () {
+            var typeDropdown = $('#typeDropDown' + index).val();
+                if ($('#typeDropDown' + index).val() != "") { // check if the plan dropDown is selected
+                    if ($('#' + lastInput[index]).val() != "") { // check if the user has entered a data in the last input field
+
+                        if ($('#' + lastInput[index]).attr('data-value') == '2') {//check for valid url
+                            if (validURL($('#' + lastInput[index]).val()) == false) {
+                                swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageError"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageEnterValidUrl"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageInvalidUrl"))");
+                                $('#span' + index).show();
+                                return;
+                            } else {
+                                $('#span' + index).hide();
+                            }
+                        }
+                        index++;
+                        html = getHtmlForAppendPlan(index);
+                        $('#repeaterPlan_').append(html);
+                        getDropDownFunction("lessonPlanTypes", index, "typeDropDown");
+                        initializeSelect2($("#typeDropDown" + index));
+                        initializeSelect2($("#dlIn" + index));
+                    } else {
+                        if (typeDropdown != 1) {
+                            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageError"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageEmptyFeildPlan"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageInvalidInput"))");
+                        } else {
+                            index++;
+                        html = getHtmlForAppendPlan(index);
+                        $('#repeaterPlan_').append(html);
+                        getDropDownFunction("lessonPlanTypes", index, "typeDropDown");
+                        initializeSelect2($("#typeDropDown" + index));
+                        initializeSelect2($("#dlIn" + index));
+                        }
+                    }
+                } else {
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageError"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageSelectLessonPlan"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageInvalidInput"))");
+                }
+            });
+            //on remove btn2 clicked
+        $(document).on('click', '.remove_Btn2', function () {
+             var i = $(this).attr("data-index");
+            var dropdown = $("#typeDropDown" + i).val();
+            if (dropdown == 1) {
+                console.log("fet hone");
+                selectedLessonsArray = [];
+                selectedLessonsCount = 0;
+                console.log(selectedLessonsCount);
+            }
+
+                $('.planBlock_' + i).remove();
+                delete lastInput[i];
+            });
+
+            $('#submitBtn').click(function () {
+                var objectives = [];
+                for (i in objectiveValues) {
+                    if (i != null)
+                        objectives.push(objectiveValues[i]);
+                }
+                var exit = false;
+                jsonPlan = [];
+                $('.planClass').each(function () {
+                    var valueId = $(this).attr('data-value');
+                    var value = $(this).val();
+                    if (valueId == "2" && value != "") {
+                        if (validURL(value) != true) {
+                           swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageError"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageEnterValidUrl"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageInvalidUrl"))");
+
+                            exit = true;
+                            return;
+                        }
+                    }
+                    if (value != "") {
+                        console.log("valueIdvalueIdvalueIdvalueId");
+                        console.log(valueId);
+                        item = {};
+                        item["planId"] = valueId;
+                        item["planValue"] = value;
+                        jsonPlan.push(item);
+                    }
+                });
+
+                if (exit == true) {
+                    return;
+                }
+                var encodedLessonOverView = btoa($('#lessonOv').summernote('code'));
+                var encodedAssessment= btoa($('#assessment').summernote('code'));
+                if ($('#title').val() == "") {
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageError"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageErrorTitle"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageInvalidInput"))");
+                    return;
+                }
+                if ($('#gradeDropDown').val() == "") {
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageError"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageErrorGrade"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageInvalidInput"))");
+                    return;
+                }
+                if ($('#subjectDropDown').val() == "") {
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageError"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageErrorSubject"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageInvalidInput"))");
+                    return;
+                }
+                if ($('#time').val() == "") {
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageError"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageErrorTime"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageInvalidInput"))");
+                    return;
+                }
+                if (encodedLessonOverView == "" || encodedLessonOverView == "PHA+PGJyPjwvcD4=") {
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageError"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageErrorLessonOv"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageInvalidInput"))");
+                    return;
+                }
+                if (encodedAssessment == "" || encodedAssessment == "PHA+PGJyPjwvcD4=") {
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageError"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageAssessment"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageInvalidInput"))");
+                    return;
+                }
+                if (objectives.length == 0) {
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageError"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageObjective"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageInvalidInput"))");
+                    return;
+                }
+                if (jsonPlan.length == 0) {
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageError"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageLessonPlan"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonPlanPageInvalidInput"))");
+                    return;
+                }
+                var data = {
+                    "title": $('#title').val(),
+                    "grade": $('#gradeDropDown').val(),
+                    "subject": $('#subjectDropDown').val(),
+                    "time": $('#time').val(),
+                    "lessonOverView": encodedLessonOverView,
+                    "creationDate": today,
+                    "assessment": encodedAssessment,
+                    "objectives": objectives,
+                    "plans": JSON.stringify(jsonPlan),
+                    "DLPlans": selectedLessonsArray
+                }
+                $("#jsonData").val(JSON.stringify(data));
+                mApp.block($("#WholePageDiv"));
+                $("#SavePlanHidden").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        if (data == "200") {
+                            window.location = '@Url.Action("MyLessonsPlans","LessonPlan")';
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        mApp.unblock($("#WholePageDiv"));
+                        console.log("Error In SavePlanHidden !!!!!!!");
+                    }
+                });
+            });
+        $('#resetBtn').click(function () {
+           window.location = '@Url.Action("MyLessonsPlans","LessonPlan")';
+            index = 0;
+            j = 0;
+            objectiveValues = [];
+            lastInput = [];
+            $('#title').val('');
+            $('#time').val('');
+            $('#lessonOv').summernote('reset');
+            $('#assessment').summernote('reset');
+            $('#creationDate').val(today);
+            $('#gradeDropDown').val("").trigger("change");
+            $('#subjectDropDown').val("").trigger("change");
+            $('#divRepeater').empty();
+            $('#repeaterPlan_').empty();
+            html = getHtmlForAppendPlan(index);
+            $('#repeaterPlan_').append(html);
+            html1 = '<div id="objective_' + j + '" class="col-4"><select id="select_' + j + '" data-index="' + j + '" class="objectiveDropDown" style="width:100% !important; position:relative !important"></select></div>'
+            html1 += '<div id="delete_' + j + '" class="col-2 remove_btn" style="margin-top:27px"><span id="' + j + '" class="btn btn btn-sm btn-brand m-btn m-btn--icon m-btn--pill m-btn--wide btn-danger remove_btn">X</span></div>'
+            html1 += '<div id="domain_' + j + '" class="col-6" style="margin-top:27px"></div>'
+            $('#divRepeater').append(html1);
+            getDropDownFunction("lessonPlanTypes", index, "typeDropDown");
+            initializeSelect2($("#typeDropDown" + index));
+            initializeSelect2($("#dlIn" + index));
+            $('#divRepeater').append();
+            getDropDownFunction("objectives", j, "select_");
+            initializeSelect2($("#select_" + j));
+        });
+
+
+    });
+
+        var selectedLessonsCount = 0;
+        //$(document).on("click", ".lessonCard", function () {
+        //    var thisElement = $(this);
+        //    if (thisElement.hasClass("selectedItem")) {
+        //        thisElement.removeClass("selectedItem");
+        //        thisElement.css("border", "none");
+        //    selectedLessonsCount--;
+        //    } else {
+        //        thisElement.addClass("selectedItem");
+        //         thisElement.css("border", "5px solid #34bfa3");
+        //    selectedLessonsCount++;
+        //}
+
+        //    if (selectedLessonsCount < 0) {
+        //        selectedLessonsCount = 0;
+        //    }
+
+
+        //})
+
+        var selectedLessonsArray = [];
+        $("#saveDLLessons").click(function () {
+            selectedLessonsArray = [];
+            $(".selectedItem").each(function (index) {
+                var id = $(this).attr("id");
+                var lessKey = id.split('_');
+                selectedLessonsArray.push(lessKey[1]);
+            });
+            $('#m_modal_1').modal('hide');
+        })
+    </script>
+}

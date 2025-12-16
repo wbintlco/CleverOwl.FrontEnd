@@ -1,0 +1,36 @@
+﻿@using RLI.EntityFramework.EDM
+@using RLI.Common.Managers
+@model IEnumerable<RLI.Common.DataObjects.GetAssignmentSubmissionsResultModel>
+@using RLI.Common.Managers
+
+<style>
+    .studentSubmissionCard {
+        border-radius: 10px;
+        border: grey;
+        border-style: solid;
+        border-width: 1px !important;
+        width: 100% !important;
+    }
+
+    .teacherSilouhette {
+        position: absolute;
+        top: 10px;
+        left: 17px;
+        width: 50px !important;
+    }
+
+    .m-widget4__item.m-widget4__item--last, .m-widget4__item:last-child {
+        border-bottom: 1px solid !important;
+    }
+</style>
+
+@*<ul class="m-widget4 grid effect-2 teacherGrid" id="gridALL" style="-webkit-perspective:1px;perspective:1px;">
+                @Html.Partial("_StudentSubmissionCard")
+    </ul>*@
+<div class="row m-0">
+    @Html.Partial("_StudentSubmissionCard", Model)
+</div>
+@*<div class="m-widget4 grid effect-2 studentSubmissionsGrid col-lg-3" id="gridALL" style="-webkit-perspective:1px;perspective:1px;">
+        @Html.Partial("_StudentSubmissionCard")
+    </div>*@
+

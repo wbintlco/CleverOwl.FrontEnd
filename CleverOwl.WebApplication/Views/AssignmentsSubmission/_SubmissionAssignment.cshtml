@@ -1,0 +1,252 @@
+﻿
+@model RLI.Common.DataObjects.SubmissionDetailsViewModel
+@using RLI.Common.Managers
+@using RLI.Common.DataObjects
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+<div id="submissionsInfo" class="col-12">
+    <table id="submissionInfoTable">
+        <tr>
+            <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSubmissionStatus"))</b></td>
+            <td>@Model.SubmissionStatus</td>
+
+        </tr>
+        <tr>
+            <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageGradingStatus"))</b></td>
+            <td>@Model.GradingStatus</td>
+        </tr>
+        <tr>
+            <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageDueDate"))</b></td>
+            <td>@Model.DueDate</td>
+
+        </tr>
+        <tr>
+            <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageTimeRemaining"))</b></td>
+            @{
+                var timeRemaining = Model.TimeRemaining.Value;
+                var timeRemainingDays = timeRemaining.Days;
+                var timeRemainingHours = timeRemaining.Hours;
+                var timeRemainingMinutes = timeRemaining.Minutes;
+            }
+            @if (timeRemainingDays != 0 || timeRemainingHours != 0 || timeRemainingMinutes != 0)
+            {
+                <td>@timeRemainingDays d @timeRemainingHours h @timeRemainingMinutes m</td>
+            }
+            else
+            {
+                <td class="m--font-danger">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_DueDateSubmissionMessage"))</td>
+            }
+
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageExtensionDueDate"))
+                </b>
+            </td>
+            @if(Model.ExtensionDueDate != null)
+            {
+                <td>@Model.ExtensionDueDate</td>
+            }
+        </tr>
+
+        <tr>
+            <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageLastModified"))</b></td>
+            <td>@Model.LastModified</td>
+
+        </tr>
+        <tr id="onlinetextRow">
+            <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageOnlineText"))</b></td>
+            <td>
+                @{
+                    string text = "";
+                    if (Model.OnlineText != null)
+                    {
+                        text = Model.OnlineText.Replace("'", "").ToString();
+
+
+                    }
+                }
+                @Html.Raw(text)
+            </td>
+        </tr>
+        <tr id="filesSubmissionsRow">
+            <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageFilesSubmission"))</b></td>
+            <td>
+                @if (Model.SubmissionFile != null && Model.SubmissionFile.Count() > 0)
+                {
+                    foreach (var attachment in Model.SubmissionFile)
+                    {
+                        
+                        <div style="display: flex; justify-content:space-between">
+                            <div>
+                                <a href="@attachment.fileurl.Replace("webservice", "")?forcedownload=1" download="download" style="word-break:break-word;">@attachment.filename</a>
+                            </div>
+                        </div>
+                        
+                    }
+                }
+            </td>
+        </tr>
+        <tr>
+            <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSubmissionComments"))</b></td>
+            <td>
+                <div id="comments">
+                    @{
+                        int userId = int.Parse(Model.MoodleUserId);
+                        var groupedBYCommentsTeacher = Model.getCommentResultModel.comments.Where(c => c.userid != userId).GroupBy(item => item.fullname).Select(group => new { Customer = group.Key, Items = group.ToList() }).ToList();
+                        var groupedBYCommentsStudent = Model.getCommentResultModel.comments.Where(c => c.userid == userId).GroupBy(item => item.fullname).Select(group => new { Customer = group.Key, Items = group.ToList() }).ToList();
+                        foreach (var content in groupedBYCommentsTeacher)
+                        {
+                            <h6>@content.Customer</h6>
+                            foreach (AddCommentResultModel item in content.Items)
+                            {
+                                <p>@Html.Raw(item.content)</p>
+                            }
+                        }
+                        <h6>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageMyComments"))</h6>
+                        <div id="studentCommentsContainer">
+                            @foreach (var content in groupedBYCommentsStudent)
+                            {
+                                foreach (AddCommentResultModel item in content.Items)
+                                {
+                                    <div class="row">
+                                        <div class="col-lg-8">
+                                            @Html.Raw(item.content)
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <a href="" data-CommentId="@item.id" class="deleteComment"><i class="fa fa-trash"></i></a>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+
+                </div>
+                <a href="#" id="addComment" data-toggle="modal" data-target="#m_scrollable_modal_comment"><u>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageAddComment"))</u></a>
+            </td>
+        </tr>
+    </table>
+    <div class="mt-3">
+        <div class="row mt-4">
+            <div class="col-3">
+
+            </div>
+            <div id="SubBtns" class="col-6" style="text-align:center">
+                @if (Model.Locked == false)
+                {
+                    var timeRemaining1 = Model.TimeRemaining.Value;
+                    var timeRemainingDays1 = timeRemaining1.Days;
+                    var timeRemainingHours1 = timeRemaining1.Hours;
+                    var timeRemainingMinutes1 = timeRemaining1.Minutes;
+                    var today = DateTime.Now;
+
+                    if ((timeRemainingDays1 != 0 && timeRemainingHours1 != 0 && timeRemainingMinutes1 != 0) || Model.ExtensionDueDate != null)
+                    {
+                        if (Model.SubmissionStatus == "draft" || Model.SubmissionStatus != "submitted")
+                        {
+
+                            <div id="submitBtn" type="button" class="btn btn-brand" style="width:100px">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DataTableNext"))</div>
+
+
+                        }
+                        else if (Model.ExtensionDueDate != null)
+                        {
+                            if (Model.ExtensionDueDate.Value > today)
+                            {
+                                <div id="editBtn" type="button" class="btn btn-brand mr-3" style="width:100px;">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DataTableNext"))</div>
+
+                            }
+                             
+                        }
+
+                    }
+
+                }
+
+
+            </div>
+            <div class="col-3">
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="divOnlineTextHidden" hidden>@Model.OnlineText</div>
+<div id="submissionsSaveEdit" class="col-12" style="display:none">
+    <div class="row">
+        <div id="onlineTextBlock" class="col-md-6 col-12 mt-2">
+            <div id="summernote" class="note-icon-summernote">
+
+                @Html.Raw(Model.OnlineText)
+
+
+            </div>
+            <div id="wordsBlock" class="row">
+                <div class="col-md-7"></div>
+                <div class="col-md-3">
+                    <span>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageWordsCount")) </span>
+                </div>
+                <div class="col-md-2">
+                    <span id="wordsCurrentNumber"></span>
+                                  /
+                    <span id="wordsLimit"></span>
+                </div>
+            </div>
+        </div>
+        <div id="submissionFilesBlock" class="col-md-6 col-12 mt-2">
+            <div id="dropzone" class="m-dropzone dropzone m-dropzone--metal" style="height:300px">
+                <div class="m-dropzone__msg dz-message needsclick">
+                    <div>
+                        <i class="fa fa-file-upload fa-8x" style="margin-bottom:20px;"></i>
+                    </div>
+                    <span class="m-dropzone__msg-desc">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageDragDrop"))</span>
+                </div>
+            </div>
+            <div id="filesUploaded" class="row">
+                @{
+                    if (Model.SubmissionFile != null)
+                    {
+                        int i = 0;
+                        foreach (var attachment in Model.SubmissionFile)
+                        {
+
+                            <div id="fileIndex_@i" class="col-12" style="margin:10px">
+                                <div class="row">
+                                    <div class="col-6" style="text-align:center;">
+                                        <a href="@attachment.fileurl.Replace("webservice", "")?forcedownload=1" download="download" style="word-break:break-word;">@attachment.filename</a>
+                                    </div>
+                                    <div class="col-6">
+                                        <a class="removeFile m--font-danger" data-index="@i" data-file-name="@attachment.filename" style="cursor: pointer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageRemoveFile"))</a>
+                                    </div>
+                                </div>
+                            </div>
+                            i++;
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <div id="SaveBtns" class="mt-5" style="text-align:center">
+        @if (Model.Locked == false)
+        {
+            if ((Model.SubmissionStatus == "draft" || Model.SubmissionStatus != "submitted") && Model.ExtensionDueDate == null)
+            {
+                <button id="saveSubmissionBtn" class="btn btn-brand">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSave"))</button>
+                <button id="saveDraftSubmissionBtn" class="btn btn-brand">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSaveDraft"))</button>
+            }
+            else if (Model.ExtensionDueDate != null)
+            {
+                <button id="editSubmissionBtn" class="btn btn-brand">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSaveChanges"))</button>
+                <button id="saveDraftSubmissionBtn" class="btn btn-brand">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSaveDraft"))</button>
+            }
+            <button id="cancelSubmissionBtn" class="btn btn-brand">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageCancel"))</button>
+        }
+
+    </div>
+</div>

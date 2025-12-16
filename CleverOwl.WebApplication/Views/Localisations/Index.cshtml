@@ -1,0 +1,491 @@
+﻿
+
+@using RLI.Common.Managers
+@{
+    ViewBag.Title = "Index";
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+@Styles.Render("~/assets/vendors/JExcel/dist/jexcel.css")
+@Styles.Render("~/assets/vendors/JExcel/dist/jexcel.theme.css")
+@Styles.Render("~/assets/vendors/JExcel/dist/jsuites.css")
+
+<style>
+    input[type="file"] {
+        display: none;
+    }
+    .jexcel_content {
+        display: block !important;
+        overflow-x: scroll !important;
+    }
+</style>
+<div id="demo" class="m-portlet m-portlet--mobile">
+
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "localisationPageLocalisation"))
+                </h3>
+            </div>
+        </div>
+        <div class="m-portlet__head-tools">
+            <div class="m-portlet__nav">
+                <div class="m-portlet__nav-item">
+                    <div class="row">
+                        <div class="col-4">
+                            <label class="m-portlet__nav-link btn m-btn--pill btn-outline-success m-btn m-btn--outline-2x w-100">
+                                <input type="file" id="selectedFile" />
+                                <i style="padding-right:5px" class="fas fa-cloud-upload-alt"></i>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "localisationTestJExcelLocalisationPageUpload11"))
+                            </label>
+                        </div>
+                        <div class="col-3">
+                            <a href="@Url.Action("LocalisationEdit","Localisations")" target="_blank" class="m-portlet__nav-link btn m-btn--pill btn-outline-primary m-btn m-btn--outline-2x w-100">
+                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "localisationTestJExcelLocalisationPageEdit11"))
+                            </a>
+                        </div>
+                        <div class="col-5">
+                            <a href="@Url.Action("JExcelLocalisationViewPending","Localisations")" target="_blank" class="m-portlet__nav-link btn m-btn--pill btn-outline-danger m-btn m-btn--outline-2x w-100">
+                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "localisationTestJExcelLocalisationPageViewPending"))
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div id="body" class="m-portlet__body" style="padding:10px;">
+
+        <div class="m-portlet m-portlet--mobile">
+            <div class="m-portlet__head">
+                <div class="m-portlet__head-caption">
+                    <div class="m-portlet__head-title">
+                        <h3 class="m-portlet__head-text">
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsPageGenerate"))
+                        </h3>
+                    </div>
+                </div>
+                <div class="m-portlet__head-tools">
+                    <div class="m-portlet__nav">
+                        <div class="m-portlet__nav-item">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="m-portlet__body" style="padding:10px">
+                <div class="row">
+                    <div class="col-md-4 col-12">
+                        <div class="form-group m-form__group">
+                            <label class="col-form-lable">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsPageController")):</label>
+                            <div>
+                                <input name="controller" id="controller" type="text" class="form-control m-input" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsPageEnterC"))">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="form-group m-form__group">
+                            <label class="col-form-lable">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsPageAction")):</label>
+                            <div>
+                                <input name="action" id="action" type="text" class="form-control m-input" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsPageEnterA"))">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="form-group m-form__group">
+                            <label class="col-form-lable">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsPageRows")):</label>
+                            <div>
+                                <input name="rows" id="rows" type="number" class="form-control m-input" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsPageEnterR"))">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group m-form__group col-4">
+                        <div id="generateKey" class="btn m-btn--pill btn-outline-success m-btn m-btn--outline-2x" style="width:100% !important">
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsPageGenerateKey"))
+                        </div>
+                    </div>
+                    <div class="form-group m-form__group col-4">
+                        <button id="suggestion_btn" class="m-portlet__nav-link btn m-btn--pill btn-outline-danger m-btn m-btn--outline-2x" style="width:100% !important">
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsPage1Suggestion"))
+                        </button>
+                    </div>
+                    <div class="form-group m-form__group col-4">
+                        <button id="translate_btn" class="m-portlet__nav-link btn m-btn--pill btn-outline-primary m-btn m-btn--outline-2x" style="width:100% !important">
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsPage2Translate"))
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div id="JExcelContainer" style="min-width:100%">
+                        <div id="JExcelTable" style="min-width: 100%; display: block !important;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="m-portlet__foot" style="padding:10px">
+            <div class="row">
+                <div class="col-6"></div>
+                <div class="col-3">
+                    <div id="save_btn" class="m-portlet__nav-link btn m-btn--pill btn-outline-primary m-btn m-btn--outline-2x w-100">
+                        <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsPageSave"))</div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div id="cancel_Btn" class="m-portlet__nav-link btn m-btn--pill btn-outline-metal m-btn m-btn--outline-2x w-100">
+                        <div class="m--font-metal">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationsCancel"))</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@using (Html.BeginForm("SaveFile", "Localisations", FormMethod.Post, new { id = "SaveLocalisaion", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("jsonData", "")
+}
+@using (Html.BeginForm("GetLanguagesSuggested", "Localisations", FormMethod.Post, new { id = "GetLanguagesSuggested", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("jsonOfData", "")
+}
+@using (Html.BeginForm("GetLanguagesTranslated", "Localisations", FormMethod.Post, new { id = "GetLanguagesTranslated", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("dataToTranslate", "")
+}
+@using (Html.BeginForm("GetActionAndController", "Localisations", FormMethod.Post, new { id = "GetActionAndController", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("data", "")
+}
+
+
+@section Scripts{
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+    @Scripts.Render("~/assets/vendors/JExcel/dist/jexcel.js")
+    @Scripts.Render("~/assets/vendors/JExcel/dist/jsuites.js")
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+    <script>
+        var clientWidth = document.getElementById('JExcelTable').clientWidth;
+        var jExcelTable;
+        var indexKey = 1;
+        let selectedFile;
+        var jsonContent;
+        document.getElementById('selectedFile').addEventListener("change", (event) => {
+            selectedFile = event.target.files[0];
+            if (selectedFile) {
+                let fileReader = new FileReader();
+                fileReader.readAsBinaryString(selectedFile);
+                fileReader.onload = (event) => {
+                    let data = event.target.result;
+                    let workbook = XLSX.read(data, { type: "binary" });
+                    workbook.SheetNames.forEach(sheet => {
+                        let rowObject = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheet]);
+                        jsonContent = rowObject;
+                    });
+                }
+                fileReader.onloadend = (event) => {
+                    if (jsonContent) {
+                        resetTable();
+                        var i = 1;
+                        $.each(jsonContent, function (index, value) {
+                            $('#JExcelTable').jexcel('setValue', 'A' + i, value.Controller);
+                            $('#JExcelTable').jexcel('setValue', 'B' + i, value.Action);
+                            $('#JExcelTable').jexcel('setValue', 'C' + i, value.FieldKey);
+                            $('#JExcelTable').jexcel('setValue', 'D' + i, value.English);
+                            $('#JExcelTable').jexcel('setValue', 'E' + i, value.Arabic);
+                            $('#JExcelTable').jexcel('setValue', 'F' + i, value.French);
+                            i++;
+                        });
+                    }
+                }
+            }
+        });
+
+
+        function initTable() {
+            $('#JExcelTable').jexcel({
+                data: [[null]],
+                columns: [
+                    {
+                        type: 'text',
+                        title: 'Controller',
+                        width: '200',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'Action',
+                        width: '200',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'FeildKey',
+                        width: '250',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'English',
+                        width: '150',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'Arabic',
+                        width: '150',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'French',
+                        width: '150',
+                        wordWrap: true
+                    },
+                ],
+                rowResize: true,
+                minSpareRows: 5,
+                csvHeaders: true,
+                search: true,
+                pagination: 25,
+            });
+        }
+        function resetTable() {
+            $('#JExcelContainer').empty();
+            $('#JExcelContainer').append('<div id="JExcelTable" style="min-width:100%"></div>');
+            initTable();
+        }
+
+
+        $(document).ready(function () {
+
+            jExcelTable = initTable();
+            $('#generateKey').on('click', function () {
+                var rows = $('#rows').val();
+                var action = $('#action').val();
+                var controller = $('#controller').val();
+                var i = 1;
+                var rowIndex = 1;
+                if (controller != '' && action != '' && rows != '') {
+                    while (i <= rows) {
+                        if ($('#JExcelTable').jexcel('getValue', 'A' + rowIndex) == '' && $('#JExcelTable').jexcel('getValue', 'B' + rowIndex) == '' && $('#JExcelTable').jexcel('getValue', 'C' + rowIndex) == '') {
+                            var actionUpper = action.charAt(0).toUpperCase() + action.slice(1);
+                            var conttollerUpper = controller.charAt(0).toUpperCase() + controller.slice(1);
+                            $('#JExcelTable').jexcel('setValue', 'C' + rowIndex, conttollerUpper + actionUpper + 'Page' + indexKey);
+                            $('#JExcelTable').jexcel('setValue', 'A' + rowIndex, conttollerUpper);
+                            $('#JExcelTable').jexcel('setValue', 'B' + rowIndex, actionUpper);
+                            i++;
+                            indexKey++;
+                        }
+                        rowIndex++;
+                    }
+                } else {
+                    swal('@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "localisationTestJExcelLocalisationPageEmptyF"))', '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "localisationTestJExcelLocalisationPagemissingEmpty"))', 'error');
+                }
+            });
+
+            $('#suggestion_btn').on('click', function () {
+                mApp.block($('#demo'));
+                var rowContents = $('#JExcelTable').jexcel('getData', false);
+                var jsonData = [];
+                var dynamicArrayIndex = [];
+                var index = 1;
+                for (var d in rowContents) {
+                    var current = rowContents[d];
+                    var english = current[3];
+                    var arabic = current[4];
+                    var french = current[5];
+                    var fieldKey = current[2];
+                    if (english != '' && ((arabic == '') || (french == ''))) {
+                        var item = {};
+                        item["english"] = english;
+                        item["fieldKey"] = fieldKey;
+                        if (arabic == '') {
+                            item["arabic"] = "true";
+                        } else {
+                            item["arabic"] = arabic;
+                        }
+                        if (french == '') {
+                            item["french"] = "true";
+                        } else {
+                            item["french"] = french;
+                        }
+                        jsonData.push(item);
+                        dynamicArrayIndex.push(index);
+                    }
+                    index++;
+                }
+
+                $('#jsonOfData').val(JSON.stringify(jsonData));
+                $('#GetLanguagesSuggested').ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        if (data == "error") {
+                            mApp.unblock($('#demo'));
+                            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationTestJExcelLocalisationPage1Error"))", " @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationTestJExcelLocalisationPageErrorOccur"))", "error");
+                            return;
+                        } else {
+                            $.each(data, function (index, value) {
+                                if ($('#JExcelTable').jexcel('getValue', 'E' + dynamicArrayIndex[index]) == '') {
+                                    if (value.arabic != null) {
+                                        $('#JExcelTable').jexcel('setValue', 'E' + dynamicArrayIndex[index], value.arabic);
+                                        $('#JExcelTable').jexcel('setStyle', 'E' + dynamicArrayIndex[index], 'color', 'red');
+                                    }
+
+                                }
+                                if ($('#JExcelTable').jexcel('getValue', 'F' + dynamicArrayIndex[index]) == '') {
+                                    if (value.french != null) {
+                                        $('#JExcelTable').jexcel('setValue', 'F' + dynamicArrayIndex[index], value.french);
+                                        $('#JExcelTable').jexcel('setStyle', 'F' + dynamicArrayIndex[index], 'color', 'red');
+                                    }
+                                }
+                            });
+                            mApp.unblock($('#demo'));
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        mApp.unblock($('#demo'));
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationTestJExcelLocalisationPage1Error"))", " @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationTestJExcelLocalisationPageErrorOccur"))", "error");
+                    }
+                });
+            });
+
+            $('#translate_btn').on('click', function () {
+                mApp.block($('#demo'));
+                var rowContents = $('#JExcelTable').jexcel('getData', false);
+                var jsonData = [];
+                var dynamicArrayIndex = [];
+                var index = 1;
+                for (var d in rowContents) {
+                    var current = rowContents[d];
+                    var english = current[3];
+                    var arabic = current[4];
+                    var french = current[5];
+                    var fieldKey = current[2];
+                    if (english != '' && ((arabic == '') || (french == ''))) {
+                        var item = {};
+                        item["english"] = english;
+                        item["fieldKey"] = fieldKey;
+                        if (arabic == '') {
+                            item["arabic"] = "true";
+                        } else {
+                            item["arabic"] = arabic;
+                        }
+                        if (french == '') {
+                            item["french"] = "true";
+                        } else {
+                            item["french"] = french;
+                        }
+                        jsonData.push(item);
+                        dynamicArrayIndex.push(index);
+                    }
+                    index++;
+                }
+                $('#dataToTranslate').val(JSON.stringify(jsonData))
+                $('#GetLanguagesTranslated').ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        if (data == "error") {
+                            mApp.unblock($('#demo'));
+                            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationTestJExcelLocalisationPage1Error"))", " @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationTestJExcelLocalisationPageErrorOccur"))", "error");
+                            return;
+                        } else {
+                            $.each(data, function (index, value) {
+                                if ($('#JExcelTable').jexcel('getValue', 'E' + dynamicArrayIndex[index]) == '') {
+                                    if (value.arabic != null) {
+                                        $('#JExcelTable').jexcel('setValue', 'E' + dynamicArrayIndex[index], value.arabic);
+                                        $('#JExcelTable').jexcel('setStyle', 'E' + dynamicArrayIndex[index], 'color', 'blue');
+                                    }
+
+                                }
+                                if ($('#JExcelTable').jexcel('getValue', 'F' + dynamicArrayIndex[index]) == '') {
+                                    if (value.french != null) {
+                                        $('#JExcelTable').jexcel('setValue', 'F' + dynamicArrayIndex[index], value.french);
+                                        $('#JExcelTable').jexcel('setStyle', 'F' + dynamicArrayIndex[index], 'color', 'blue');
+                                    }
+                                }
+                            });
+                            mApp.unblock($('#demo'));
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        mApp.unblock($('#demo'));
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationTestJExcelLocalisationPage1Error"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationTestJExcelLocalisationPageErrorOccur"))", "error");
+                    }
+                });
+            });
+
+            $('#save_btn').on('click', function () {
+                mApp.block($('#demo'));
+                var jsonData = [];
+                var data = $('#JExcelTable').jexcel('getData', false);
+
+                for (var d in data) {
+                    var current = data[d];
+                    var key = current[2];
+                    var english = current[3];
+                    var arabic = current[4];
+                    var french = current[5];
+                    if (key != '' && english != '' && arabic != '' && french != '') {
+                        var item = {};
+                        item["controller"] = current[0];
+                        item["action"] = current[1];
+                        item["fieldKey"] = key;
+                        item["english"] = english;
+                        item["arabic"] = arabic;
+                        item["french"] = french;
+                        jsonData.push(item);
+                    }
+                }
+                if (jsonData.length == 0) {
+                    mApp.unblock($('#demo'));
+                    return;
+                }
+                $("#jsonData").val(JSON.stringify(jsonData));
+                $("#SaveLocalisaion").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+
+                        if (data == 200) {
+                            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationTestJExcelLocalisationPage5Success"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationTestJExcelLocalisationPage6SuccessfullySaved"))", "success");
+                            resetTable();
+                            mApp.unblock($('#demo'));
+
+                        } else if (data == 404) {
+                            mApp.unblock($('#demo'));
+                            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationTestJExcelLocalisationPage1Error"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationTestJExcelLocalisationPageErrorOccur"))", "error");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        mApp.unblock($('#demo'));
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationTestJExcelLocalisationPage1Error"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LocalisationTestJExcelLocalisationPageErrorOccur"))", "error");
+                    }
+                });
+
+            });
+            $('#cancel_Btn').on('click', function () {
+                mApp.block($('#demo'));
+                resetTable();
+                indexKey = 1;
+                mApp.unblock($('#demo'));
+            });
+        });
+    </script>
+
+
+
+}
+
+

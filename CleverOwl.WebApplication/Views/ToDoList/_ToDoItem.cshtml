@@ -1,0 +1,161 @@
+﻿@model CleverOwl.WebApplication.Models.ToDoViewModel
+
+@using RLI.Common.Managers
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+
+@if (Model.Assignments.Count() == 0 && Model.Sessions.Count() == 0)
+{
+    @Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
+  { "title", "Hey hey!" },
+  { "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Youdontseemtohaveanytodo")).ToString() }
+  , { "description", "" }
+  , { "action", false },
+  { "actionBtnId", "" },
+  { "actionBtnText", "" } })
+}
+else
+{
+    <style>
+        h5 {
+            font-weight: normal !important;
+        }
+
+     .no-border{
+         border-bottom: none !important;
+     }
+
+        .m-portlet {
+            background: #ffffff;
+            padding: 0px;
+            margin-top: 15px;
+        }
+        .item-todo {
+            border-bottom: 1px solid #2b2350;
+        }
+      
+        .item-todo a{
+            font-weight:bold;
+        }
+  
+      
+    </style>
+    <div class="m-portlet" style="width: 100%;">
+       
+        <div class="m-portlet__body">
+            <div class="global-container">
+                @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Teacher")
+                {
+                    if (Model.Sessions.Count() != 0)
+                    {
+                        foreach (var session in Model.Sessions)
+                        {
+                            <a href="@session.MeetingURL" target="_blank">
+                                <div class="row item-todo" dir="ltr" style=" padding: 40px;">
+                                    <div class="col-lg-1 col-md-2 col-sm-12">
+                                        @Html.Partial("~/Views/SharedSvgs/_SynchronousLearningIcon.cshtml")
+                                    </div>
+                                    <div class="col-lg-11 col-md-10 col-sm-12" style="text-align:initial">
+
+                                        <h5>Virtual Class - @session.SchoolSubjectTeacherGrade.Subject.Subject1</h5>
+                                        <h4>@session.Topic</h4>
+                                    </div>
+
+                                </div>
+                            </a>
+
+                        }
+                    }
+                    if (Model.Assignments.Count() != 0)
+                    {
+                        foreach (var assignment in Model.Assignments)
+                        {
+                            <a href="@Url.Action("Index","StudentsSubmissionPage", new { assignmnentId = assignment.AssignmentId })" target="_blank">
+                                <div class="row item-todo" dir="ltr" style=" padding: 40px; ">
+                                    <div class="col-lg-1 col-md-2 col-sm-12">
+                                        @Html.Partial("~/Views/SharedSvgs/_AssignmentsIcon.cshtml")
+                                    </div>
+                                    <div class="col-lg-11 col-md-10 col-sm-12" style="text-align:initial">
+
+                                        <h5>ASSIGNMENT - @assignment.SubjectName - @assignment.GradeName</h5>
+                                        <h4>@assignment.Title</h4>
+                                    </div>
+
+                                </div>
+                            </a>
+
+                        }
+
+                    }
+                }
+                else
+                {
+                    if (Model.Sessions.Count() != 0)
+                    {
+                        foreach (var session in Model.Sessions)
+                        {
+                            <div class="row item-todo" dir="ltr" style=" padding: 40px;">
+                                <div class="col-lg-1 col-md-2 col-sm-12">
+                                    @Html.Partial("~/Views/SharedSvgs/_SynchronousLearningIcon.cshtml")
+                                </div>
+                                <div class="col-lg-8 col-md-7 col-sm-12" style="text-align:initial">
+
+                                    <h5>Virtual Class - @session.SchoolSubjectTeacherGrade.Subject.Subject1</h5>
+                                    <h4>@session.Topic</h4>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-12" style="text-align: initial; display: flex; align-items: center;">
+
+                                    <a href="@session.MeetingURL" target="_blank">Attend</a>
+
+
+
+                                </div>
+
+                            </div>
+                          
+
+                        }
+                    }
+                    if (Model.Assignments.Count() != 0)
+                    {
+                        foreach (var assignment in Model.Assignments)
+                        {
+
+                            <div class="row item-todo" dir="ltr" style=" padding: 40px;">
+                                <div class="col-lg-1 col-md-2 col-sm-12">
+                                    @Html.Partial("~/Views/SharedSvgs/_AssignmentsIcon.cshtml")
+                                </div>
+                                <div class="col-lg-8 col-md-7 col-sm-12" style="text-align:initial">
+
+                                    <h5>ASSIGNMENT - @assignment.SubjectName</h5>
+                                    <h4>@assignment.Title</h4>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-12" style="text-align: initial; display: flex; align-items: center;">
+                                    @if (assignment.submissionStatus.Equals("submitted"))
+                                    {
+                                        <a href="@Url.Action("Index","AssignmentsSubmission", new { assignmentKey = assignment.AssignmentKey })" target="_blank">Resolved</a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Url.Action("Index","AssignmentsSubmission", new { assignmentKey = assignment.AssignmentKey })" target="_blank">Resolve</a>
+                                    }
+
+                                </div>
+
+                            </div>
+
+
+                        }
+
+                    }
+                }
+
+            </div>
+        </div>
+    </div>
+}
+<script>
+    
+</script>

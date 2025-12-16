@@ -1,0 +1,37 @@
+﻿@using RLI.Common.Managers
+@using Everest.OpenCurate.EntityFramework.EDM
+@model IEnumerable<Everest.OpenCurate.EntityFramework.EDM.Grade>
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    int gradeIndex = 0;
+    int CurrentLanguageIdentifier = (int)ViewBag.CurrentLanguageIdentifier;
+}
+
+
+<h2 class="widget-title">
+    <i class="m-menu__link-icon fa fa-cubes mr-2" style="font-size:2.5rem;"><span class="ml-2" style="font-family:'poppins'; font-size:2rem">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ResourcesPageGrade"))</span></i>
+    <i class="show_grade m-menu__ver-arrow la m--pull-right mt-3" data-status="none" style="color: #2b2350"></i>
+    @*<i class="show_grade m-menu__ver-arrow la la-angle-up m--pull-right mt-3 d-none d-lg-block" data-status="up" style="color: #2b2350"></i>*@
+</h2>
+<ul id="grades_list">
+    @foreach (Grade grade in Model.Distinct().OrderBy(g => g.GradeIndex))
+    {
+        string gradeValue = grade.Grade1;
+
+        try
+        {
+            gradeValue = CurrentLanguageIdentifier == 0 ? grade.Grade1 : grade.DataGUID.DataTranslations.Where(dt => dt.LanguageKey == CurrentLanguageIdentifier).FirstOrDefault().Value;
+
+        }catch(Exception e)
+        {
+            gradeValue = grade.Grade1;
+        }
+
+
+        <li class="Grade_Filter" style="cursor:pointer" data-key="@grade.GradeKey" data-index="@gradeIndex">
+            <a>@gradeValue</a>
+            <span class="m-badge m-badge--brand">@Model.Count(c => c.GradeKey == grade.GradeKey).ToString()</span><span class="remove m-badge m-badge--danger" data-key="@grade.GradeKey" data-display="false" style="display:none; margin-left:10px " title="click to remove">X</span>
+        </li>
+        gradeIndex++;
+    }
+</ul>

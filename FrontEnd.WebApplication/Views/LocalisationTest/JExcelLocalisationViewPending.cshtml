@@ -1,0 +1,408 @@
+﻿
+
+@using RLI.Common.Managers
+@{
+    ViewBag.Title = "JExcelLocalisation";
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+@Styles.Render("~/assets/vendors/JExcel/dist/jexcel.css")
+@Styles.Render("~/assets/vendors/JExcel/dist/jexcel.theme.css")
+@Styles.Render("~/assets/vendors/JExcel/dist/jsuites.css")
+
+<style>
+    input[type="file"] {
+        display: none;
+    }
+</style>
+<div id="demo" class="m-portlet m-portlet--mobile">
+
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageViewPending"))
+                </h3>
+            </div>
+        </div>
+
+
+    </div>
+    <div id="body" class="m-portlet__body" style="padding:10px;">
+
+        <div class="m-portlet m-portlet--mobile">
+            <div class="m-portlet__head">
+                <div class="m-portlet__head-caption">
+                    <div class="m-portlet__head-title">
+                        <h3 class="m-portlet__head-text">
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageFilter"))
+                        </h3>
+                    </div>
+                </div>
+                <div class="m-portlet__head-tools">
+                    <div class="m-portlet__nav">
+                        <div class="m-portlet__nav-item">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="m-portlet__body" style="padding:10px">
+                <div class="row">
+                    <div class="col-md-4 col-12">
+                        <div class="form-group m-form__group">
+                            <label class="col-form-lable">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageController")):</label>
+                            <div>
+                                <select id="ControllersDropDown" class="form-control" style="width:100%">
+                                    <option></option>
+                                    @foreach (var controller in ViewBag.Controllers)
+                                    {
+                                        <option value="@controller">@controller</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="form-group m-form__group">
+                            <label class="col-form-lable">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageActions")):</label>
+                            <div>
+                                <select id="ActionsDropDown" class="form-control" style="width:100%"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <div class="form-group m-form__group">
+                            <label class="col-form-lable" style="visibility:hidden">filter:</label>
+                            <div>
+                                <button id="filterBtn" class="m-portlet__nav-link btn m-btn--pill btn-outline-primary m-btn m-btn--outline-2x w-100"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageFilter"))</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <div class="form-group m-form__group">
+                            <label class="col-form-lable" style="visibility:hidden">clear:</label>
+                            <div>
+                                <button id="Clear_btn" class="m-portlet__nav-link btn m-btn--pill btn-outline-danger m-btn m-btn--outline-2x w-100"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageClear"))</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div id="JExcelContainer" style="min-width:100%">
+                    <div id="JExcelTable" style="min-width:100%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="m-portlet__foot" style="padding:10px">
+            <div class="row">
+                <div class="col-6"></div>
+                <div class="col-3">
+                    <div id="save_btn" class="m-portlet__nav-link btn m-btn--pill btn-outline-primary m-btn m-btn--outline-2x w-100">
+                        <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageSave"))</div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div id="cancel_Btn" class="m-portlet__nav-link btn m-btn--pill btn-outline-metal m-btn m-btn--outline-2x w-100">
+                        <div class="m--font-metal">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageCancel"))</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@using (Html.BeginForm("SaveViewPending", "LocalisationTest", FormMethod.Post, new { id = "SaveViewPending", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("jsonData", "")
+}
+
+@using (Html.BeginForm("GetActionsPendingDropDownPerController", "Localisations", FormMethod.Post, new { id = "GetActionsPendingDropDownPerController", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("valueSelected", "")
+}
+@using (Html.BeginForm("GetPendingView", "Localisations", FormMethod.Post, new { id = "GetPendingView", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("data", "")
+}
+@using (Html.BeginForm("GetViewPendingContents", "Localisations", FormMethod.Post, new { id = "GetViewPendingContents", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("controller", "")
+    @Html.Hidden("action", "")
+}
+
+@section Scripts{
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+    @Scripts.Render("~/assets/vendors/JExcel/dist/jexcel.js")
+    @Scripts.Render("~/assets/vendors/JExcel/dist/jsuites.js")
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+    <script>
+        var jExcelTable;
+
+        function initTable() {
+            $('#JExcelTable').jexcel({
+                data: [[null]],
+                columns: [
+                    {
+                        type: 'text',
+                        title: 'InterfaceLocalisationKey',
+                        width: '50',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'Controller',
+                        width: '180',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'Action',
+                        width: '180',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'FeildKey',
+                        width: '250',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'English',
+                        width: '150',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'Arabic',
+                        width: '150',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'French',
+                        width: '150',
+                        wordWrap: true
+                    },
+                ],
+                rowResize: true,
+                minSpareRows: 1,
+                csvHeaders: true,
+                search: true,
+                pagination: 25,
+            });
+        }
+        function resetTable() {
+            $('#JExcelContainer').empty();
+            $('#JExcelContainer').append('<div id="JExcelTable" style="min-width:100%"></div>');
+            initTable();
+        }
+
+        function getDropDown(valueSelected) {
+            mApp.block($('#demo'));
+                $("#valueSelected").val(valueSelected);
+                $("#GetActionsPendingDropDownPerController").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        html = '<option></option>';
+                        $.each(data, function (index, value) {
+                            html += '<option value="' + value + '">' + value + '</option>';
+                        });
+                        $('#ActionsDropDown').empty();
+                        $('#ActionsDropDown').append(html);
+
+                        mApp.unblock($('#demo'));
+                    },
+                    error: function (xhr, status, error) {
+
+                        mApp.unblock($('#demo'));
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageError"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageMssgE"))", "error");
+
+                    }
+                });
+
+        }
+        function getLanguageContent( controller, action) {
+            mApp.block('#demo');
+            $("#controller").val(controller);
+            $("#action").val(action);
+            $("#GetViewPendingContents").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    resetTable();
+                    i = 1;
+                    $.each(data, function (index, value) {
+                        $('#JExcelTable').jexcel('setValue', 'A' + i, value.InterfaceLocalisationKey);
+                        $('#JExcelTable').jexcel('setValue', 'B' + i, value.Controller);
+                        $('#JExcelTable').jexcel('setValue', 'C' + i, value.Action);
+                        $('#JExcelTable').jexcel('setValue', 'D' + i, value.FieldKey);
+                        $('#JExcelTable').jexcel('setValue', 'E' + i, value.English);
+                        $('#JExcelTable').jexcel('setValue', 'F' + i, value.Arabic);
+                        $('#JExcelTable').jexcel('setValue', 'G' + i, value.French);
+
+                        i++;
+                    });
+                    $('#JExcelTable').jexcel('setReadOnly', 'A' + i, true);
+                    $('#JExcelTable').jexcel('setReadOnly', 'B' + i, true);
+                    $('#JExcelTable').jexcel('setReadOnly', 'C' + i, true);
+                    $('#JExcelTable').jexcel('setReadOnly', 'D' + i, true);
+                    $('#JExcelTable').jexcel('setReadOnly', 'E' + i, true);
+                    $('#JExcelTable').jexcel('setReadOnly', 'F' + i, true);
+                    $('#JExcelTable').jexcel('setReadOnly', 'G' + i, true);
+                    mApp.unblock('#demo');
+
+                },
+                error: function (xhr, status, error) {
+                    resetTable();
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageError"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageMssgE"))", "error");
+
+                }
+            });
+        }
+        $(document).ready(function () {
+            var permissionDenied = false;
+            $('#ControllersDropDown').select2({
+                placeholder: 'select controller'
+            });
+            $('#ActionsDropDown').select2({
+                placeholder: 'select action'
+            });
+            $('#ControllersDropDown').on('change', function () {
+                if (permissionDenied == false) {
+                    getDropDown($('#ControllersDropDown').val());
+                }
+            });
+            jExcelTable = initTable();
+            mApp.block($('#demo'));
+            $("#GetPendingView").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data) {
+                        resetTable();
+                        var i = 1;
+
+                        $.each(data, function (index, value) {
+                            $('#JExcelTable').jexcel('setValue', 'A' + i, value.InterfaceLocalisationKey);
+                            $('#JExcelTable').jexcel('setValue', 'B' + i, value.Controller);
+                            $('#JExcelTable').jexcel('setValue', 'C' + i, value.Action);
+                            $('#JExcelTable').jexcel('setValue', 'D' + i, value.FieldKey);
+                            $('#JExcelTable').jexcel('setValue', 'E' + i, value.English);
+                            $('#JExcelTable').jexcel('setValue', 'F' + i, value.Arabic);
+                            $('#JExcelTable').jexcel('setValue', 'G' + i, value.French);
+                            i++;
+                        });
+                        $('#JExcelTable').jexcel('setReadOnly', 'A' + i, true);
+                        $('#JExcelTable').jexcel('setReadOnly', 'B' + i, true);
+                        $('#JExcelTable').jexcel('setReadOnly', 'C' + i, true);
+                        $('#JExcelTable').jexcel('setReadOnly', 'D' + i, true);
+                        $('#JExcelTable').jexcel('setReadOnly', 'E' + i, true);
+                        $('#JExcelTable').jexcel('setReadOnly', 'F' + i, true);
+                        $('#JExcelTable').jexcel('setReadOnly', 'G' + i, true);
+                    }
+                    mApp.unblock($('#demo'));
+                },
+                error: function (xhr, status, error) {
+                    mApp.unblock($('#demo'));
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageError"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageMssgE"))", "error");
+                }
+            });
+
+
+
+
+
+            $('#save_btn').on('click', function () {
+                mApp.block($('#demo'));
+                var jsonData = [];
+                var data = $('#JExcelTable').jexcel('getData', false);
+                for (var d in data) {
+                    var current = data[d];
+                    var interfaceKey = current[0]
+                    var controller = current[1];
+                    var action = current[2];
+                    var Fieldkey = current[3];
+                    var english = current[4];
+                    var arabic = current[5];
+                    var french = current[6];
+                    if (interfaceKey != '' && Fieldkey != '' && english != '' && arabic != '' && french != ''){
+                            var item = {};
+                            item["interfaceLocalisationKey"] = interfaceKey;
+                            item["controller"] = controller;
+                            item["action"] = action;
+                            item["fieldKey"] = Fieldkey;
+                            item["english"] = english;
+                            item["arabic"] = arabic;
+                            item["french"] = french;
+                            jsonData.push(item);
+                        }
+
+                }
+                if (jsonData.length == 0) {
+                    mApp.unblock($('#demo'));
+                    return;
+                }
+                $("#jsonData").val(JSON.stringify(jsonData));
+                $("#SaveViewPending").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+
+                        if (data == 200) {
+                            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageSuccess"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageSuccessfullySaved"))", "success");
+                            resetTable();
+                            mApp.unblock($('#demo'));
+
+                        } else if (data == 404) {
+                            mApp.unblock($('#demo'));
+                            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageError"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageMssgE"))", "error");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        mApp.unblock($('#demo'));
+                         swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageError"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "JExcelLocalisationViewPendingPageMssgE"))", "error");
+                    }
+                });
+
+            });
+            $('#Clear_btn').on('click', function () {
+                mApp.block($('#demo'));
+                permissionDenied = true;
+                $('#ControllersDropDown').val(null).trigger('change');
+                $('#ActionsDropDown').val(null).trigger('change');
+                permissionDenied = false;
+                mApp.unblock($('#demo'));
+
+            });
+            $('#filterBtn').on('click', function () {
+                controller1 = $('#ControllersDropDown').val();
+                action1 = $('#ActionsDropDown').val();
+                getLanguageContent( controller1, action1);
+
+            });
+            $('#cancel_Btn').on('click', function () {
+                mApp.block($('#demo'));
+                resetTable();
+                indexKey = 1;
+                mApp.unblock($('#demo'));
+            });
+        });
+    </script>
+
+
+
+}
+
+
+

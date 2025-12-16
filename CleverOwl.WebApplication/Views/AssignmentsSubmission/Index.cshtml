@@ -1,0 +1,1532 @@
+﻿
+@model RLI.WebApplication.Models.AssigViewModel
+@using RLI.Common.Managers
+@using RLI.EntityFramework.EDM
+@using RLI.Common.Managers
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsSubmissionsPage"));
+    Language currentLanguage = ViewBag.CurrentLanguage;
+    AspNetUser currentUser = ViewBag.CurrentUser;
+    var AssignmentKey = ViewBag.AssignmentKey;
+    var AssignmentName = ViewBag.AssignmentName;
+    string language1 = currentLanguage.Language1;
+    bool webhookScormTypeExists = false;
+    var totalScore = ViewBag.AutoCorrectedGraded != null ? Math.Round((double)ViewBag.AutoCorrectedGraded, 2) : 0;
+    var maxScore = 100;
+    var progressPercentage = (totalScore * 100) / maxScore;
+    try
+    {
+        webhookScormTypeExists = ViewBag.webhookScormTypeExists;
+    }
+    catch (Exception e)
+    {
+
+    }
+
+    RLI.Common.DataObjects.SubmissionDetailsViewModel submissionViewModel = (RLI.Common.DataObjects.SubmissionDetailsViewModel)ViewBag.SubmissionDetails;
+
+    int? currentUserId = null;
+    if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Student")
+    {
+        currentUserId = currentUser.Studentkey;
+    }
+    else if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Teacher")
+    {
+
+        currentUserId = currentUser.TeacherKey;
+    }
+
+    var GradeKey = ViewBag.GradeKey;
+    var SubjectKey = ViewBag.SubjectKey;
+    var LessonKey = ViewBag.LessonKey;
+    //var CourseId = ViewBag.CourseId;
+    var IsAutoCorrectedOrNot = ViewBag.IsAutoCorrectedOrNot;
+}
+@Styles.Render("~/assets/vendors/summernote/dist/summernote.css")
+@Styles.Render("~/assets/vendors/masonry/css/default.css")
+@Styles.Render("~/assets/vendors/masonry/css/component.css")
+@if (currentLanguage == null || !currentLanguage.IsRTL)
+{
+    @Styles.Render("~/assets/vendors/dropzone/dist/min/dropzone.min.css")
+}
+else
+{
+    <!--RTL CSS-->
+    @Styles.Render("~/assets/vendors/dropzone/dist/min/dropzone.min.rtl.css")
+}
+<style>
+    #autoCorrectContainer #grid li {
+        width: 83.33% !important;
+    }
+
+    .note-editable {
+        min-height: 203px;
+    }
+
+    svg {
+        height: 50px;
+    }
+
+    .page-banner {
+        margin-top: 100px;
+        height: fit-content;
+        background-color: #ffffff;
+    }
+
+    .lessonCard {
+        margin-top: 10px !important;
+    }
+
+    ul {
+        list-style-type: none;
+    }
+
+    .grid.effect-2 {
+        padding-left: 0px !important;
+    }
+
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+
+    .fullscreen {
+        top: 10% !important;
+        margin-top: 65px;
+    }
+
+    .progress-bar {
+        height: 100%;
+    }
+
+    .note-editing-area {
+        height: auto !important;
+        overflow: auto;
+    }
+
+    .note-editor.note-frame.panel .note-toolbar-wrapper.panel-default {
+        height: 0px !important;
+    }
+
+    video {
+        width: -webkit-fill-available !important;
+    }
+</style>
+<section class="page-banner">
+    <div class="container">
+        <div class="page-title-wrapper">
+            <div>
+                <ul class="bradcurmed">
+                    <li><a href="@Url.Action("Index", "Dashboard")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Wall"))</a></li>
+                    <li><a href="@Url.Action("Index", "Assignments")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Assignments"))</a></li>
+                    <li><a rel="noopener noreferrer">Submission</a></li>
+                </ul>
+            </div>
+            <div class="row m--margin-top-20-desktop">
+                <div class="col-lg-1 m-auto m--hidden-tablet m--hidden-mobile">
+                    @Html.Partial("~/Views/SharedSvgs/_AssignmentsIcon.cshtml")
+                </div>
+                <div class="col-lg-5 col-12 m-auto">
+                    <h1 class="page-title"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSubmission")) <span id="assignmentName">(@Model.AssignmetName)</span> </h1>
+                </div>
+                <div class="col-lg-3  m-auto">
+                </div>
+                <div class="col-lg-3 col-12 m-auto">
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="page-body">
+            <div class="container">
+
+                <!--begin::Auto-correct form-->
+                <div id="scormsBlock" class="m-portlet mt-5">
+                    <div class="m-portlet__head m--padding-20">
+                        <h4 class="m-subheader__title ">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageAuto-Corrected"))</h4>
+                    </div>
+                    <div class="m-portlet__body m--padding-20">
+                        <div class="row">
+                            <!--begin::Auto-correct-->
+                            <div class="col-12">
+                                <div class="m-widget24 mt-5">
+                                    <div class="m-widget24__item">
+
+                                        <div class="row">
+                                            <div class="col-md-4 col-12">
+                                                <h3 class="m-widget24__title mt-4">
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPagePleaseCompleteTheLessonBelow"))
+                                                </h3>
+
+                                                <div class="mt-3 col-12 p-0" id="autoCorrectContainer">
+                                                    @*append auto-correct scrom here*@
+                                                </div>
+
+                                                @{
+                                                    List<QualitativeFeedback_Result> qualitativeFeedback_Result = (List<QualitativeFeedback_Result>)ViewBag.qualitativeFeedback_Result;
+                                                }
+
+                                                @if (qualitativeFeedback_Result != null && qualitativeFeedback_Result.Count != 0 && submissionViewModel.GradingStatus == "graded")
+                                                {
+                                                    <div class="row">
+                                                        <div class="col-lg-10">
+                                                            @Html.Partial("_AutoCorrectedQualitativeCard", qualitativeFeedback_Result)
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+
+                                            <div class="col-md-8 col-12">
+
+                                                @if (submissionViewModel.scormPagesInfo == null || submissionViewModel.scormPagesInfo.Count <= 1)
+                                                {
+                                                    if (!webhookScormTypeExists)
+                                                    {
+                                                        @Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
+                                                                                   { "title", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_EmptySlateTitle")).ToString() },
+                                                                                   { "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageNoResultFoundYet")).ToString() }
+                                                                                   , { "description", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageYouStillHave")).ToString() + " " + submissionViewModel.TimeRemaining.Value.Days + Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageDay")) + "," + submissionViewModel.TimeRemaining.Value.Hours + Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageHours")) + "," + submissionViewModel.TimeRemaining.Value.Minutes + Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageMinutes")) + " " + Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageToCompleteYourAssignment")) }
+                                                                                   , { "action", false },
+                                                                                   { "actionBtnId", "" },
+                                                                                   { "actionBtnText", "" } })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
+                                                                                                                                          { "title", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_EmptySlateTitle")).ToString() },
+                                                                                                                                          { "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageNoResultFoundYet")).ToString() }
+                                                                                                                                          , { "description", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPagePendingResultsMsg")).ToString() }
+                                                                                                                                          , { "action", false },
+                                                                                                                                          { "actionBtnId", "" },
+                                                                                                                                          { "actionBtnText", "" } })
+                                                    }
+
+
+                                                }
+                                                else
+                                                {
+                                                    @*show result if exist here*@
+
+                                                    <!--begin:: Widgets/User Progress -->
+
+                                                    <div class="m-portlet m-portlet--full-height mt-4">
+
+                                                        <div class="m-portlet__body">
+                                                            <div class="tab-content">
+                                                                <div class="tab-pane active" id="m_widget4_tab1_content">
+                                                                    <div class="m-widget4 m-widget4--progress">
+                                                                        @foreach (var scormInfo in submissionViewModel.scormPagesInfo)
+                                                                        {
+                                                                            <div class="m-widget4__item w-100">
+
+                                                                                <div class="m-widget4__info">
+                                                                                    <br />
+                                                                                    <span class="m-widget4__title">
+                                                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPagePage")) #@scormInfo.PageNumber
+                                                                                    </span>
+                                                                                    <br />
+                                                                                    <span class="m-widget4__title m--font-bold m--font-brand">
+                                                                                        @(scormInfo.PageTitle != null ? scormInfo.PageTitle : "")
+                                                                                    </span>
+                                                                                    <br />
+                                                                                    <div class="row mt-3">
+                                                                                        <div class="col-md-6 col-12">
+                                                                                            <span class="m-widget4__title">
+                                                                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageMistakeError1"))
+                                                                                            </span>
+                                                                                            <br />
+                                                                                            <span class="m--font-danger ml-5">
+                                                                                                @scormInfo.MistakeCount / @scormInfo.ErrorCount
+                                                                                            </span>
+                                                                                        </div>
+                                                                                        <div class="col-md-6 col-12">
+                                                                                            <span class="m-widget4__title">
+                                                                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageCheck1"))
+                                                                                            </span>
+                                                                                            <br />
+                                                                                            <span class="m--font-accent ml-5">
+                                                                                                @scormInfo.CheckCount
+                                                                                            </span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="m-widget4__progress">
+                                                                                    <div class="m-widget4__progress-wrapper">
+                                                                                        <span class="m-widget17__progress-number">@scormInfo.PageGrade</span>
+
+                                                                                        <div class="m-section__content">
+                                                                                            <div class="progress m-progress--sm">
+                                                                                                <div class="progress-bar bg-brand" role="progressbar" style="width: @scormInfo.PageGrade;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="@scormInfo.PageGrade"></div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        }
+
+                                                                        <div class="m-widget4__item w-100" style="height:125px;">
+                                                                            <div class="m-widget4__info">
+                                                                                <br />
+                                                                                <span class="m-widget4__title m--font-danger">
+                                                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageTotal"))
+                                                                                </span>
+                                                                            </div>
+                                                                            <div class="m-widget4__progress">
+                                                                                <div class="m-widget4__progress-wrapper">
+                                                                                    <span class="m-widget17__progress-number">@totalScore%</span>
+
+                                                                                    <div class="m-section__content">
+                                                                                        <div class="progress m-progress--sm">
+                                                                                            <div class="progress-bar bg-brand" role="progressbar"
+                                                                                                 style="width: @progressPercentage%;" aria-valuenow="@totalScore"
+                                                                                                 aria-valuemin="0" aria-valuemax="@maxScore"></div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!--end:: Widgets/User Progress -->
+
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <div class="m--space-10"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end::Auto-correct-->
+                        </div>
+                    </div>
+                </div>
+                <!--end::Auto-correct form-->
+                <!--begin::General form-->
+                <div class="m-portlet mt-5">
+                    <div class="m-portlet__head m--padding-20">
+                        <h4 class="m-subheader__title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageGenerals"))</h4>
+                    </div>
+                    <div class="m-portlet__body m--padding-20">
+                        <div class="row">
+                            <!--begin::General description-->
+                            <div class="col-12">
+                                <div class="m-widget24 mt-5">
+                                    <div class="m-widget24__item">
+                                        <div class="row">
+                                            <div class="col-md-3 col-12">
+                                                <h3 class="m-widget24__title mt-4">
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageDescription"))
+                                                </h3>
+                                            </div>
+                                            <div class="col-md-9 col-12">
+                                                <div class="m-widget24__desc">
+                                                    <div id="description" style="padding:15px; min-height: 200px; background: #f9f5f7; border-radius:30px; width:100%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="m--space-10"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end::General description-->
+                            <!--begin::General Ressources-->
+                            <div id="ressourcesBlock" class="col-12">
+                                <div class="m-widget24 mt-5">
+                                    <div class="m-widget24__item">
+                                        <div class="row">
+                                            <div class="col-md-3 col-12">
+                                                <h3 class="m-widget24__title mt-4">
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageRessources"))
+                                                </h3>
+                                            </div>
+                                            <div class="col-md-9 col-12">
+                                                <div class="m-widget24__desc">
+                                                    <div class="row">
+                                                        <div class="mt-3 col-12" id="lessonCardsContainer" style="padding-left:0px!important">
+                                                            @*append ressources here*@
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="m--space-10"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end::General Ressources-->
+                            <!--begin::General Files-->
+                            @if (Model.IntroAttachments.Count() > 0)
+                            {
+                                <div class="col-12">
+                                    <div class="m-widget24 mt-5">
+                                        <div class="m-widget24__item">
+                                            <div class="row">
+                                                <div class="col-md-3 col-12">
+                                                    <h3 class="m-widget24__title mt-4">
+                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageFiles"))
+                                                    </h3>
+                                                </div>
+
+                                                <div class="col-md-9 col-12">
+                                                    <div class="m-widget24__desc">
+                                                        <div id="files">
+
+                                                            @foreach (var attachment in Model.IntroAttachments)
+                                                            {
+                                                                int i = 0;
+                                                                <div id="index_@i" class="row" style="margin:10px">
+                                                                    <div class="col-8">
+                                                                        <a href="@attachment.fileurl?token=@ViewBag.StudentToken&forcedownload=1" download="download" target="_blank" style="word-break:break-word;">@attachment.filename</a>
+                                                                    </div>
+                                                                </div>
+                                                                i++;
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="m--space-10"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <!--end::General Files-->
+                        </div>
+                    </div>
+                </div>
+                <!--end::General form-->
+                <!--begin::Submission table-->
+                <div id="submissionBlock" class="m-portlet mt-5">
+                    <div class="m-portlet__head m--padding-20">
+                        <h4 class="m-subheader__title ">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSubmission"))</h4>
+                    </div>
+                    <div class="m-portlet__body m--padding-20">
+                        <div id="submission" class="row">
+
+                            <!--begin::Submission form-->
+                            @Html.Partial("~/Views/AssignmentsSubmission/_SubmissionAssignment.cshtml", submissionViewModel)
+
+                            @if (Model.OnlineText == false && Model.FilesSubmission == false && submissionViewModel.SubmissionStatus != "submitted" && submissionViewModel.Locked == false)
+                            {
+                                if (submissionViewModel.scormPagesInfo != null && submissionViewModel.scormPagesInfo.Count >= 1)
+                                {
+                                    <div class="col-12" style="text-align:center;"> <button id="saveSubmissionBtn" class="btn btn-brand">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSave"))</button></div>
+                                }
+                            }
+                            <!--end::Submission form-->
+                        </div>
+                    </div>
+                </div>
+                <!--end::Submission table-->
+                <!--begin::Submission feedback-->
+                @{
+                    string display = "none";
+                    if (submissionViewModel.GradingStatus == "graded")
+                    {
+                        display = "block";
+                    }
+                }
+                <div id="submissionFeedback" class="m-portlet mt-5 mb-5" style="display:@display">
+                    <div class="m-portlet__head m--padding-20">
+                        <h4 class="m-subheader__title ">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageFeedback"))</h4>
+                    </div>
+                    <div class="m-portlet__body m--padding-20">
+                        <div class="row">
+                            <!--begin::feedback table-->
+                            <div class="col-12">
+                                <table id="gradingInfoTable" class="mt-5">
+                                    <tr>
+                                        <td>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageGrade"))</td>
+                                        <td>@Html.Raw(submissionViewModel.Grade)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageGradedOn"))</td>
+                                        <td>@submissionViewModel.GradedOn</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageGradedBy"))</td>
+                                        <td>@ViewBag.GradedBy</td>
+                                    </tr>
+                                    @if (Model.FeedbackComments != null)
+                                    {
+                                        <tr>
+                                            <td>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageFeedback"))</td>
+                                            <td>@Html.Raw(Model.FeedbackComments)</td>
+                                        </tr>
+                                    }
+                                </table>
+                                @*@Html.Partial("~/Views/AssignmentsSubmission/_SubmissionFeedback.cshtml")*@
+                            </div>
+                            <!--end::feedback table-->
+                        </div>
+                    </div>
+                </div>
+                <!--end::submission feedback-->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="m_scrollable_modal_comment" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top:55px">
+    <div id="comment" class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageAddComment"))</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="m-scrollable" data-scrollbar-shown="true" data-scrollable="true">
+                    <textarea id="commentField" style="width:100%"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="closeModal" type="button" class="btn btn-secondary" data-dismiss="modal">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageClose"))</button>
+                <button id="saveComment" type="button" data-dismiss="modal" class="btn btn-primary">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageAccept"))</button>
+            </div>
+        </div>
+    </div>
+</div>
+@using (Html.BeginForm("InsertLessonCard", "AssignmentsSubmission", FormMethod.Post, new { id = "InsertLessonCardHidden" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("lessonCardId", "")
+    @Html.Hidden("cardAssignmentKey", "")
+}
+@using (Html.BeginForm("AddStudentComment", "AssignmentsSubmission", FormMethod.Post, new { id = "AddStudentCommentHidden", @class = "", @style = "display:none" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("commentValue", "")
+    @Html.Hidden("submID", "")
+    @Html.Hidden("assignmentCmI", "")
+}
+@using (Html.BeginForm("DeleteStudentComment", "AssignmentsSubmission", FormMethod.Post, new { id = "DeleteStudentCommentHidden", @class = "", @style = "display:none" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("commentId", "")
+}
+@using (Html.BeginForm("SubmitAssignment", "AssignmentsSubmission", FormMethod.Post, new { id = "SubmitAssignmentHidden", @class = "", @style = "display:none" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("assignmentKey", (int)ViewBag.AssignmentKey)
+    @Html.Hidden("assignmentId", "")
+    @Html.Hidden("fileAttachementsId", "")
+    @Html.Hidden("descAttachementsId", "")
+    @Html.Hidden("text", "")
+    @Html.Hidden("teacherKey", (int)ViewBag.TeacherKey)
+    @Html.Hidden("isAutoCorrected", "")
+    @Html.Hidden("isFileEnabled", Model.FilesSubmission)
+
+}
+@using (Html.BeginForm("UploadDescFile", "AssignmentsSubmission", FormMethod.Post, new { id = "UploadDescFileHidden" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("fileBase64", "")
+    @Html.Hidden("attachmentDescId", "")
+}
+@using (Html.BeginForm("UploadFileFromAjax", "AssignmentsSubmission", FormMethod.Post, new { id = "UploadFileHidden" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("file1", "")
+    @Html.Hidden("attachmentId1", "")
+}
+@using (Html.BeginForm("DeleteFile", "AssignmentsSubmission", FormMethod.Post, new { id = "DeleteFile" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("fileName", "")
+    @Html.Hidden("attachmentid", "")
+}
+@using (Html.BeginForm("SaveDraft", "AssignmentsSubmission", FormMethod.Post, new { id = "SaveDraftHidden", @class = "", @style = "display:none" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("assignmentKeyD", "")
+    @Html.Hidden("assignmentIdD", "")
+    @Html.Hidden("fileAttachementsIdD", "")
+    @Html.Hidden("descAttachementsIdD", "")
+    @Html.Hidden("textD", "")
+    @Html.Hidden("isFileSub", Model.FilesSubmission)
+
+}
+@using (Html.BeginForm("DeleteSubmission", "AssignmentsSubmission", FormMethod.Post, new { id = "DeleteSubmissionHidden", @class = "", @style = "display:none" }))
+{
+    @Html.AntiForgeryToken()
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/masonry/js/modernizr.custom.js")
+    @Scripts.Render("~/assets/vendors/masonry/js/masonry.pkgd.min.js")
+    @Scripts.Render("~/assets/vendors/masonry/js/imagesloaded.pkgd.js")
+    @Scripts.Render("~/assets/vendors/masonry/js/classie.js")
+    @Scripts.Render("~/assets/vendors/masonry/js/AnimOnScroll.js")
+    @Scripts.Render("~/assets/vendors/summernote/dist/summernote.js")
+    @Scripts.Render("~/assets/vendors/dropzone/dist/min/dropzone.min.js")
+    @Scripts.Render("~/assets/amcharts4/core.js")
+    @Scripts.Render("~/assets/amcharts4/charts.js")
+    @Scripts.Render("~/assets/amcharts4/themes/animated.js")
+    @Scripts.Render("~/assets/amcharts4/themes/dark.js")
+
+    <!--Reference the SignalR library. -->
+    @Scripts.RenderFormat("<script src='https://" + Request.Url.Host + "/{0}'></script>", "~/Scripts/jquery.signalR-2.4.1.min.js")
+    <!--Reference the autogenerated SignalR hub script. -->
+    @Scripts.RenderFormat("<script src='https://" + Request.Url.Host + "/{0}'></script>", "~/signalr/hubs")
+
+<script>
+
+
+    var AssignmentSubmissionPageOpps = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageOpps"))";
+    var AssignmentSubmissionPageErrorInSavingComment = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageErrorInSavingComment"))";
+    var AssignmentSubmissionPageErrorInDeletingComment = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageErrorInDeletingComment"))";
+    var AssignmentSubmissionPageErrorInAddingTheFile = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageErrorInAddingTheFile"))";
+    var AssignmentSubmissionPageSuccess = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSuccess"))";
+    var AssignmentSubmissionPageAssignmentSubmitdSuccessfully = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageAssignmentSubmitdSuccessfully"))";
+    var AssignmentSubmissionPageErrorInSavingSubmission = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageErrorInSavingSubmission"))";
+    var AssignmentSubmissionPageErrorInDeletingFile = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageErrorInDeletingFile"))";
+    var AssignmentSubmissionPageAssignmentEditSuccessfully = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageAssignmentEditSuccessfully"))";
+    var AssignmentSubmissionPageGoToLesson = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageGoToLesson"))";
+    var AssignmentSubmissionPageErrorInSavingDraftSubmission = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageErrorInSavingDraftSubmission"))";
+    var AssignmentSubmissionPageAssignmentEditDraftSuccessfully = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageAssignmentEditDraftSuccessfully"))";
+    var AssignmentSubmissionPageYouCanNotAddAFileInThisTypeOfAssignment = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageYouCanNotAddAFileInThisTypeOfAssignment"))";
+    var AssignmentSubmissionPageYouPassedTheWordsLimitRequired = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageYouPassedTheWordsLimitRequired"))";
+    var AssignmentSubmissionPageAttention = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageAttention"))";
+
+    var nbFile = 0;
+    var urls = [];
+
+    var fileBuffer;
+
+    var wordsLimit = parseInt("@Model.WordLimit");
+    var wordsCount = 0;
+
+    var onlineTextEnable = '@Model.OnlineText';
+    var subFileEnable = '@Model.FilesSubmission';
+    if (onlineTextEnable == 'False' && subFileEnable == 'False') {
+        $('#SubBtns').hide();
+    }
+    Dropzone.autoDiscover = false;
+
+    $(document).ready(function () {
+        var onlineTextHiddenValue = $("#divOnlineTextHidden").html();
+        $('.note-editable').prepend(onlineTextHiddenValue);
+        //...SignalRPart...//
+        $(function () {
+            // Reference the auto-generated proxy for the hub.
+            var moodleSignalRManager1 = $.connection.moodleSignalRManager;
+            // Create a function that the hub can call back to display messages.
+            moodleSignalRManager1.client.addNewInteractiveReportDataToPage = function (type, payload) {
+                console.log('addNEw');
+                console.log(type);
+                console.log(payload);
+                location.reload();
+            };
+
+            // Start the connection.
+            //$.connection.hub.start().done(function () {
+            //    console.log('connection.hub.start()');
+            //});
+            //var count = 0;
+            //if (count == 0) {
+            //    console.log('im here');
+            //    $("#newPostsBtn").hide();
+            //    count++;
+            //}
+
+        });
+        $('#description').append('@Html.Raw(Model.Description.Replace("'", "").Replace("\n", ""))');
+
+
+        @if (Model.OnlineText == false)
+        {
+            <text>
+                $('#onlineTextBlock').hide();
+                $('#submissionFilesBlock').removeClass('col-md-6');
+                $('#onlinetextRow').hide();
+            </text>
+        }
+            @if (Model.FilesSubmission == false)
+            {
+                <text>
+                $('#submissionFilesBlock').hide();
+                $('#onlineTextBlock').removeClass('col-md-6');
+                $('#filesSubmissionsRow').hide();
+            </text>
+            }
+
+        //lessonsLinkInDescriptionScorm
+        $(".lessonsLinkInDescriptionTitle").remove();
+
+
+
+        var lessonsCardIdsEdit = [];
+        var lessonsCardIdsEditAutoCorrect = [];
+        $('.lessonsLinkInDescription').each(function () {
+            var lessonKey = $(this).attr("data-lessonkey");
+            //var lessonName = $(this).text();
+            lessonsCardIdsEdit.push(lessonKey);
+        });
+        $('.lessonsLinkInDescriptionScorm').each(function () {
+            var lessonScormKey = $(this).attr("data-lessonkey");
+            //var lessoScormnName = $(this).text();
+            lessonsCardIdsEditAutoCorrect.push(lessonScormKey);
+        });
+        $(".lessonsLinkInDescriptionScorm").remove();
+        $(".lessonsLinkInDescription").remove();
+
+        InsertLessonCard(lessonsCardIdsEdit, $('#lessonCardsContainer'));
+
+        InsertScromCard(lessonsCardIdsEditAutoCorrect, $('#autoCorrectContainer'));
+
+
+        $('#description').prop('disabled', true);
+
+        initSubmissionField();
+
+        $(document).on('click', '#submitBtn', function () {
+            mApp.block($('#SubBtns'));
+            mApp.progress($('#SubBtns'));
+                        $.ajax({
+                url: '@Url.Action("AssignmentSynchronisation", "StudentsSubmissionPage")',
+                type: 'POST',
+                dataType: "html",
+                data: {
+                    assignmnentKey: '@AssignmentKey',
+                    __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+                            },
+ 
+                            success: function (data) {
+                                console.log("data : ", data);
+                        const isAutoCorrectedOrNot = @IsAutoCorrectedOrNot.ToString().ToLower();
+                                if (isAutoCorrectedOrNot == true)
+                                {
+                                    if (data.toLowerCase() === "true") {
+                                console.log("truuuuuuuueeeeeee");
+                                mApp.unblock($('#SubBtns'));
+                                mApp.unprogress($('#SubBtns'));
+                                $(".btn-fullscreen").click();
+                                $(".btn-fullscreen").click();
+                                //$('#submissionFeedback').show();
+                                $('#submissionsInfo').hide();
+                                $('#submissionsSaveEdit').show();
+                            }
+                            else {
+                                mApp.unblock($('#SubBtns'));
+                                mApp.unprogress($('#SubBtns'));
+                                swal("Complete Activity", "Please make sure to complete the lesson before proceeding with the submission.", "error");
+                                console.log("falseeeeeeee");
+                            }
+
+                        }
+                        else {
+                                    console.log("noooooooo");
+                                    mApp.unblock($('#SubBtns'));
+                                    mApp.unprogress($('#SubBtns'));
+                            $(".btn-fullscreen").click();
+                            $(".btn-fullscreen").click();
+                            //$('#submissionFeedback').show();
+                            $('#submissionsInfo').hide();
+                            $('#submissionsSaveEdit').show();
+                        }
+                            },
+                             error: function () {
+                                 mApp.unblock($('#SubBtns'));
+                                 mApp.unprogress($('#SubBtns'));
+                                 $(".btn-fullscreen").click();
+                                 $(".btn-fullscreen").click();
+                                 //$('#submissionFeedback').show();
+                                 $('#submissionsInfo').hide();
+                                 $('#submissionsSaveEdit').show();
+                            }
+                        });
+
+        });
+        $(document).on('click', '#editBtn', function () {
+            $(".btn-fullscreen").click();
+            $(".btn-fullscreen").click();
+            $('#submissionsInfo').hide();
+            $('#submissionsSaveEdit').show();
+        });
+        $(document).on('click', '#cancelSubmissionBtn', function () {
+            $('#submissionsInfo').show();
+            $('#submissionsSaveEdit').hide();
+        });
+        $(document).on('click', '#saveSubmissionBtn', function () {
+            var autoCorretced = false;
+            if (onlineTextEnable == 'False' && subFileEnable == 'False') {
+                autoCorretced = true;
+            }
+            submitAsignment(autoCorretced);
+
+        });
+        $(document).on('click', '#saveDraftSubmissionBtn', function () {
+            //uploadImgInDescription("saveDradft", true);
+            saveDraft();
+        });
+        $(document).on('click', '#editSubmissionBtn', function () {
+            submitAsignment(false);
+        });
+
+        //$(document).on('click', '#removeSubmissionBtn', function () {
+        //    $('#editBtn').hide();
+        //    $('#removeSubmissionBtn').hide();
+        //    $('#submitBtn').show();
+        //});
+
+        $(document).on('click', '#saveComment', function () {
+
+            var comment = $("#commentField").val();
+            $("#commentValue").val(comment);
+            $("#submID").val('@ViewBag.SubmissionId');
+            $("#assignmentCmI").val('@ViewBag.CourseModuleId');
+
+            mApp.block($('#studentCommentsContainer'));
+            $('#addComment').hide();
+            $('#AddStudentCommentHidden').ajaxSubmit({
+                beforeSubmit: function () {
+
+                },
+                success: function (data) {
+                    $('#addComment').show();
+                    var html = "";
+                    html = '<div class="row"><div class="col-lg-8">' + data.comment + '</div><div class="col-lg-4"><a href="" data-CommentId="' + data.commentId + '" class="deleteComment"><i class="fa fa-trash"></i></a></div></div>';
+                    $("#studentCommentsContainer").prepend(html);
+                    $("#commentField").val('');
+                    mApp.unblock($('#studentCommentsContainer'));
+                    if (data == 500) {
+                        swal(AssignmentSubmissionPageOpps, AssignmentSubmissionPageErrorInSavingComment, "error");
+                    }
+                },
+                error: function () {
+                    $('#addComment').show();
+                    swal(AssignmentSubmissionPageOpps, AssignmentSubmissionPageErrorInSavingComment, "error");
+                }
+            });
+        });
+
+        $(document).on('click', '.deleteComment', function () {
+            //$(this).parent().parent().remove();
+            event.preventDefault();
+            var commentId = $(this).attr("data-CommentId");
+            $("#commentId").val(commentId);
+
+            var currentItem = $(this);
+            mApp.block($('#comments'));
+            $('#addComment').hide();
+            $('#DeleteStudentCommentHidden').ajaxSubmit({
+                beforeSubmit: function () {
+
+                },
+                success: function (data) {
+                    $('#addComment').show();
+                    mApp.unblock($('#comments'));
+                    if (data == "200") {
+                        $(currentItem).parent().parent().remove();
+                    } else {
+                        swal(AssignmentSubmissionPageOpps, AssignmentSubmissionPageErrorInDeletingComment, "error");
+                    }
+                },
+                error: function () {
+                    $('#addComment').show();
+                    mApp.unblock($('#comments'));
+                    swal(AssignmentSubmissionPageOpps, AssignmentSubmissionPageErrorInDeletingComment, "error");
+                }
+            });
+        });
+
+        $(document).on('click', '.removeFile', function () {
+
+            var index = $(this).attr('data-index');
+            mApp.block($('#filesUploaded'));
+            mApp.block($('#editSubmissionBtn'));
+            mApp.block($('#saveSubmissionBtn'));
+            mApp.block($('#saveDraftSubmissionBtn'));
+            var fileName = $(this).attr("data-file-name");
+            var attachmentId = '@Model.Attachements';
+            $("#fileName").val(fileName);
+            $("#attachmentid").val(attachmentId);
+            $("#DeleteFile").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == "200") {
+                        mApp.unblock($('#filesUploaded'));
+                        mApp.unblock($('#editSubmissionBtn'));
+                        mApp.unblock($('#saveSubmissionBtn'));
+                        mApp.unblock($('#saveDraftSubmissionBtn'));
+                        $('#fileIndex_' +index).remove();
+                        nbFile--;
+
+                    } else  {
+                        mApp.unblock($('#filesUploaded'));
+                        mApp.unblock($('#editSubmissionBtn'));
+                        mApp.unblock($('#saveSubmissionBtn'));
+                        mApp.unblock($('#saveDraftSubmissionBtn'));
+
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageErrorInDeletingFile"))", 'error');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    mApp.unblock($('#filesUploaded'));
+                    mApp.unblock($('#editSubmissionBtn'));
+                    mApp.unblock($('#saveSubmissionBtn'));
+                    mApp.unblock($('#saveDraftSubmissionBtn'));
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageErrorInDeletingFile"))", 'error');
+                }
+            });
+        });
+
+
+
+
+    });
+
+    //....functions....//
+
+    function InsertLessonCard(id, selector) {
+        if (id.length != 0) {
+            //$('#lessonCardsContainer').css("min-height", "20px");
+            mApp.block(selector);
+            $("#lessonCardId").val(JSON.stringify(id));
+            $("#cardAssignmentKey").val(@AssignmentKey);
+            $("#InsertLessonCardHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    selector.empty();
+                    selector.append(data);
+                        @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Student" || RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Teacher")
+    {
+        <Text>
+
+                    $('.registerPathTimlineBtn').click(function () {
+
+                        var studycontent = {
+          version: "1.0.0",
+          context: {
+            type: "study-content",
+            action: "start",
+            user: {
+              id: '@currentUserId',
+            },
+            data: {
+              classInfo: {
+                id: '@SubjectKey-@GradeKey',
+              }
+            },
+            content: [{
+                id: '@LessonKey',
+            }],
+          },
+        };
+                        document.getElementById("gooru").inputdata = studycontent;
+                    });
+                    </Text>
+    }
+                    $(".lessonCard__header_Overlay").hide();
+                    $(".m-portlet__head-tools").hide();
+                    //$(".blankslate").hide();
+                    $(".lessonCard__header_Overlay_Studenthare").hide();
+                    $(".CopyBtn").hide();
+                    $(".treeHover").css('cursor', 'default').css('text-decoration', 'none');
+                    $(".treeHover")
+                    loadMasonry();
+                    mApp.unblock(selector);
+                },
+                error: function (xhr, status, error) {
+                    //$(".blankslate").hide();
+                    //swal("Error", "error in get conversation 2", "error");
+                    console.log("Error In InsertLessonCardHidden !!!!!!!");
+                    //$('#lessonCardsContainer').css("min-height", "10px");
+                    mApp.unblock(selector);
+                }
+            });
+        } else {
+            $('#ressourcesBlock').remove();
+        }
+
+    }
+
+    function InsertScromCard(id, selector) {
+        if (id.length != 0) {
+            console.log("fetttttttttttt11111111111", id);
+            //$('#lessonCardsContainer').css("min-height", "20px");
+            mApp.block(selector);
+            $("#lessonCardId").val(JSON.stringify(id));
+            $("#cardAssignmentKey").val(@AssignmentKey);
+            $("#InsertLessonCardHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    selector.empty();
+                    selector.append(data);
+                      @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Student" || RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Teacher")
+    {
+        <Text>
+
+                    $('.registerPathTimlineBtn').click(function () {
+
+                        var studycontent = {
+          version: "1.0.0",
+          context: {
+            type: "study-content",
+            action: "start",
+            user: {
+              id: '@currentUserId',
+            },
+            data: {
+              classInfo: {
+                id: '@SubjectKey-@GradeKey',
+              }
+            },
+            content: [{
+                id: '@LessonKey',
+            }],
+          },
+        };
+                        document.getElementById("gooru").inputdata = studycontent;
+                    });
+                    </Text>
+    }
+                    $(".lessonCard__header_Overlay").hide();
+                    $(".m-portlet__head-tools").hide();
+                    //$(".blankslate").hide();
+                    $(".lessonCard__header_Overlay_Studenthare").hide();
+                    $(".CopyBtn").hide();
+                    $(".treeHover").css('cursor', 'default').css('text-decoration', 'none');
+                    var scormLink = $(".m-portlet__head .m-portlet__head-caption .m-portlet__head-title a").attr("href");
+                    var html = '<a class="btn btn-brand" href="' + scormLink + '" target="_blank"> ' + AssignmentSubmissionPageGoToLesson + ' </a>';
+                    $('#goToLessonLink').append(html);
+                    console.log(scormLink);
+                    loadMasonry();
+                    mApp.unblock(selector);
+
+
+                },
+                error: function (xhr, status, error) {
+                    //$(".blankslate").hide();
+                    //swal("Error", "error in get conversation 2", "error");
+                    console.log("Error In InsertLessonCardHidden !!!!!!!");
+                    console.log("NOT INSERTED");
+                    //$('#lessonCardsContainer').css("min-height", "10px");
+                    mApp.unblock(selector);
+                }
+            });
+        } else {
+            $('#scormsBlock').remove();
+        }
+    }
+
+    function initSubmissionField() {
+
+        //...initialize dropzone...//
+        var uploadUrl = '@Url.Action("UploadFile")';
+        var UploadDropZone = new Dropzone('#dropzone', {
+            url: uploadUrl,
+            file: "file",
+            maxFiles: 5,
+            maxfilesexceeded: function (file) {
+            this.removeFile(file);
+            },
+            maxFilesize: "@System.Configuration.ConfigurationManager.AppSettings["CROWDCONTENTUPLOADFILESIZE"]", // MB
+            addRemoveLinks: true,
+            acceptedFiles:".xls,.xlsx,.ods,.png,.jpg,.jpeg,.jfif,.gif,.mp4,.pdf,.doc,.txt,.docs,.docx,.odt,.mpg, .mpeg, .m2v,.m4v,.wmv,.webm,.pptx,.pptm,.ppt,.zip,.rar",
+            timeout: 180000,
+            sending: function (file) {
+                console.log("sending");
+                console.log(file);
+                mApp.block($('#dropzone'));
+                mApp.block($('#editSubmissionBtn'));
+                mApp.block($('#saveSubmissionBtn'));
+                mApp.block($('#saveDraftSubmissionBtn'));
+            },
+            removedfile: function (file) {
+                var fileType = file["type"].split("/")[0];
+                var fileName = file["name"] + "";
+                if (fileType == "image") {
+                    fileName += ".pdf";
+                    file["name"] = fileName;
+                }
+                var attachmentId = '@Model.Attachements';
+                DeleteFileAttachment(attachmentId, fileName);
+                var _ref;
+                return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+            },
+            success: function (file, response) {
+                //$(".dz-success-mark").attr('style', 'display: none !important');
+                //$(".dz-error-mark").attr('style', 'display: none !important');
+                console.log(file);
+                nbFile++;
+                mApp.unblock($('#dropzone'));
+                mApp.unblock($('#editSubmissionBtn'));
+                mApp.unblock($('#saveSubmissionBtn'));
+                mApp.unblock($('#saveDraftSubmissionBtn'));
+            },
+            error: function (file, error) {
+                mApp.unblock($('#dropzone'));
+                mApp.unblock($('#editSubmissionBtn'));
+                mApp.unblock($('#saveSubmissionBtn'));
+                mApp.unblock($('#saveDraftSubmissionBtn'));
+                //$(".dz-success-mark").attr('style', 'display: none !important');
+                //$(".dz-error-mark").attr('style', 'display: none !important');
+                swal(AssignmentSubmissionPageOpps, AssignmentSubmissionPageErrorInAddingTheFile, "error");
+            },
+            params: {__RequestVerificationToken: $('@Html.AntiForgeryToken()').val(), attachmentId: '@Model.Attachements'}
+        });
+        //...end initialize dropzone...//
+
+
+
+        var currentLanguageWYSIWYG = "en-US";
+        @{
+            if (language1 == "English")
+            {
+                <text>currentLanguageWYSIWYG = "en-US";</text>
+            } else if (language1 == "French")
+            {
+                <text>currentLanguageWYSIWYG = "fr-FR";</text>
+            } else if (language1 == "Arabic")
+            {
+                <text>currentLanguageWYSIWYG = "ar-AR";</text>
+            }
+        }
+        console.log("init");
+        $('#summernote').summernote({
+            height: 204,
+            tabsize: 2,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['fontname', ['fontname']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'hr']],
+                ['view', ['fullscreen', 'codeview', 'help']],
+            ],
+            lang: currentLanguageWYSIWYG,
+            callbacks: {
+                onImageUpload: function (image) {
+                    //mApp.block('.note-editable');
+                    mApp.block('#saveSubmissionBtn');
+                    mApp.block('#editSubmissionBtn');
+                    mApp.block('#saveDraftSubmissionBtn');
+                    console.log("imageimageimage");
+
+                    if (onlineTextEnable == "True" && subFileEnable == "True") {
+                        UploadDropZone.addFile(image[0]);
+                        setTimeout(function () { removeImagesInSummernote(); }, 100);
+
+                    } else {
+                        mApp.unblock('#saveSubmissionBtn');
+                        mApp.unblock('#editSubmissionBtn');
+                        mApp.unblock('#saveDraftSubmissionBtn');
+                        swal(AssignmentSubmissionPageOpps, AssignmentSubmissionPageYouCanNotAddAFileInThisTypeOfAssignment, "error");
+                    }
+                    return;
+                },
+                onKeyup: function (e) {
+                    var t = e.currentTarget.innerText;
+                    var currentWords = t.trim().split(/[\s\.\?]+/);
+                    wordsCount = currentWords.length;
+                    console.log("keyup: " + wordsLimit);
+                    if (currentWords.length > wordsLimit) {
+                        if (e.keyCode != 8) {
+                            //e.preventDefault();
+                        }
+                        $("#wordsCurrentNumber").html(wordsCount);
+                        $("#wordsBlock").css("color", "red");
+                    } else {
+                        if (t.trim() == "") {
+                            wordsCount = 0;
+                        }
+                        $("#wordsCurrentNumber").html(wordsCount);
+                        $("#wordsBlock").css("color", "green");
+                    }
+
+                },
+                onPaste: function (e) {
+                    var t = e.currentTarget.innerText;
+                    var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
+                    if (bufferText != " " && bufferText != null) {
+                        var resultText = (t + bufferText).trim().split(/[\s\.\?]+/);
+                        wordsCount = resultText.length;
+
+                        if (resultText.length > wordsLimit) {
+                            //e.preventDefault();
+                            $("#wordsCurrentNumber").html(wordsCount);
+                            $("#wordsBlock").css("color", "red");
+                        } else {
+                            $("#wordsCurrentNumber").html(wordsCount);
+                            $("#wordsBlock").css("color", "green");
+                        }
+
+                    }
+                }
+            }
+        });
+        var text = $(".note-editable").text();
+        wordsCount = text.trim().split(/[\s\.\?]+/).length;
+        if (text.trim() == "") {
+            wordsCount = 0;
+        }
+        if (wordsLimit != 0 && wordsLimit != null) {
+            $("#wordsCurrentNumber").html(wordsCount);
+            $("#wordsLimit").html(wordsLimit);
+            $("#wordsBlock").css("color", "green");
+        } else {
+            $("#wordsBlock").hide();
+        }
+    }
+
+    function uploadImage(imageFile, attachmentId, dropzone) {
+        //console.log(imageFile.file);
+        //return;
+        mApp.block($("#dropzone"));
+        $("#file1").val(imageFile);
+        $("#attachmentId1").val(attachmentId);
+        $("#UploadFileHidden").ajaxSubmit({
+            beforeSubmit: function () {
+
+            },
+            success: function (data) {
+                mApp.unblock($("#dropzone"));
+                dropzone.emit("complete", imageFile);
+                if (data == "500") {
+                    swal(AssignmentSubmissionPageOpps, AssignmentSubmissionPageErrorInAddingTheFile, "error");
+                }
+            },
+            error: function () {
+                mApp.unblock($("#dropzone"));
+                swal(AssignmentSubmissionPageOpps, AssignmentSubmissionPageErrorInAddingTheFile, "error");
+            }
+        });
+    }
+
+    function removeImagesInSummernote() {
+        var imgs = $('.note-editable').find("img");
+
+        imgs.each(function (index, value) {
+            var currentImage = $(this);
+            currentImage.remove();
+        });
+    }
+
+    function saveDraft() {
+
+        if (wordsLimit != 0 && wordsLimit != null && wordsCount > wordsLimit) {
+            swal(AssignmentSubmissionPageAttention, AssignmentSubmissionPageYouPassedTheWordsLimitRequired, "warning");
+            return;
+        }
+        mApp.block('#submissionBlock');
+
+        var assignmentKey = '@ViewBag.AssignmentKey';
+       // TempData["assignmentKey"] = assignmentKey;
+        var fileAttachementsId = '@Model.Attachements';
+        var descAttachementsId = '@Model.DescAttachementsId';
+        var assigId = '@ViewBag.AssignmentId'
+        var text = btoa(unescape(encodeURIComponent($('#summernote').summernote('code'))));
+        console.log("******************************************************");
+        console.log($('#summernote').summernote('code'));
+        $('#assignmentKeyD').val(assignmentKey);
+        $('#assignmentIdD').val(assigId);
+        $('#fileAttachementsIdD').val(fileAttachementsId);
+        $('#descAttachementsIdD').val(descAttachementsId);
+        $('#textD').val(text);
+
+        $('#SaveDraftHidden').ajaxSubmit({
+            beforeSubmit: function () {
+
+            },
+            success: function (data) {
+                mApp.unblock('#submissionBlock');
+                if (data == "500") {
+                    location.reload();
+                  //  swal(AssignmentSubmissionPageOpps, AssignmentSubmissionPageErrorInSavingDraftSubmission, "error");
+                } else {
+                    swal(AssignmentSubmissionPageSuccess, AssignmentSubmissionPageAssignmentEditDraftSuccessfully, "success");
+
+                    $('#submission').empty();
+                    $('#submission').append(data);
+                    $('#cancelSubmissionBtn').click();
+                    console.log("save change success");
+                    initSubmissionField();
+
+                    @if (Model.OnlineText == false)
+                    {
+                        <text>
+                            $('#onlineTextBlock').hide();
+                            $('#submissionFilesBlock').removeClass('col-md-6');
+                            $('#onlinetextRow').hide();
+                        </text>
+                    }
+                    @if (Model.FilesSubmission == false)
+                    {
+                        <text>
+                            $('#submissionFilesBlock').hide();
+                            $('#onlineTextBlock').removeClass('col-md-6');
+                            $('#filesSubmissionsRow').hide();
+                        </text>
+                    }
+
+                }
+
+            },
+            error: function () {
+                mApp.unblock('#submissionBlock');
+                swal(AssignmentSubmissionPageOpps, AssignmentSubmissionPageErrorInSavingDraftSubmission, "error");
+            }
+        });
+    }
+
+    function submitAsignment(isAutoCorrected) {
+
+        if (wordsLimit != 0 && wordsLimit != null && wordsCount > wordsLimit) {
+            swal(AssignmentSubmissionPageAttention, AssignmentSubmissionPageYouPassedTheWordsLimitRequired, "warning");
+            return;
+        }
+        mApp.block('#submissionBlock');
+        var fileAttachementsId = '@Model.Attachements';
+        var descAttachementsId = '@Model.DescAttachementsId';
+        var assigId = '@ViewBag.AssignmentId'
+        var text = btoa(unescape(encodeURIComponent($('#summernote').summernote('code'))));
+
+        $('#assignmentId').val(assigId);
+        $('#fileAttachementsId').val(fileAttachementsId);
+        $('#descAttachementsId').val(descAttachementsId);
+        $('#text').val(text);
+        $('#isAutoCorrected').val(isAutoCorrected);
+
+        $('#SubmitAssignmentHidden').ajaxSubmit({
+            beforeSubmit: function () {
+
+            },
+            success: function (data) {
+                mApp.unblock("#submissionBlock");
+                if (data == "500") {
+                    location.reload();
+                   // swal(AssignmentSubmissionPageOpps, AssignmentSubmissionPageErrorInSavingSubmission, "error");
+                } else {
+                  /*  swal(AssignmentSubmissionPageSuccess, AssignmentSubmissionPageAssignmentSubmitdSuccessfully, "success");*/
+                    swal({
+                        title: AssignmentSubmissionPageSuccess,
+                        text: AssignmentSubmissionPageAssignmentSubmitdSuccessfully,
+                        icon: "success",
+                    }).then(() => {
+                        location.reload(); // Reload the current page
+                    });
+
+                    $('#submission').empty();
+                    $('#submission').append(data);
+                    $('#cancelSubmissionBtn').click();
+                    initSubmissionField();
+
+                    @if (Model.OnlineText == false)
+                    {
+                        <text>
+                            $('#onlineTextBlock').hide();
+                            $('#submissionFilesBlock').removeClass('col-md-6');
+                            $('#onlinetextRow').hide();
+                        </text>
+                    }
+                    @if (Model.FilesSubmission == false)
+                    {
+                        <text>
+                            $('#submissionFilesBlock').hide();
+                            $('#onlineTextBlock').removeClass('col-md-6');
+                            $('#filesSubmissionsRow').hide();
+                        </text>
+                    }
+
+                }
+
+            },
+            error: function () {
+                mApp.unblock('#submissionBlock');
+                swal(AssignmentSubmissionPageOpps, AssignmentSubmissionPageErrorInSavingSubmission, "error");
+            }
+        });
+
+    }
+
+
+
+    function deleteSubmission() {
+
+        $('#DeleteSubmissionHidden').ajaxSubmit({
+            beforeSubmit: function () {
+
+            },
+            success: function () {
+
+            },
+            error: function () {
+
+            }
+        });
+        }
+
+    function DeleteFileAttachment(attachmentsId, fileName) {
+        mApp.block($('#dropzone'));
+        mApp.block($('#editSubmissionBtn'));
+        mApp.block($('#saveSubmissionBtn'));
+        mApp.block($('#saveDraftSubmissionBtn'));
+        $("#fileName").val(fileName);
+        $("#attachmentid").val(attachmentsId);
+        $("#DeleteFile").ajaxSubmit({
+            beforeSubmit: function () {
+            },
+            success: function (data) {
+                mApp.unblock($('#dropzone'));
+                mApp.unblock($('#editSubmissionBtn'));
+                mApp.unblock($('#saveSubmissionBtn'));
+                mApp.unblock($('#saveDraftSubmissionBtn'));
+                if (data == "200") {
+
+                    nbFile--;
+
+                } else if (data == "500") {
+
+
+                }
+            },
+            error: function (xhr, status, error) {
+                mApp.unblock($('#dropzone'));
+                mApp.unblock($('#editSubmissionBtn'));
+                mApp.unblock($('#saveSubmissionBtn'));
+                mApp.unblock($('#saveDraftSubmissionBtn'));
+                swal(AssignmentSubmissionPageOpps, AssignmentSubmissionPageErrorInDeletingFile, 'error');
+            }
+        });
+    }
+
+    function getFilesUploaded() {
+        var html = "";
+        @foreach (var attachment in submissionViewModel.SubmissionFile)
+        {
+            int i = 0;
+                <text>
+                    html += '<div id="fileIndex_@i" class="col-12" style="margin:10px">';
+                    html += '<div class="row">';
+                    html += '<div class="col-6" style="text-align:center;">';
+                    html +=' <a href="@attachment.fileurl.Replace("webservice", "")?forcedownload=1" download="download" style="word-break:break-word;">@attachment.filename</a>';
+                    html += '</div>';
+                    html += '<div class="col-6">';
+                    html += '<a class="removeFile m--font-danger" data-index="@i" data-file-name="@attachment.filename" data-attachment-id="@Model.Attachements" style="cursor: pointer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageRemoveFile"))</a>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</div>';
+                </text>
+            i++;
+        }
+        console.log(html);
+        $('#filesUploaded').append(html);
+
+    }
+
+
+
+
+
+    function loadMasonry() {
+            new AnimOnScroll(document.getElementById('grid'), {
+                minDuration: 0.4,
+                maxDuration: 0.7,
+                viewportFactor: 0.2
+            });
+        masonryFitContent();
+    }
+
+    // loadMasonry();
+
+    function masonryFitContent() {
+
+        var currentWindowWidth = $(window).width();
+        var numberOfCards = parseInt((currentWindowWidth * 0.85) / 300);
+        numberOfCards = currentWindowWidth < 700 ? 1 : numberOfCards;
+        numberOfCards = currentWindowWidth > 1200 ? 1 : numberOfCards;
+
+        var gridthWidth = numberOfCards * 450;
+        //var gridthWidth = numberOfCards * 300;
+
+        $("#grid_1").width(gridthWidth);
+
+        $("#grid_2").width(gridthWidth);
+
+
+    }
+
+    //....end functions....//
+
+    $(window).resize(function () {
+        masonryFitContent();
+
+    });
+    $(document).ready(function () {
+                         @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Student" || RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Teacher")
+                                 {
+                                 <text>
+        try {
+            var prevcoursedata = {
+                "version": "1.0.0",
+                "context": {
+                    "type": "preview-course",
+                    "action": "preview-course",
+                    "user": {
+                        "id": '@currentUserId'
+                    },
+                    "data": {
+                        "classInfo": {
+                            "id": '@SubjectKey-@GradeKey',
+                            "className": '@AssignmentName'
+                        }
+                    },
+                    content: [
+                    ],
+
+                },
+            };
+
+        document.getElementById("gooru").inputdata = prevcoursedata;
+        } catch (e) {
+
+        }
+
+        </text>
+    }
+
+        });
+
+</script>
+}

@@ -1,0 +1,134 @@
+﻿
+@using RLI.Common.Managers
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+@Styles.Render("~/assets/vendors/custom/select2/select2.bundle.css")
+
+<title>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageAddToCurriculum"))</title>
+<div class="m-portlet m-portlet--mobile">
+
+    <div class="m-portlet m-portlet--mobile">
+        <div class="m-portlet__head">
+            <div class="m-portlet__head-caption">
+                <div class="m-portlet__head-title">
+                    <h3 class="m-portlet__head-text">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageAddToCurriculum"))
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="m-portlet__body" style="padding:20px">
+            <div class="row">
+                <div class="col-md-3">
+                    <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageGrade:"))</div>
+                    <div>@Html.DropDownList("grade",(SelectList)ViewBag.Grades,"",new { style="width:100%", id="gradeDD"})</div>
+
+                </div>
+                <div class="col-md-3">
+                    <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageSubject:"))</div>
+                    <div>@Html.DropDownList("subject", (SelectList)ViewBag.Subjects,"",new {id="subjectDD", style="width:100%"})</div>
+                </div>
+                <div class="col-md-3">
+                    <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageTopic:"))</div>
+                    @Html.DropDownList("topic", (SelectList)ViewBag.Topics,"", new { id = "topicDD", style = "width:100%" })
+                </div>
+                <div class="col-md-3">
+                    <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageProvider:"))</div>
+                    @Html.DropDownList("provider", (SelectList)ViewBag.Providers,"", new { id = "providerDD", style = "width:100%" })
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px">
+                <div class="col-md-3">
+                    <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageLessonType:"))</div>
+                    @Html.DropDownList("lesson", (SelectList)ViewBag.Lessons,"", new { id="lessonTypeDD", style = "width:100%" })
+                </div>
+                <div class="col-md-3">
+                    <div>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageLanguage:"))</div>
+                    @Html.DropDownList("Language", (SelectList)ViewBag.Languages,"", new {id="languageDD", style = "width:100%" })
+                </div>
+                <div class="col-md-3">
+                    <button class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100" id="applyBtn" style="margin-top:20px">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageApply"))</button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn m-btn--pill btn-outline-metal m-btn m-btn--outline-2x w-100" id="cancelBtn" style="margin-top:20px">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageCancel"))</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <!--begin::Page Vendors -->
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+    @Scripts.Render("~/assets/vendors/custom/datatables/datatables.bundle.js")
+<script>
+
+    $(document).ready(function () {
+
+            $('#gradeDD').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageSelectGrade"))'
+
+
+            });
+
+            $('#subjectDD').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageSelectSubject"))'
+
+
+            });
+
+            $('#topicDD').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageSelectTopic"))'
+
+
+            });
+            $('#providerDD').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageSelectProvider"))'
+
+
+            });
+            $('#lessonTypeDD').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageSelectLessonType"))'
+
+
+            });
+            $('#languageDD').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonMappingPageSelectLanguage"))'
+            });
+
+            $('#applyBtn').click(function () {
+                var grade = $("#gradeDD").val();
+                var subject = $("#subjectDD").val();
+                var topic = $("#topicDD").val();
+                var provider = $("#providerDD").val();
+                var lessonType = $("#lessonTypeDD").val();
+
+                $.ajax({
+                    url: '@Url.Action("MapLessons", "LessonBuilderManagementTest")',
+                    type: 'POST',
+                    data: {
+                        gradeKey: grade, subjectKey: subject, topicKey: topic, providerKey: provider, lessonTypeKey: lessonType,
+                    },
+                    success: function (data) {
+                        if (data.status == "ok") {
+                            console.log(data.result);
+                        }
+                    }
+                });
+            });
+            $('#cancelBtn').click(function () {
+                window.close();
+            });
+
+        });
+
+
+</script>
+
+}

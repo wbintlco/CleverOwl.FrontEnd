@@ -1,0 +1,205 @@
+﻿@model CleverOwl.WebApplication.Models.ContainerHeaderComponentsModel
+@using RLI.Common.Managers
+@{
+    
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+<style>
+    @@media (min-width: 1200px) {
+        .container {
+            max-width: 90%;
+        }
+    }
+   .page-banner {
+        height: fit-content;
+        margin-bottom: 30px;
+        background-color: #ffffff;
+    }
+
+    .page-body {
+        padding: 0;
+        margin-bottom: 50px;
+    }
+     .search-form-widget .select2-search__field {
+        background: transparent !important;
+        border: 0 !important;
+        padding: 19px 70px 19px 30px !important;
+        font-size: 16px !important;
+        font-weight: 400 !important;
+        margin: 0 !important;
+        border-radius: 45px !important;
+        -webkit-transition: all 0.3s ease-in-out;
+        -o-transition: all 0.3s ease-in-out !important;
+        transition: all 0.3s ease-in-out !important;
+    }
+    @@media (max-width: 991px){
+        .search-form-widget {
+            margin-top: 10px !important;
+        }
+        .blog-post-archive {
+            padding: unset !important;
+        }
+        .sidebar {
+            margin-top: unset !important;
+        }
+    }
+
+    .search-form-widget .select2.select2-container.select2-container--default {
+        padding: 0;
+        border-radius: 30px 30px 30px 30px !important;
+    }
+
+    .search-form-widget .select2-container--default .select2-selection--multiple {
+        background: transparent !important;
+        border: 0 !important;
+    }
+
+    .search-form-widget .select2-container--default.select2-container--focus .select2-selection--multiple {
+        background: transparent !important;
+        border: 0 !important;
+    }
+
+    .search-form-widget .select2-dropdown {
+        margin-top: 10px;
+        background-color: #ffffff !important;
+        border-radius: 45px !important;
+    }
+
+    .search-form-widget .select2-results {
+        padding: 20px !important;
+    }
+
+    .search-form-widget .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #fdf1f1 !important;
+    }
+
+    .search-form-widget .select2-selection__choice {
+        padding: 18px !important;
+        width: inherit !important;
+    }
+
+    .search-form-widget .select2-selection__choice__remove {
+        float: right;
+        display: block;
+        height: 100%;
+        margin-top: 6px;
+        margin-left: 6px;
+    }
+
+    .search-form-widget .select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
+        border: 0 !important;
+        background-color: transparent !important;
+    }
+
+    .records-control-widget .select2.select2-container.select2-container--default {
+        border-radius: 0px 30px 30px 0px !important;
+    }
+
+    .select2.select2-container.select2-container--default {
+        width: 100% !important;
+    }
+
+    .select2-selection__clear {
+        padding-top: 8px !important;
+    }
+
+    svg {
+        height: 50px
+    }
+
+  .feature-image {
+        background: url("@Url.Content("~/assets/files/media/img/loader/loader2.gif")");
+        min-height: 315px;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+  .blog-post-archive
+  {
+      padding: 80px 0;
+  }
+
+  .blog-content .post-meta li a:hover {
+    color: #f98e47 !important;
+}
+
+  .blog-content .entry-title a:hover {
+    color: #f98e47 !important;
+}
+
+  .author a:hover {
+    color: #f98e47 !important;
+}
+    .m-menu__ver-arrow{
+        cursor:pointer;
+    }
+</style>
+<section class="page-banner">
+    <div class="container">
+        <div class="page-title-wrapper">
+            <div>
+                <ul class="bradcurmed">
+                    <li><a href="@Url.Action("Index","Dashboard")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Wall"))</a></li>
+                    @foreach (var route in Model.Routes)
+                    {
+                        <li><a href="@route.Path" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, route.Title))</a></li>
+                    }
+                </ul>
+            </div>
+            <div class="row m--margin-top-20-desktop">
+                @if (Model.IconType == "url")
+                {
+                    <div class="col-lg-1 m-auto m--hidden-tablet m--hidden-mobile">
+                        @Html.Partial(Model.IconSource)
+                    </div>
+                }
+                else if (Model.IconType == "html")
+                {
+                    <div class="col-lg-1 m-auto m--hidden-tablet m--hidden-mobile">
+                        @Html.Raw(Model.IconSource)
+                    </div>
+                }
+
+
+                <div class="col-lg-5 col-12 m-auto">
+                    <h1 class="page-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, Model.TitleName))</h1>
+                </div>
+                <div class="col-lg-3  m-auto">
+                </div>
+                <div class="col-lg-3 col-12 m-auto">
+                    @if (Model.ContainsActionButton == true)
+                    {
+                        <a id="actionButton" href="@Model.ActionButtonUrl" class="btn m-btn--pill m-btn m-btn--gradient-from-primary m-btn--gradient-to-info pull-right m--padding-top-15 m--padding-bottom-15 m--padding-left-20 m--padding-right-20 w-100-mobile pull-right">
+                            <i class="fa fa-plus m--padding-right-5"></i>
+                            <span>
+                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, Model.ActionButtonName))
+                            </span>
+                        </a>
+                    }
+                </div>
+            </div>
+
+        </div>
+        @if (Model.ContainsSearchBar == true)
+        {
+            <div id="searchContainer" class="row m--margin-top-40-desktop">
+                <div class="col-12">
+                    <div id="search" class="widget widget_search">
+                        <form role="search" class="search-form-widget">
+                            <label>
+                                <select id="quicksearch_input" class="search-field" multiple="multiple" name="param">
+                                    <option></option>
+                                </select>
+                            </label>
+                            <button type="submit" class="search-submit">
+                                <i class="ei ei-icon_search"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+    <!-- /.container -->
+</section>

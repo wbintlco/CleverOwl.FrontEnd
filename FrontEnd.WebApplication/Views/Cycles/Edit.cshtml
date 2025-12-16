@@ -1,0 +1,88 @@
+﻿@model FrontEnd.WebApplication.Models.CycleViewModel
+@using RLI.Common.Managers
+@using RLI.EntityFramework.EDM
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    
+}
+<style>
+    .select2-results__group {
+        color: #0E8BF2 !important;
+        font-size: 20px !important;
+        font-weight: bold;
+    }
+</style>
+
+<div class="m-portlet m-portlet--mobile" id="SubjectsDiv">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageEditCycle2"))
+                </h3>
+            </div>
+        </div>
+        <div class="m-portlet__head-tools">
+        </div>
+    </div>
+    <div class="m-portlet__body" style="padding:10px;">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "editForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <div class="form-group">
+                    <label class="control-label col-md-2" for="Subject1">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageCycle2"))</label>
+                    <div class="col-md-12">
+                        <input class="form-control text-box single-line" type="text" name="Cycle1" id="CycleName" style="width:100%" value="@Model.Cycle1" />
+                    </div>
+                </div>
+                
+                <div class="form-group" hidden>
+                    <label class="control-label col-md-2">CycletKey</label>
+                    <div class="col-md-12">
+                        <input name="CycleKey" value="@Model.CycleKey" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <input type="submit" value="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageSave22"))" id="submitBtn" class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100">
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 mt-1">
+                            <a class="btn m-btn--pill btn-outline-metal m-btn m-btn--outline-2x w-100" href="@Url.Action("Index","Cycles")">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "EditPageBackToCycles22"))</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        }
+    </div>
+
+</div>
+
+
+
+@section Scripts {
+
+    <!--begin::Page Vendors -->
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+
+    <script>
+        $(document).ready(function () {
+
+        });
+
+
+    </script>
+
+
+}
+

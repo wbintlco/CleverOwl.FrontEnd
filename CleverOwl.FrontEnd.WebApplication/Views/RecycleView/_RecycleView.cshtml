@@ -1,0 +1,133 @@
+﻿<style>
+
+    .profile {
+        padding: 5rem 0;
+    }
+
+    .profile::after {
+        content: "";
+        display: block;
+        clear: both;
+    }
+
+    .profile-bio {
+        display: flex;
+        align-content: center;
+        justify-content: left;
+    }
+
+    .profile-user-settings {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1.1rem;
+    }
+
+    .profile-user-name {
+        display: inline-block;
+        font-size: 3.2rem;
+        font-weight: 300;
+    }
+
+    .profile-stats {
+        display: flex;
+        font-weight: 400;
+        color: #212529;
+        justify-content: space-between;
+        padding: 10px;
+    }
+
+    .profile-bio {
+        font-size: 1.6rem;
+        font-weight: 400;
+        line-height: 1.5;
+    }
+
+    .profile-real-name {
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .profile-image {
+        background: url("@Url.Content("~/Content/loader2.gif")");
+        max-height: 350px;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    /* Loader */
+
+    .loader {
+        width: 5rem;
+        height: 5rem;
+        border: 0.6rem solid #999;
+        border-bottom-color: transparent;
+        border-radius: 50%;
+        margin: 0 auto;
+        animation: loader 500ms linear infinite;
+    }
+
+    img {
+        width: 100%;
+        max-height: 350px;
+    }
+</style>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 post-post-grid" style="padding:30px">
+            <div class="row">
+                <div class="col-12">
+                    <div class="profile-user-settings">
+                        <h3 class="profile-user-name" style="padding:10px">janedoe_</h3>
+                        <span class="dropdown" style="margin-top:15px">
+                            <a href="#" class="btn m-btn m-btn--hover-brand m-btn--icon m-btn--icon-only m-btn--pill" data-toggle="dropdown" aria-expanded="false">
+                                <i class="la la-ellipsis-h" style="font-weight:bold; color: #212529; font-size:2.5rem;"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-32px, 27px, 0px);">
+                                <a class="dropdown-item" href="#" style="cursor: pointer;"><i class="fas fa-share"></i>Share</a>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="profile-image">
+                        <img src="https://images.unsplash.com/photo-1511765224389-37f0e77cf0eb?w=500&h=500&fit=crop" loading="lazy" alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="profile-stats col-12">
+                    <div>
+                        <span style="padding:10px;"><i class="like_ic far fa-heart" data-active="desactive"style="font-size:2.5rem; cursor: pointer; color:#f98e47"></i> </span>
+                        <span style="padding:10px;"><i class="comment_ic far fa-comment" data-active="desactive" style="font-size:2.5rem;cursor: pointer; color:#f98e47"></i></span>
+                    </div>
+                    <div>
+                        <span style="padding:10px;"><i class="save_ic far fa-bookmark" data-active="desactive" style="font-size:2.5rem; cursor: pointer; color:#f98e47"></i></span>
+                    </div>
+                </div>
+                <div class="col-12" >
+                    <div class="comment_field" style="display:none">
+                        <div class="form-group m-form__group" style="padding-top:10px">
+                            <div class="m-input-icon m-input-icon--left m-input-icon--right">
+                                <input type="text" class="form-control m-input m-input--pill m-input--air" placeholder="Comment...">
+                                <span class="m-input-icon__icon m-input-icon__icon--left"><span><i class="la la-user"></i></span></span>
+                                <span class="m-input-icon__icon m-input-icon__icon--right"  style="cursor:pointer;"><span><i class="far fa-paper-plane" style=" font-size: 1.7em;"></i></span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-bio">
+                    <div><span class="profile-real-name" style="padding:10px">Jane Doe</span><p style="padding-left:15px">Lorem ipsum dolor sit, amet consectetur adipisicing elit 📷✈️🏕️</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12" id="loader_0"></div>
+</div>
+
+
+

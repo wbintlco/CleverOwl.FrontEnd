@@ -1,0 +1,178 @@
+﻿@model FrontEnd.WebApplication.Models.GradeViewModel
+@using RLI.Common.Managers
+@using RLI.EntityFramework.EDM
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    List<DataTranslation> dataTranslations = ViewBag.DataTranslations;
+    int i = 0;
+    bool visibility = ViewBag.Visibility;
+}
+<style>
+    .select2-results__group {
+        color: #0E8BF2 !important;
+        font-size: 20px !important;
+        font-weight: bold;
+    }
+</style>
+
+<div class="m-portlet m-portlet--mobile" id="DomainsDiv">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageGradeDetails1"))
+                </h3>
+            </div>
+        </div>
+        <div class="m-portlet__head-tools">
+        </div>
+    </div>
+    <div class="m-portlet__body" style="padding:10px;">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "editForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="Grade1">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageGrade1"))</label>
+                <div class="col-md-12">
+                    <input class="form-control text-box single-line" type="text" name="Grade1" id="GradeName" style="width:100%" value="@Model.Grade1" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2" for="CycleKey">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageCycle1"))</label>
+                <div class="col-md-12">
+                    @Html.DropDownList("CycleKey", (SelectList)ViewBag.CycleDropDown, new { style = "width:100%; disabled='disabled' ", id = "CycleKey" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2" for="GradeIndex">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageGradeIndex"))</label>
+                <div class="col-md-12">
+                    @Html.DropDownList("GradeIndex", (SelectList)ViewBag.IndexDropDown, "", new { style = "width:100%;  disabled='disabled'", id = "IndexDropDown" })
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2" for="CycleKey">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageVisibility1"))</label>
+                <div class="col-md-12">
+                    @{
+                        if (visibility == true)
+                        {
+                            <select id="Visibility" name="Visibility" style="width:100%">
+                                <option></option>
+                                <option value="false">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageFalse1"))</option>
+                                <option value="true" selected>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageTrue1"))</option>
+                            </select>
+                        }
+                        else
+                        {
+                            <select id="Visibility" name="Visibility" style="width:100%">
+                                <option></option>
+                                <option value="false" selected>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageFalse1"))</option>
+                                <option value="true">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageTrue1"))</option>
+                            </select>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+            <div class="m-portlet m-portlet--mobile">
+                <div class="m-portlet__head">
+                    <div class="m-portlet__head-caption">
+                        <div class="m-portlet__head-title">
+                            <h3 class="m-portlet__head-text">
+                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageGradeTranslation1"))
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="m-portlet__head-tools">
+                    </div>
+                </div>
+                <div class="m-portlet__body" style="padding:10px;">
+
+                    <div class="m-form__section m-form__section--first">
+
+                        <div id="m_repeater_1">
+                            <div class="form-group  m-form__group" id="m_repeater_1">
+
+                                <div data-repeater-list="" class="col-lg-11" id="repeaterDiv">
+                                    @{
+
+                                        foreach (var item in dataTranslations)
+                                        {
+                                            <div data-repeater-item="" id="languageTranslationRepeater_@i" class="form-group m-form__group row align-items-center">
+                                                <div class="col-md-4">
+                                                    <div class="m-form__group m-form__group--inline">
+                                                        <div class="m-form__label control-label"><label>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageLanguageTranslation1"))</label></div>
+                                                        <div class="m-form__control"><input type="text" disabled="" class="form-control m-input" placeholder="@item.Language.Language1"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="m-form__label"><label class="m-label m-label--single">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageGradeName1"))</label></div>
+                                                    <div class="m-form__control"><input type="text" class="form-control m-input gradeNameClass" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageGradeName1"))" value="@item.Value"></div>
+                                                </div>
+
+                                                <div class="d-md-none m--margin-bottom-10"></div>
+
+                                                <div class="col-md-4">
+                                                </div>
+                                            </div>
+                                            i++;
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-lg-9 col-md-9 col-sm-9"></div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 mt-1">
+                        <a class="btn m-btn--pill btn-outline-metal m-btn m-btn--outline-2x w-100" href="@Url.Action("Index","Grades")">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageBackToGrades1"))</a>
+                    </div>
+                </div>
+            </div>
+         }
+    </div>
+
+</div>
+
+
+
+@section Scripts {
+
+    <!--begin::Page Vendors -->
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+
+    <script>
+        $(document).ready(function () {
+            $('#CycleKey').select2({
+                "disabled": true,
+            });
+            $('#Visibility').select2({
+                "disabled": true,
+            });
+            $('#translationLanguageDropdown').select2({
+                placeholder: 'Language Translation',
+                data: @Html.Raw(Json.Encode(ViewBag.LanguageKey)),
+            });
+            $('#IndexDropDown').select2({
+                "disabled": true,
+            });
+            $("select").prop("disabled", true);
+            $("input").prop("disabled", true);
+
+        });
+
+
+    </script>
+
+
+}

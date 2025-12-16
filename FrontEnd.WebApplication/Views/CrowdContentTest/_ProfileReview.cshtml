@@ -1,0 +1,97 @@
+﻿@model RLI.WebApplication.Models.ReviewProfileViewModel
+@using RLI.Common.Managers
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+@using (Html.BeginForm("ReviewProfile", "CrowdContent", FormMethod.Post, new { @class = "m-form m-form--fit m-form--label-align-right m-form--group-seperator-dashed", @id = "profileReviewForm", role = "form" }))
+{
+    <div class="m-form__section m-form__section--first">
+        <div class="m-form__heading">
+            <h3 class="font-weight-bold">
+                <i class="fa fa-user-check" style="padding-right: 20px;font-size:3rem;"></i>
+                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateProfileReviewWhatWeKnowTitle"))
+            </h3>
+        </div>
+        <div class="m-form__heading m--margin-top-40">
+            <h3 class="m-form__heading-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateProfileReviewBasicInformationTitle"))</h3>
+        </div>
+        <div class="m-portlet__body">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.Id)
+            <div class="m-form__content">
+                @Html.ValidationSummary("", new { @class = "text-danger mt-4" })
+            </div>
+            <div class="form-group m-form__group row">
+                <label class="col-lg-3 col-form-label">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateProfileReviewAlternativeEmailLabel"))</label>
+                <div class="col-lg-8">
+                    @Html.EditorFor(model => model.AlternativeEmail, new { htmlAttributes = new { @class = "form-control m-input", @placeholder = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageEmailPlaceholder")).ToString() } })
+                    <span class="m-form__help"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateProfileReviewEnterEmailSpan"))</span>
+                    @Html.ValidationMessageFor(model => model.AlternativeEmail, "*", new { @class = "m-form__help text-danger" })
+                </div>
+                <div class="col-xl-1 col-lg-1"></div>
+            </div>
+            <div class="form-group m-form__group row">
+                <label class="col-lg-3 col-form-label"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateProfileReviewFirstNameLabel"))</label>
+                <div class="col-lg-8">
+                    @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control m-input", @placeholder = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageFirstNamePlaceholder")).ToString() } })
+                    <span class="m-form__help"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateProfileReviewEnterFirstNameSpan"))</span>
+                    @Html.ValidationMessageFor(model => model.FirstName, "*", new { @class = "text-danger" })
+                </div>
+                <div class="col-xl-1 col-lg-1"></div>
+            </div>
+            <div class="form-group m-form__group row">
+                <label class="col-lg-3 col-form-label"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateProfileReviewLastNameLabel"))</label>
+                <div class="col-lg-8">
+                    @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control m-input", @placeholder = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePageLastNamePlaceholder")).ToString() } })
+                    <span class="m-form__help"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateProfileReviewEnterLastNameSpan"))</span>
+                    @Html.ValidationMessageFor(model => model.LastName, "*", new { @class = "text-danger" })
+                </div>
+                <div class="col-xl-1 col-lg-1"></div>
+            </div>
+            <div class="form-group m-form__group row">
+                <label class="col-lg-3 col-form-label"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateProfileReviewSectorLabel"))</label>
+                <div class="col-lg-8">
+                    @Html.DropDownList("Sector", null, "", htmlAttributes: new { @id = "sectorsSelect", @class = "form-control w-100" })
+                </div>
+                <div class="col-xl-1 col-lg-1"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="m-separator m-separator--dashed m-separator--lg"></div>
+    <div class="m-form__section">
+        <div class="m-form__heading">
+            <h3 id="mobilePhoneHeading" class="m-form__heading-title">
+                 @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateProfileReviewMobilePhoneTitle"))
+                <i data-toggle="m-tooltip" data-width="auto" class="m-form__heading-help-icon flaticon-info" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateProfileReviewYouWillReceiveCodeToolTip"))"></i>
+            </h3>
+        </div>
+        <div class="form-group m-form__group row">
+            <label class="col-lg-3 col-form-label"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateProfileReviewPhoneNumberLabel"))</label>
+            <div class="col-lg-8">
+                <input id="mobilePhoneNumberSelect" class="form-control m-input w-100" type="tel" />
+                @Html.ValidationMessageFor(model => model.PhoneNumber, Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePagePhoneError")).ToString(), new { @class = "text-danger", @style = "display:block;" })
+                <div id="numberInvalidSpan" class="text-danger" style="display:none;">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePagePhoneHelp"))</div>
+                @Html.HiddenFor(m => m.PhoneNumber)
+            </div>
+            <div class="col-xl-1 col-lg-1"></div>
+        </div>
+    </div>
+    <div class="m-separator m-separator--dashed m-separator--lg"></div>
+    <div id="acknowledgeInformationAccuracyContainer" class="form-group m-form__group m-form__group--sm row">
+        <div class="col-xl-12">
+            <div class="m-checkbox-inline">
+                <label class="m-checkbox m-checkbox--solid m-checkbox--brand">
+                    @Html.CheckBoxFor(m => m.AcknowledgeAccuracyInformation, new { @class = "m-checkbox m-checkbox--solid m-checkbox--brand" })
+                    @*@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePagePhoneAcknowledgeAccuracyInformationLabel"))*@
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateProfileReviewPhoneAcknowledgeAccuracyInformationLabel"))
+                    <span></span>
+                </label>
+            </div>
+            @Html.ValidationMessageFor(model => model.AcknowledgeAccuracyInformation, Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePagePhoneAcknowledgeAccuracyInformationValidationMessage")).ToString(), new { @class = "m-form__help text-danger" })
+        </div>
+    </div>
+}

@@ -1,0 +1,370 @@
+﻿
+@model IEnumerable<RLI.EntityFramework.EDM.Domain>
+@using RLI.Common.Managers
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = "Index";
+}
+@Styles.Render("~/assets/vendors/custom/datatables/datatables.bundle.css")
+<style>
+    .m-portlet__body {
+        overflow: auto !important;
+        padding: 20px;
+    }
+
+    .dataTables_info {
+        display: none !important;
+    }
+</style>
+<div class="m-portlet m-portlet--mobile">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageDomains"))
+                </h3>
+            </div>
+        </div>
+        <div class="m-portlet__head-tools">
+            <div class="m-portlet__nav">
+                <ul class="m-portlet__nav">
+                    <li class="m-portlet__nav-item">
+                        <a href="@Url.Action("Create", "Domains")" class="m-portlet__nav-link m-portlet__nav-link--icon"><i class="la la-plus-square"><span>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageCreate"))</span></i></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__body" style="padding:10px">
+        <div class="m-portlet m-portlet--mobile">
+            <div class="m-portlet__head">
+                <div class="m-portlet__head-caption">
+                    <div class="m-portlet__head-title">
+                        <h3 class="m-portlet__head-text">
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageFilter"))
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div
+                 class="m-portlet__body" style="padding:20px">
+                <div class="row">
+                    <div class="col-md-3">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageGrade"))
+                        @Html.DropDownList("GradeKey", (SelectList)ViewBag.Grades, "", new { style = "width:100%", id = "GradesDropDown" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageSubject"))
+                        @Html.DropDownList("SubjectKey", (SelectList)ViewBag.Subjects, "", new { style = "width:100%", id = "SubjectsDropDown" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageDomain"))
+                        @Html.DropDownList("Domain1", (SelectList)ViewBag.DomainsName, "", new { style = "width:100%", id = "DomainsDropDown" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageStatus"))
+                        @Html.DropDownList("Status", (SelectList)ViewBag.StatusKey, "", new { style = "width:100%", id = "StatusesDropDown" })
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-6"></div>
+                    <div class="col-md-3">
+                        <button href="@Url.Action("GetNextOrPreviousDomains", "Domains")" class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100" id="applyBtn">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageApply"))</button>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn m-btn--pill btn-outline-danger m-btn m-btn--outline-2x w-100" id="clearBtn">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageClear"))</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="domainTable">
+            @Html.Partial("_DomainsTable")
+        </div>
+
+    </div>
+    <div class="m-portlet__foot">
+        <div class="row">
+            <div class="col-md-3">
+                <button class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100" id="previousBtn" style="display:none;">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPagePrevious"))</button>
+            </div>
+            <div class="col-md-6"></div>
+            <div class="col-md-3">
+                <button class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100" id="nextBtn">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageNext"))</button>
+            </div>
+        </div>
+    </div>
+</div>
+@using (Html.BeginForm("GetNextOrPreviousDomains", "Domains", FormMethod.Post, new { id = "FilterHidden", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+
+}
+
+@using (Html.BeginForm("ApproveDomain", "Domains", FormMethod.Post, new { id = "ApproveDomainHidden", @class = "", @style = "display:none;" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("DomId", "")
+}
+
+@using (Html.BeginForm("RejectDomain", "Domains", FormMethod.Post, new { id = "RejectDomainHidden", @class = "", @style = "display:none;" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("IdOfDom", "")
+}
+@section Scripts {
+
+    <!--begin::Page Vendors -->
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+    @Scripts.Render("~/assets/vendors/custom/datatables/datatables.bundle.js")
+
+<script>
+    var table;
+    function init() {
+        table = $("#m-table").dataTable({//f was removed to remove filtering
+            dom: `<'row'<'col-sm-12 col-md-9'><'col-sm-12 col-md-3 align-edge'>>
+                    <'row'<'col-sm-12'tr>>
+                    <'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 dataTables_pager'lp>>`,
+            "language": {
+                "search": "<span>@UtilitiesManager.GetFieldLabel(Locale, "DataTableSearch") :   </span>",
+                "lengthMenu": "@UtilitiesManager.GetFieldLabel(Locale, "DataTableDisplay") _MENU_ @UtilitiesManager.GetFieldLabel(Locale, "DataTableRecords")",
+                "info": "@UtilitiesManager.GetFieldLabel(Locale, "DataTableShowing") _START_ @UtilitiesManager.GetFieldLabel(Locale, "DataTableTo") _END_ @UtilitiesManager.GetFieldLabel(Locale, "DataTableOf") _TOTAL_ @UtilitiesManager.GetFieldLabel(Locale, "DataTableEntries")",
+                "infoFiltered": "(@UtilitiesManager.GetFieldLabel(Locale, "DataTableResultsOutOfTotal") _MAX_ @UtilitiesManager.GetFieldLabel(Locale, "DataTableRecords"))", "infoEmpty": "@UtilitiesManager.GetFieldLabel(Locale, "DataTableEmpty")",
+                "paginate": {
+                    "first": "@UtilitiesManager.GetFieldLabel(Locale, "DataTableFirst")",
+                    "last": "@UtilitiesManager.GetFieldLabel(Locale, "DataTableLast")",
+                    "next": "@UtilitiesManager.GetFieldLabel(Locale, "DataTableNext")",
+                    "previous": "@UtilitiesManager.GetFieldLabel(Locale, "DataTablePrevious")",
+                }
+            },
+            "paginate": false,
+            "ordering": false,
+            //"order": [[ 1, 'asc' ], [ 2, 'asc' ], [ 5, 'asc' ]],
+            responsive: !0,
+            pagingType: "full_numbers",
+            columnDefs: [{
+                targets: -1,
+                title: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageActions"))",
+                orderable: !1,
+                render: function (a, e, n, t) {
+                    var ApproveHidden = "hidden";
+                    var RejectHidden = "hidden";
+                    var actionHidden = "";
+                    if (n[4] == "Pending" || n[4] == "Rejected") {
+                        ApproveHidden = "";
+                    }
+                    if (n[4] == "Approved" || n[4] == "Pending") {
+                        RejectHidden = "";
+                    }
+                             @if (User.IsInRole("ContentPublisher"))
+                            {
+                               <text>
+                    ApproveHidden = "hidden";
+                    RejectHidden = "hidden";
+
+                    actionHidden = "hidden";
+
+                        </text>
+                            }
+                    return '\n<span class="dropdown">' +
+                        '\n<a href="#" class="btn m-btn m-btn--hover-brand m-btn--icon m-btn--icon-only m-btn--pill" data-toggle="dropdown" aria-expanded="true">' +
+                        '\n<i class="la la-ellipsis-h"></i>\n</a>\n<div class="dropdown-menu dropdown-menu-right">' +
+                        '\n                                <a class="dropdown-item" href="" onClick="ApproveDomain(' + n[0] + ')" ' + ApproveHidden + '><i class="fas fa-check"></i> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageApprove"))</a>' +
+                        '\n                                <a class="dropdown-item" href="" onClick="RejectDomain(' + n[0] + ')" ' + RejectHidden + '><i class="far fa-times-circle"></i> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageReject"))</a>' +
+                        '\n                                <a class="dropdown-item" href="@Url.Action("Delete")/' + n[0] + '" ' + actionHidden + '><i class="la la-trash"></i>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageDelete"))</a>' +
+                        '\n                                <a class="dropdown-item" href="@Url.Action("Edit")/?id=' + n[0] + '" ' + actionHidden + '><i class="la la-edit"></i> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageEdit"))</a>' +
+                        '\n                                <a class="dropdown-item" href="@Url.Action("Details")/?id=' + n[0] + '"><i class="la la-info"></i> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageDetails"))</a>' +
+                        '\n</div>\n</span>\n'
+                }
+            }, {
+                targets: 0,
+                visible: false,
+            }],
+            "stateSave": true
+        });
+    }
+
+    $(document).ready(function () {
+            init();
+            $('#GradesDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageChooseGrade"))'
+            });
+            $('#SubjectsDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageChooseSubject"))'
+            });
+
+            $('#DomainsDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageChooseDomain"))'
+            });
+            $('#StatusesDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainsPageChooseStatus"))'
+            });
+            var skip1 = 0;
+            $('#applyBtn').on('click', function () {
+                mApp.block($("#domainTable"));
+
+                $.ajax({
+                url: '@Url.Action("GetNextOrPreviousDomains", "Domains")',
+                type: 'POST',
+                dataType: 'html',
+                data: {
+                    skip: skip1, gradeKey: $('#GradesDropDown').val(), subjectKey: $('#SubjectsDropDown').val(), domainName: $('#DomainsDropDown').val(), statusKey: $('#StatusesDropDown').val(),
+                    __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+
+                },
+                    success: function (data) {
+
+
+                    if (data.includes("Empty")) {
+                        //Datatable.destoy();
+                        $("#domainTable").empty();
+                        $("#domainTable").html("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_NoResultFound"))");
+                        $('#nextBtn').hide();
+                        $('#previousBtn').hide();
+                    } else {
+                        table.destroy();
+                        $("#domainTable").empty();
+                        $("#domainTable").html(data);
+
+                        init();
+                    }
+
+                    mApp.unblock($("#domainTable"));
+                }
+            });
+            });
+
+
+
+        });
+
+        function ApproveDomain(id) {
+
+            event.preventDefault();
+            $("#DomId").val(id);
+
+            $("#ApproveDomainHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == 5) {
+                        $("#applyBtn").click()
+                    }
+                    },
+                error: function (xhr, status, error) {
+                    console.log("Error In ApproveDomain !!!!!!!");
+                }
+            });
+        }
+
+        function RejectDomain(id) {
+            event.preventDefault();
+            $("#IdOfDom").val(id);
+            $("#RejectDomainHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == 6) {
+                        $("#applyBtn").click()
+                    }
+                    },
+                error: function (xhr, status, error) {
+                    console.log("Error In RejectDomain !!!!!!!");
+                }
+            });
+        }
+
+
+          $("#clearBtn").click(function () {
+          $("#GradesDropDown").val('').trigger('change');
+          $("#SubjectsDropDown").val('').trigger('change');
+          $("#DomainsDropDown").val('').trigger('change');
+          $("#StatusesDropDown").val('').trigger('change');
+
+          $("#applyBtn").click();
+          })
+
+        var paginationIndexing = 0;
+        $("#nextBtn").click(function () {
+            var grade = $("#GradesDropDown option:selected").val();
+            var subject = $("#SubjectsDropDown option:selected").val();
+            var domain = $("#DomainsDropDown option:selected").val();
+            var status = $("#StatusesDropDown option:selected").val();
+
+            paginationIndexing++;
+             mApp.block($("#domainTable"));
+
+                $.ajax({
+                url: '@Url.Action("GetNextOrPreviousDomains", "Domains")',
+                type: 'POST',
+                dataType: 'html',
+                data: {
+                    skip: paginationIndexing, gradeKey:grade, subjectKey: subject, domainName: domain, statusKey: status,
+                    __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+
+                },
+                success: function (data) {
+
+                    if (data.includes("Empty")) {
+                         paginationIndexing--;
+                        $("#nextBtn").hide();
+                        $("#previousBtn").show();
+                    } else {
+
+                        $("#domainTable").empty();
+                        $("#domainTable").html(data);
+                    Datatable.init();
+
+                    }
+                                 if (paginationIndexing == 0) {
+                $("#previousBtn").hide();
+            } else {
+                  $("#previousBtn").show();
+            }
+
+                    mApp.unblock($("#domainTable"));
+                }
+            });
+        })
+
+        $("#previousBtn").click(function () {
+            var grade = $("#GradesDropDown option:selected").val();
+            var subject = $("#SubjectsDropDown option:selected").val();
+            var domain = $("#DomainsDropDown option:selected").val();
+            var status = $("#StatusesDropDown option:selected").val();
+
+            $("#nextBtn").show();
+            paginationIndexing= parseInt(--paginationIndexing,10);
+
+           mApp.block($("#domainTable"));
+
+                $.ajax({
+                url: '@Url.Action("GetNextOrPreviousDomains", "Domains")',
+                type: 'POST',
+                dataType: 'html',
+                data: {
+                    skip: paginationIndexing, gradeKey:grade, subjectKey: subject, domainName: domain, statusKey: status,
+                    __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+
+                },
+                success: function (data) {
+                    $("#domainTable").empty();
+                    $("#domainTable").html(data);
+                    if (paginationIndexing == 0) {
+                $("#previousBtn").hide();
+            } else {
+                  $("#previousBtn").show();
+            }
+                    Datatable.init();
+
+                    mApp.unblock($("#domainTable"));
+                }
+            });
+        })
+</script>
+
+}
+

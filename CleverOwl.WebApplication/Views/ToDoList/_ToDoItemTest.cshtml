@@ -1,0 +1,107 @@
+﻿@model CleverOwl.WebApplication.Models.ToDoViewModel
+@using RLI.EntityFramework.EDM;
+@using RLI.Common.Managers
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    string subjectValue = "";
+}
+
+
+
+
+@if (Model.Assignments.Count() == 0 && Model.Sessions.Count() == 0)
+{
+    @Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
+  { "title", "Hey hey!" },
+  { "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Youdontseemtohaveanytodo")).ToString() }
+  , { "description", "" }
+  , { "action", false },
+  { "actionBtnId", "" },
+  { "actionBtnText", "" } })
+}
+else
+{
+    <style>
+        h5 {
+            font-weight: normal !important;
+        }
+
+        .no-border {
+            border-bottom: none !important;
+        }
+
+        .m-portlet {
+            background: #ffffff;
+            padding: 0px;
+            margin-top: 15px;
+        }
+
+        .item-todo {
+            border-bottom: 1px solid #2b2350;
+        }
+
+         
+    </style>
+    <div class="m-portlet" style="width: 100%;">
+
+        <div class="m-portlet__body">
+            <div class="global-container">
+
+                @if (Model.Sessions.Count() != 0)
+                {
+                    foreach (var session in Model.Sessions)
+                    {
+                        using (RLIEntities db = new RLIEntities())
+                        {
+                            subjectValue = db.Subjects.Find(session.SchoolSubjectTeacherGrade.SubjectKey).Subject1;
+                        }
+                        <a href="@session.MeetingURL" target="_blank">
+                            <div class="row item-todo" dir="ltr" style=" padding: 40px;">
+                                <div class="col-lg-1 col-md-2 col-sm-12">
+                                    @Html.Partial("~/Views/SharedSvgs/_SynchronousLearningIcon.cshtml")
+                                </div>
+                                <div class="col-lg-11 col-md-10 col-sm-12" style="text-align:initial">
+
+                                    <h5>Virtual Class - @subjectValue</h5>
+                                    <h4>@session.Topic</h4>
+                                </div>
+
+                            </div>
+                        </a>
+
+                    }
+                }
+                @if (Model.Assignments.Count() != 0)
+                {
+                    foreach (var assignment in Model.Assignments)
+                    {
+                    <a href="@Url.Action("Index","AssignmentsSubmission", new { assignmentKey = assignment.AssignmentKey })" target="_blank">
+                            <div class="row item-todo" dir="ltr" style=" padding: 40px; ">
+
+                                <div class="col-lg-1 col-md-2 col-sm-12">
+                                    @Html.Partial("~/Views/SharedSvgs/_AssignmentsIcon.cshtml")
+                                </div>
+                                <div class="col-lg-11 col-md-10 col-sm-12" style="text-align:initial">
+
+                                    <h5>ASSIGNMENT - @assignment.SubjectName</h5>
+                                    <h4>@assignment.Title</h4>
+                                </div>
+
+
+                            </div>
+                    </a>
+
+
+
+                }
+
+                }
+
+
+
+</div>
+        </div>
+    </div>
+}
+
+

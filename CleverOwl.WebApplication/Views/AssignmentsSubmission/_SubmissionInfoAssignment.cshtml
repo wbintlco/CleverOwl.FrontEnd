@@ -1,0 +1,136 @@
+﻿
+@model RLI.Common.DataObjects.SubmissionDetailsViewModel
+@using RLI.Common.Managers
+@using RLI.Common.DataObjects
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+<table id="submissionInfoTable">
+    <tr>
+        <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSubmissionStatus"))</b></td>
+        <td>@Model.SubmissionStatus</td>
+
+    </tr>
+    <tr>
+        <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageGradingStatus"))</b></td>
+        <td>@Model.GradingStatus</td>
+    </tr>
+    <tr>
+        <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageDueDate"))</b></td>
+        <td>@Model.DueDate</td>
+
+    </tr>
+    <tr>
+        <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageTimeRemaining"))</b></td>
+        @{
+            var timeRemaining = Model.TimeRemaining.Value;
+            var timeRemainingDays = timeRemaining.Days;
+            var timeRemainingHours = timeRemaining.Hours;
+            var timeRemainingMinutes = timeRemaining.Minutes;
+        }
+        @if ((timeRemainingDays != 0 || timeRemainingHours != 0 || timeRemainingMinutes != 0) && Model.ExtensionDueDate != null)
+        {
+    <td>@timeRemainingDays d @timeRemainingHours h @timeRemainingMinutes m</td>
+        }
+        else
+        {
+            <td class="m--font-danger">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_DueDateSubmissionMessage"))</td>
+        }
+      
+    </tr>
+
+    <tr>
+        <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageLastModified"))</b></td>
+        <td>@Model.LastModified</td>
+
+    </tr>
+    <tr>
+        <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageOnlineText"))</b></td>
+        <td> @(Model.OnlineText != null? Html.Raw(Model.OnlineText.Replace("'", "")).ToString() : "")</td>
+    </tr>
+    <tr>
+        <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSubmissionComments"))</b></td>
+        <td>
+            <div id="comments">
+                @{
+                    int userId = int.Parse(Model.MoodleUserId);
+                    var groupedBYCommentsTeacher = Model.getCommentResultModel.comments.Where(c => c.userid != userId).GroupBy(item => item.fullname).Select(group => new { Customer = group.Key, Items = group.ToList() }).ToList();
+                    var groupedBYCommentsStudent = Model.getCommentResultModel.comments.Where(c => c.userid == userId).GroupBy(item => item.fullname).Select(group => new { Customer = group.Key, Items = group.ToList() }).ToList();
+                    foreach (var content in groupedBYCommentsTeacher)
+                    {
+                        <h6>@content.Customer</h6>
+                        foreach (AddCommentResultModel item in content.Items)
+                        {
+                            <p>@Html.Raw(item.content)</p>
+                        }
+                    }
+                    <h6>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageMyComments"))</h6>
+                    <div id="studentCommentsContainer">
+                        @foreach (var content in groupedBYCommentsStudent)
+                        {
+                            foreach (AddCommentResultModel item in content.Items)
+                            {
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        @Html.Raw(item.content)
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <a href="" data-CommentId="@item.id" class="deleteComment"><i class="fa fa-trash"></i></a>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+
+            </div>
+            <a href="#" id="addComment" data-toggle="modal" data-target="#m_scrollable_modal_comment"><u>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageAddComment"))</u></a>
+        </td>
+    </tr>
+</table>
+<div class="mt-3">
+    <div class="row mt-4">
+        <div class="col-3">
+
+        </div>
+        <div id="SubBtns" class="col-6" style="text-align:center">
+            @if (Model.Locked == false)
+            {
+                <!--if (Model.SubmissionStatus == "submitted")
+        {
+            <div id="editBtn" type="button" class="btn btn-brand mr-3" style="width:100px;">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageEdit"))</div>-->
+                @*<div id="removeSubmissionBtn" type="button" class="btn btn-brand mr-3">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageRemoveSubmission"))</div>*@
+                <!--<div id="submitBtn" type="button" class="btn btn-brand" style="width:100px; display:none;">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSubmit"))</div>
+        }
+        else
+        {
+            <div id="editBtn" type="button" class="btn btn-brand mr-3" style="width:100px; display:none">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageEdit"))</div>-->
+                @*<div id="removeSubmissionBtn" type="button" class="btn btn-brand mr-3" style="display:none">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageRemoveSubmission"))</div>*@
+                <!--<div id="submitBtn" type="button" class="btn btn-brand" style="width:100px">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSubmit"))</div>
+        }-->
+            
+                if (Model.SubmissionStatus != "submitted" && Model.SubmissionStatus == "draft")
+                {
+                        <div id="editBtn" type="button" class="btn btn-brand mr-3" style="width:100px;">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageEdit"))</div>
+                        @*<div id="removeSubmissionBtn" type="button" class="btn btn-brand mr-3">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageRemoveSubmission"))</div>*@
+                        @*<div id="submitBtn" type="button" class="btn btn-brand" style="width:100px; display:none;">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSubmit"))</div>*@
+                    }
+                    else if (Model.SubmissionStatus != "submitted")
+                    {
+                        <div id="submitBtn" type="button" class="btn btn-brand" style="width:100px">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionPageSubmit"))</div>
+                    }
+                                            
+                }
+
+
+            </div>
+        <div class="col-3">
+
+        </div>
+    </div>
+
+</div>
+
+
+

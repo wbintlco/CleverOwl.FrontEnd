@@ -1,0 +1,666 @@
+﻿@model List<RLI.Common.DataObjects.ContactModel>
+@using RLI.EntityFramework.EDM
+@using RLI.Common.Managers
+@using Microsoft.AspNet.Identity
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageMessages"));
+    List<RLI.Common.DataObjects.ContactModel> conversations = Model;
+
+    bool iscoordinator = false;
+    if ((User.IsInRole("ContentManager") || User.IsInRole("Coordinator") || User.IsInRole("HeadOfDepartment") || User.IsInRole("SchoolDirector") || User.IsInRole("SchoolPrincipal") || User.IsInRole("SeniorCoordinator")) && ViewBag.CurrentUser.Id != User.Identity.GetUserId())
+    {
+
+   // if (User.IsInRole("ContentManager") && ViewBag.CurrentUser.Id != User.Identity.GetUserId())
+   // {
+        iscoordinator = true;
+    }
+
+}
+
+<style>
+    .page-banner {
+        margin-top: 100px;
+        height: fit-content;
+        margin-bottom: 30px;
+        background-color: #ffffff;
+    }
+
+    .page-body {
+        padding: 0;
+        margin-bottom: 50px;
+    }
+
+    .profilePhoto {
+        width: 3.2rem;
+        height: 3.2rem;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .conversationTab-newMessage {
+        background: linear-gradient(90deg, rgba(89, 194, 185, 0.4)0%, rgba(0,0,0,0) 8%);
+        border-radius: 25px;
+    }
+
+    .deleteIcon {
+        float: right;
+        width: 20px !important;
+        height: 20px !important;
+        margin-bottom: 5px !important;
+    }
+
+    .m-tabs__item-active {
+        border-radius: 2rem !important;
+        background-color: #f7f8fa !important;
+    }
+
+    .input-icons i {
+        position: absolute;
+    }
+
+    .input-icons {
+        width: 100%;
+    }
+
+    .icon {
+        padding: 10px;
+        min-width: 40px;
+    }
+
+    .input-field {
+        width: 100%;
+        /*padding: 10px;
+        text-align: center;*/
+    }
+
+    @@media (min-width: 1025px) {
+        .msgNote {
+            margin-left: 18%;
+        }
+    }
+
+    @@media (max-width: 1400px) {
+    }
+
+    .m-messenger__message-text a {
+        color: #fff !important;
+    }
+
+    svg {
+        height: 50px !important;
+    }
+
+
+    .m-messenger__message-text p {
+        word-break: break-all;
+    }
+
+    @@media(max-width:991px) {
+        .BodyParent #m_aside_left {
+            display: none !important;
+        }
+
+        .messgIcon {
+            display: none;
+        }
+        /*.mobile_tablet_hidden {
+            display: none;
+        }*/ /*.mobile_tablet_hidden {
+            display: none;
+        }*/
+    }
+
+    @@media(min-width:992px) {
+        /*.desktop_hidden {
+            display: none;
+        }*/
+
+        .seperator_mssg_contact {
+            display: none;
+        }
+    }
+
+    .m-portlet__body {
+        padding-top: 1em !important;
+    }
+
+    @@media(max-width:991px) {
+
+        .mssgIcon {
+            display: none;
+        }
+
+        .m-messenger .m-messenger__messages .m-messenger__message.m-messenger__message--out {
+            padding-left: 0px !important;
+        }
+    }
+
+    .blockUI.blockMsg.blockElement {
+        top: 50% !important;
+        left: 50% !important;
+    }
+
+    .coordinator {
+        pointer-events: none;
+        opacity: 0.5;
+        cursor: not-allowed;
+        filter: grayscale(100%);
+    }
+</style>
+
+<section class="page-banner">
+    <div class="container">
+        <div class="page-title-wrapper">
+            <div>
+                <ul class="bradcurmed">
+                    <li><a href="@Url.Action("Index","Dashboard")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageWall"))</a></li>
+                    <li><a href="@Url.Action("Index","Messages")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageMessages"))</a></li>
+                </ul>
+            </div>
+            <div class="row m--margin-top-20-desktop">
+                <div class="col-lg-1 m-auto mssgIcon">
+                    @Html.Partial("~/Views/SharedSvgs/_MessageIcon.cshtml")
+                </div>
+                <div class="col-lg-5 col-12 m-auto">
+                    <h1 class="page-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageMessages"))</h1>
+                </div>
+                <div class="col-lg-3  m-auto">
+                </div>
+                <div class="col-lg-3 col-12 m-auto">
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- /.container -->
+</section>
+<div class="page-body">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="m-portlet" style="margin-top: 10px">
+                    <div class="m-portlet__body">
+                        <div class="row m-auto">
+                            <div id="contacts" class="col-lg-4 col-12">
+                                <span class="ml-2">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageSearchOrStartANewChat"))</span>
+                                <div class="input-icons" style="">
+                                    <i class="fas fa-search icon" style="margin-top:14px"></i>
+                                    <input id="search" class="input-field form-control" type="text" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageSearchOrStartANewChat"))" />
+                                </div>
+                                <div class="m-portlet--border-bottom-accent" style="max-height:470px; overflow-y: auto;">
+                                    <ul class="m-nav m-nav--active-bg m-nav--active-bg-padding-lg m-nav--font-lg m-nav--font-bold m--margin-bottom-20 m--margin-top-10 m_nav-active m-messenger m-messenger--message-arrow m-messenger--skin-light" id="m_nav" role="tablist">
+
+                                        @Html.Partial("~/Views/Messages/_Chat.cshtml", conversations)
+
+                                    </ul>
+                                </div>
+                                @*<div class="m-portlet--border-bottom-accent desktop_hidden" style="max-height:200px; overflow-y: auto;">
+                                        <ul class="m-nav m-nav--active-bg m-nav--active-bg-padding-lg m-nav--font-lg m-nav--font-bold m--margin-bottom-20 m--margin-top-10 m_nav-active m-messenger m-messenger--message-arrow m-messenger--skin-light" id="m_nav" role="tablist">
+
+                                            @Html.Partial("~/Views/Messages/_Chat.cshtml", conversations)
+
+                                        </ul>
+                                    </div>*@
+                                @*<div class="border-bottom seperator_mssg_contact m--hidden-mobile"></div>*@
+                            </div>
+                            <div class="col-lg-8 col-12 d-none d-lg-block">
+                                <div class="m-tabs-content" id="m_sections">
+                                    <div id="backToContactsBtn" class="border-bottom seperator_mssg_contact">
+                                        <i class="fas fa-arrow-left" style="font-size: 22px; color: #2a224f">
+                                            <span class="userProfile ml-1" style="font-family: Poppins"></span>
+                                        </i>
+                                    </div>
+                                    <div class="m-portlet__body" id="m_section_">
+                                        <div id="m_quick_sidebar_tabs_messenger">
+                                            <div class="m-messenger m-messenger--message-arrow m-messenger--skin-light">
+                                                <div id="loader"></div>
+                                                <div id="messenger_messages_container" class="m-messenger__messages messenger_messages_container" style="max-height:500px;overflow-y:scroll;">
+                                                    @*append messages here*@
+                                                </div>
+                                                <div class="m-messenger__seperator"></div>
+                                                <div class="m-messenger__form" style="display:none">
+                                                    <div class="m-messenger__form-controls @(iscoordinator ? "coordinator" : "")">
+                                                        <input id="messenger_text_input" type="text" name="" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageTypeHere"))" class="m-messenger__form-input messenger_text_input" data-user_id="">
+                                                    </div>
+                                                    <div class="m-messenger__form-tools">
+
+                                                        <a id="messenger_send_message" class="m-messenger__form-attachment messenger_send_message btn-primary @(iscoordinator ? "coordinator" : "")" data-user_id="" data-conv_id="" style="margin-bottom:30px">
+                                                            <i class="la la-send"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@using (Html.BeginForm("GetConversation", "Messages", FormMethod.Post, new { id = "GetConversation" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("id", "")
+    @Html.Hidden("toUser_id", "")
+    @Html.Hidden("newMessage", false)
+}
+
+
+@using (Html.BeginForm("SearchChat", "Messages", FormMethod.Post, new { id = "SearchChat" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("convId", "")
+    @Html.Hidden("username", "")
+}
+
+@using (Html.BeginForm("SendMessage", "Messages", FormMethod.Post, new { id = "SendMessage" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("converId", "")
+    @Html.Hidden("message", "")
+    @Html.Hidden("fromUserID", "")
+    @Html.Hidden("toUserID", "")
+}
+@using (Html.BeginForm("GetPreviousMessages", "Messages", FormMethod.Post, new { id = "GetPreviousMessages" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("conversationid", "")
+    @Html.Hidden("skip", "")
+}
+
+@*GetUserConversations*@
+@using (Html.BeginForm("GetUserConversations", "Messages", FormMethod.Post, new { id = "GetUserConversations" }))
+{
+    @Html.AntiForgeryToken()
+}
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+
+
+    <!--Reference the SignalR library. -->
+    @*@Scripts.RenderFormat("<script src='https://" + Request.Url.Host + "/{0}'></script>", "~/Scripts/jquery.signalR-2.4.1.min.js")*@
+    <!--Reference the autogenerated SignalR hub script. -->
+    @*@Scripts.RenderFormat("<script src='https://" + Request.Url.Host + "/{0}'></script>", "~/signalr/hubs")*@
+
+    <script>
+
+        $(document).ready(function () {
+
+
+            $('.RenderBody').removeClass('col-md-9');
+            $("#messages").remove();
+            var userNameGlobal = "";
+            var skipMessages = 1;
+            var getNewMessages = true;
+            var globalConversationId = $('.m-nav__item').eq(0).attr("data-conversation_id");
+            @if (ViewBag.conversationId != null)
+            {
+                <text>
+            globalConversationId = '@ViewBag.conversationId';
+            </text>
+            }
+            var globalToUserId = $('.m-nav__item').eq(0).attr("data-member_id");
+                @if (ViewBag.conversationId != null)
+            {
+                <text>
+            globalToUserId = '@ViewBag.toUserKey';
+            </text>
+            }
+
+
+            const minimum_width_of_lg_screen = 992;
+            var screenWidth = getScreenWidth();
+            var permission = true;
+            var permission2 = true;
+            $(window).on('resize', function () {
+                if (getScreenWidth() !== screenWidth) {
+                    screenWidth = $(this).width();
+                    if (screenWidth >= minimum_width_of_lg_screen && permission == true) {
+                        permission2 = true
+                        permission = false;
+                        $('#m_sections').parent().removeClass('d-none d-lg-block');
+                        $('#contacts').addClass('d-none d-lg-block');
+                        $('.m-nav__item').each(function (i, obj) {
+                            var conversation_id = $(this).attr("data-conversation_id");
+                            if (conversation_id == globalConversationId) {
+                               /* $(this).css("background", "#f3f3ff");*/
+                                $(this).find('.m-tabs__item').addClass("m-tabs__item--active");
+                            }
+                        });
+                    } else if (screenWidth < minimum_width_of_lg_screen && permission2 == true) {
+                        permission = true;
+                        permission2 = false;
+                        $('.m-nav__item').each(function (i, obj) {
+                            var conversation_id = $(this).attr("data-conversation_id");
+                            if (conversation_id == globalConversationId) {
+                                $(this).css("background", "#ffffff");
+                                $(this).find('.m-tabs__item').removeClass("m-tabs__item--active");
+                            }
+                        });
+                    }
+                }
+
+            });
+
+
+
+            $('#messenger_messages_container').scroll(function () {
+                console.log("scrolling");
+                var scrollTop = $(this).scrollTop();
+                if (scrollTop <= 0) {
+                    console.log('Top reached');
+                    if (getNewMessages == true) {
+                        getPreviousMessages(globalConversationId, skipMessages);
+                        console.log('get new mssgs');
+                    }
+                }
+            });
+            function getPreviousMessages(convId, skip) {
+                getNewMessages = false;
+                console.log('getPreviousMessages()');
+                mApp.block('#loader');
+                $("#conversationid").val(convId);
+                $("#skip").val(skip);
+                $("#GetPreviousMessages").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        if (data == "error") {
+                            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageAnErrorOcuurPleaseTryagainLater"))", "error");
+                            return;
+                        }
+
+                        if (data == 404) {
+                            mApp.unblock('#loader');
+                            return;
+                        }
+                        $('#newMssgs').remove();
+                        $('#messenger_messages_container').prepend('<div id="newMssgs"></div>');
+
+                        $('#messenger_messages_container').prepend(data);
+                        $('#messenger_messages_container').scrollTop(
+                            $("#newMssgs").offset().top - $('#messenger_messages_container').offset().top + $('#messenger_messages_container').scrollTop()
+                        );
+                        mApp.unblock('#loader');
+                        skipMessages++;
+                        getNewMessages = true;
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("Error In GetConversation !!!!!!!!");
+                        mApp.unblock('#loader');
+                        getNewMessages = true;
+                    }
+                });
+            }
+
+          function getConversations(convId, toUserIid, newMessage) {
+            var currentTempMessage = $("#messenger_text_input").val();
+              console.log('int the getConversations()///////');
+              var element = $('.m-portlet');
+              element.animate({ scrollTop: element.prop("scrollHeight") }, 10);
+                $("#id").val(convId);
+                $("#toUser_id").val(toUserIid);
+                $("#newMessage").val(newMessage);
+                $("#GetConversation").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        if (data == "error") {
+                            mApp.unblock('#m_section_');
+                            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageAnErrorOcuurPleaseTryagainLater"))", "error");
+                            return;
+                        }
+
+                        $('#messenger_messages_container').empty();
+                        $('#messenger_messages_container').append(data);
+                        $('.userProfile').empty();
+                        $('.userProfile').append(userNameGlobal);
+
+                        globalConversationId = convId;
+                        globalToUserId = toUserIid;
+                        mApp.unblock('#m_section_');
+                        $('.m-messenger__form').show();
+                        $("#messenger_text_input").val(currentTempMessage);
+                        var element = $('#messenger_messages_container');
+                        element.animate({ scrollTop: element.prop("scrollHeight") }, 10);
+                    },
+                    error: function (xhr, status, error) {
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageAnErrorOcuurPleaseTryagainLater"))", "error");
+                        console.log("Error In GetConversation !!!!!!!");
+                        mApp.unblock('#m_section_');
+                    }
+                });
+            }
+
+            function getScreenWidth() {
+                return $(window).width();
+            }
+
+            function GetUserConversations() {
+                console.log('int the GetUserConversations()');
+
+                $("#GetUserConversations").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        if (data == "error") {
+                            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageAnErrorOcuurPleaseTryagainLater"))", "error");
+                            return;
+                        }
+                        $('#m_nav').empty();
+                        $('#m_nav').append(data);
+                        //var element = $('#messenger_messages_container');
+                        //element.animate({ scrollTop: 9999999999999999999999 }, 500);
+                        mApp.unblock('#m_nav');
+
+                    },
+                    error: function (xhr, status, error) {
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageAnErrorOcuurPleaseTryagainLater"))", "error");
+                        console.log("Error In GetUserConversations !!!!!!!");
+                        mApp.unblock('#m_nav');
+                    }
+                });
+            }
+
+
+
+            $(function () {
+                // Reference the auto-generated proxy for the hub.
+                var moodleSignalRManager1 = $.connection.moodleSignalRManager;
+                // Create a function that the hub can call back to display messages.
+                moodleSignalRManager1.client.addNewMessageToPage = function (type, payload) {
+                    console.log('dswdw');
+                    console.log(type);
+                    console.log(payload);
+
+                    getConversations(globalConversationId, globalToUserId, true);
+                    GetUserConversations();
+                    GetChats();
+                };
+                // Start the connection.
+                $.connection.hub.start().done(function () {
+                    console.log('hiiiii');
+                });
+                var count = 0;
+                if (count == 0) {
+                    console.log('im here');
+                    console.log("aasa"+globalConversationId);
+
+                    if (globalConversationId != undefined) {
+                        getConversations(globalConversationId, globalToUserId, false);
+                    }
+
+                    GetChats();
+                    count++;
+                }
+
+            });
+
+        $(document).on('keyup', '#messenger_text_input', function () {
+            const ua = navigator.userAgent;
+            var deviceType;
+            if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+                deviceType = "tablet";
+            }
+            else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+                deviceType = "mobile";
+            } else {
+                deviceType = "desktop";
+            }
+
+            var keyCode = (event.keyCode ? event.keyCode : event.which);
+            var path = '#messenger_text_input';
+            var $duplicate = $(path).clone();
+            if (keyCode == 13 && deviceType == "desktop") {
+                $('#messenger_send_message').trigger('click');
+            } else if (keyCode == 13 && deviceType != "desktop") {
+
+
+
+            }
+
+        });
+            $(document).on('click', '#messenger_send_message', function () {
+
+                mApp.progress($('#messenger_send_message'));
+                var mssgToSend = $('#messenger_text_input').val();
+                if (mssgToSend != '') {
+
+
+                    $("#converId").val(globalConversationId);
+                    $("#message").val($('#messenger_text_input').val());
+                    $("#fromUserID").val('@ViewBag.currentMoodleUserId');
+                    $("#toUserID").val(globalToUserId);
+                    $('#messenger_text_input').val("");
+                    $("#SendMessage").ajaxSubmit({
+                        beforeSubmit: function () {
+                        },
+                        success: function (data) {
+                            if (data == "error") {
+                                swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageAnErrorOcuurPleaseTryagainLater"))", "error");
+                                return;
+                            }
+                            $('#messenger_messages_container').empty();
+                            $('#messenger_messages_container').append(data);
+                            var element = $('#messenger_messages_container');
+                            element.animate({ scrollTop: element.prop("scrollHeight") }, 10);
+                            GetUserConversations();
+                            $('#messenger_messages_container').scroll(function () {
+                                var scrollTop = $(this).scrollTop();
+                                if (scrollTop <= 0) {
+                                    console.log('Top reached');
+                                    if (getNewMessages == true) {
+                                        $('#messenger_messages_container').prepend('<div id="loader"></div>');
+                                        getPreviousMessages(globalConversationId, skipMessages);
+                                    }
+                                }
+                            });
+                            mApp.unprogress($('#messenger_send_message'));
+                        },
+                        error: function (xhr, status, error) {
+                           swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageAnErrorOcuurPleaseTryagainLater"))", "error");
+                            console.log("Error In GetConversation !!!!!!!");
+                            mApp.unblock('#m_sections');
+                            mApp.unprogress($('#messenger_send_message'));
+                        }
+                    });
+                }
+            });
+            var conversationItem_before = '';
+
+
+            $(document).on('click', '.m-nav__item', function () {
+                mApp.block('#m_section_');
+                $('#m_sections').parent().removeClass('d-none d-lg-block');
+                $('#contacts').addClass('d-none d-lg-block');
+                var conversationTab_before = $("li[data-conversation_id='"+ globalConversationId +"']");
+                var index = $(this).attr('data-index');
+                if (conversationItem_before != '') {
+                    conversationItem_before.removeClass('m-tabs__item--active');
+                }
+
+                if (conversationTab_before != null || conversationTab_before != '') {
+                    conversationTab_before.css("background", "#ffffff");
+                }
+                $('#conversationItem_' + index).addClass('m-tabs__item--active');
+         /*       $(this).css("background", "#f3f3ff");*/
+
+                conversationItem_before = $('#conversationItem_' + index);
+                var convid = $(this).attr('data-conversation_id');
+                var toUserId = $(this).attr('data-member_id');
+                globalConversationId = convid;
+                globalToUserId = toUserId;
+                userNameGlobal = $(this).find('.txt').text();
+                getConversations(globalConversationId, globalToUserId, false);
+            });
+
+            $(document).on('click', '#backToContactsBtn', function () {
+                $('#contacts').removeClass('d-none d-lg-block');
+                $('#m_sections').parent().addClass('d-none d-lg-block');
+                $('.m-nav__item').css('background', "#ffffff");
+                $('.m-tabs__item').removeClass('m-tabs__item--active');
+            });
+            $('#search').keyup(function () {
+
+                GetChats();
+
+
+            });
+
+            function GetChats() {
+                mApp.block('#m_nav');
+                var userNameToFound = $('#search').val();
+                $("#convId").val('@ViewBag.currentMoodleUserId');
+                $("#username").val(userNameToFound);
+                $("#SearchChat").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        if (data == "error") {
+                            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageAnErrorOcuurPleaseTryagainLater"))", "error");
+                            return;
+                        }
+                        $('#m_nav').empty();
+                        $('#m_nav').append(data);
+                        mApp.unblock('#m_nav');
+                        console.log()
+                        if (screenWidth >= minimum_width_of_lg_screen) {
+                            $('.m-nav__item').each(function (i, obj) {
+                                var conversation_id = $(this).attr("data-conversation_id");
+                                if (conversation_id == globalConversationId) {
+                                    $(this).click();
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "MessagesPageAnErrorOcuurPleaseTryagainLater"))", "error");
+                        console.log("Error In GeHtmlConversation !!!!!!!");
+                        mApp.unblock('#m_nav');
+                    }
+                });
+
+            }
+
+
+        });
+    </script>
+
+}

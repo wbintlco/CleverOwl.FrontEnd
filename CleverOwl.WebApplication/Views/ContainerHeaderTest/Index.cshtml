@@ -1,0 +1,52 @@
+﻿@using CleverOwl.WebApplication.Models
+@{
+    ContainerHeaderComponentsModel containerHeaderModel = ViewBag.ContainerHeaderModel;
+}
+@Html.Partial("_ContainerHeader", containerHeaderModel)
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+    <script>
+         function initQuickSearch() {
+
+            $('#quicksearch_input').select2({
+            ajax: {
+                url: '@*@Url.Action("Search", "Resources")*@',
+                dataType: 'json',
+                type: 'POST',
+                delay: 250,
+                cache: true,
+                allowClear: true,
+                multiple: true,
+                /* maximumSelectionLength: 1,*/
+                data: function (params) {
+                    var query = {
+                        query: params.term,
+                            __RequestVerificationToken : $('@Html.AntiForgeryToken()').val()
+                    }
+
+                    return query;
+                },
+                processResults: function (data, params) {
+                    return {
+                        results: data
+                    };
+                }
+            },
+            placeholder: "ResourcesPageSearch",
+            escapeMarkup: function (markup) { return markup; },
+            minimumInputLength: 3,
+            /*maximumSelectionLength: 1,*/
+            templateSelection: function (data) {
+
+                return data.text;
+            }
+            });
+        }
+
+        $('document').ready(function () {
+            initQuickSearch();
+        });
+    </script>
+}

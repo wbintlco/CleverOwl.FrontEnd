@@ -1,0 +1,815 @@
+﻿@model RLI.Common.DataObjects.SubmissionDetailsViewModel
+@using RLI.Common.Managers
+@using RLI.EntityFramework.EDM
+@using RLI.Common.DataObjects
+@using System.Web.Http;
+@using Microsoft.AspNet.Identity
+
+@{
+    string stringNextFullName = ViewBag.nextFullName;
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsDetails"));
+
+}
+@{
+    var maxScore = 100; // Set your max score here
+    var totalScore = ViewBag.TotalScore != null ? ViewBag.TotalScore : 0; // Default to 0 if null
+    var progressPercentage = (totalScore * 100) / maxScore; // Calculate percentage
+
+    bool iscoordinator = false;
+
+    if ((User.IsInRole("ContentManager") || User.IsInRole("Coordinator") || User.IsInRole("HeadOfDepartment") || User.IsInRole("SchoolDirector") || User.IsInRole("SchoolPrincipal") || User.IsInRole("SeniorCoordinator")) && ViewBag.CurrentUser.Id != User.Identity.GetUserId())
+    {
+
+   // if (User.IsInRole("ContentManager") && ViewBag.CurrentUser.Id != User.Identity.GetUserId())
+   // {
+        iscoordinator = true;
+    }
+}
+<style>
+    .m-widget4 .m-widget4__item {
+        padding-bottom: 1rem !important;
+    }
+
+    .borderedWidgets {
+        padding: 10px;
+        border-radius: 15px;
+    }
+
+        .borderedWidgets .m-widget24__item .m-widget24__title {
+            color: #fff !important;
+        }
+
+        .borderedWidgets .m-widget24__item .m-widget24__desc {
+            color: #fff !important;
+        }
+
+    .lessonCard {
+        width: 80% !important;
+    }
+</style>
+
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="page-body">
+            <div class="container">
+                <div class="m-subheader">
+                    <div class="d-flex align-items-center">
+                        <div class="mr-auto">
+                            <h3 class="m-subheader__title ">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageAutoCorrected"))</h3>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="mt-4 p-3">
+                    <div class="m-portlet__body">
+                        <div class="row">
+                            <div class="col-md-12 col-lg-8 col-xl-8" style="background:#923c7a;border-radius:15px;">
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-8 col-xl-8 borderedWidgets" style="background: linear-gradient( 90deg, rgb(41 38 86) 0%, rgb(79 46 99) 50%, rgb(147 60 122) 100%);">
+                                        <div class="m-widget24">
+                                            <div class="m-widget24__item">
+                                                <span class="m-widget24__desc">
+                                                    <i class="far fa-calendar fa-2x"> </i>
+                                                </span><br />
+                                                <span class="m-widget24__desc">
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageDueDate"))
+                                                </span><br />
+                                                <h4 class="m-widget24__title mt-0">
+                                                    @Model.DueDate
+                                                </h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-lg-4 col-xl-4 borderedWidgets" style="background:rgb(43 35 80);">
+                                        <div class="m-widget24">
+                                            <div class="m-widget24__item">
+                                                <span class="m-widget24__desc">
+                                                    <i class="far fa-calendar-plus fa-2x"> </i>
+                                                </span><br />
+                                                <span class="m-widget24__desc">
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageExtensionDate"))
+                                                </span><br />
+                                                @if (Model.ExtensionDueDate != null)
+                                                {
+                                                    <h4 class="m-widget24__title mt-0">
+                                                        @Model.ExtensionDueDate
+                                                    </h4>
+                                                }
+                                                else
+                                                {
+                                                    <h4 class="m-widget24__title mt-0">
+                                                        Not Available
+                                                    </h4>
+                                                }
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-lg-4 col-xl-4 m--margin-10-mobile">
+                                <div class="col-md-12 col-lg-12 col-xl-12 borderedWidgets" style="background:linear-gradient( 90deg, rgba(249,120,53,1) 0%, rgba(252,152,64,1) 50%, rgba(255,188,76,1) 100%)">
+                                    <div class="m-widget24">
+                                        <div class="m-widget24__item">
+                                            <span class="m-widget24__desc">
+                                                <i class="far fa-clock fa-2x"> </i>
+                                            </span><br />
+                                            <span class="m-widget24__desc">
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageTimeRemaining"))
+                                            </span><br />
+                                            @{
+                                                var timeRemaining = Model.TimeRemaining.Value;
+                                                var timeRemainingHours = timeRemaining.Hours;
+                                                var timeRemainingMinutes = timeRemaining.Minutes;
+                                            }
+                                            @if (timeRemainingHours != 0 && timeRemainingMinutes != 0)
+                                            {
+                                                if (timeRemainingHours == 0)
+                                                {
+                                                    <h4 class="m-widget24__title mt-0">
+                                                        @timeRemainingMinutes m @*@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Remaining"))*@
+                                                    </h4>
+                                                }
+                                                else
+                                                {
+                                                    <h4 class="m-widget24__title mt-0">
+                                                        @timeRemainingHours h @timeRemainingMinutes m @*@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Remaining"))*@
+                                                    </h4>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <h4 class="m-widget24__title mt-0 m--font-danger">
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_DueDateSubmissionMessage"))
+                                                </h4>
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="m-portlet mt-4 p-3" style="background:#f3f3ff;">
+                    <div class="m-portlet__body">
+                        <div class="row">
+                            <div class="col-md-12 col-lg-8 col-xl-8">
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-8 col-xl-8">
+                                        <div class="m-widget24">
+                                            <div class="m-widget24__item">
+                                                <span class="m-widget24__desc">
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageLastModified"))
+                                                </span><br>
+                                                <h4 class="m-widget24__title mt-0">
+                                                    @Model.LastModified
+                                                </h4>
+
+                                                <div class="m--space-10"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-lg-4 col-xl-4">
+                                        <div class="m-widget24">
+                                            <div class="m-widget24__item">
+                                                <span class="m-widget24__desc">
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGradingStatus"))
+                                                </span><br>
+                                                @if (Model.GradingStatus == "graded")
+                                                {
+                                                    <h4 class="m-widget24__title mt-0 m--font-success">
+                                                        @Model.GradingStatus
+                                                    </h4>
+                                                }
+                                                else
+                                                {
+                                                    <h4 class="m-widget24__title mt-0 m--font-brand">
+                                                        @Model.GradingStatus
+                                                    </h4>
+                                                }
+                                                <div class="m--space-10"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-lg-4 col-xl-4">
+                                <div class="col-md-12 col-lg-12 col-xl-12">
+                                    <div class="m-widget24">
+                                        <div class="m-widget24__item">
+                                            <span class="m-widget24__desc">
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGrade"))
+                                            </span>
+                                            <br>
+                                            @if (Model.Grade != "" && Model.Grade != null)
+                                            {
+                                                <h4 class="m-widget24__title mt-0">
+                                                    @Html.Raw(Model.Grade)
+                                                </h4>
+                                            }
+                                            else
+                                            {
+                                                <h4 class="m-widget24__title mt-0">
+                                                    0/100
+                                                </h4>
+                                            }
+                                            <div class="m--space-10"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                @if (Model.scormPagesInfo != null)
+                {
+                    if (Model.scormPagesInfo.Count != 0)
+                    {
+                        <div class="row">
+                            <div class="col-xl-5">
+                                <div>
+                                    <div class="m-portlet__body">
+                                        @*<div class="m-portlet mt-4">
+                                                <div class="m-portlet__body">
+                                                    <div class="row" style="padding:10px;">
+                                                        <div class="col-lg-12">
+                                                            <div class="m-widget24">
+                                                                <div class="m-widget24__item">
+                                                                    <span class="m-widget24__desc">
+                                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageFirstAttempt"))
+                                                                    </span><br>
+                                                                    <h4 class="m-widget24__title mt-0">
+                                                                        @Model.ScormFirstAttemptDate
+                                                                    </h4>
+
+                                                                    <div class="m--space-10"></div>
+                                                                    <span class="m-widget24__desc">
+                                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageLastAttempt"))
+                                                                    </span><br>
+                                                                    <h4 class="m-widget24__title mt-0">
+                                                                        @Model.ScormLastAttemptDate
+                                                                    </h4>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>*@
+                                        <div class="m-portlet mt-4">
+                                            <div class="m-portlet__body">
+                                                <div class="m-widget14">
+                                                    <div class="row  align-items-center">
+                                                        <div class="mt-3 col-12 p-0" id="autoCorrectContainer">
+                                                            @*append auto-correct scrom here*@
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="m-portlet mt-4">
+                                            <div class="m-portlet__body">
+                                                <div class="m-widget14">
+                                                    <div class="m-widget14__header">
+                                                        <h3 class="m-widget14__title">
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGrade")) @Model.ScormOverallGrade
+                                                        </h3>
+                                                        <span class="m-widget14__desc">
+                                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageThisGradeisautomatic"))
+                                                        </span>
+                                                    </div>
+                                                    <div class="row  align-items-center">
+                                                        <div id="chartdiv"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--begin:: Widgets/Profit Share-->
+
+
+                                        @{
+                                            List<QualitativeFeedback_Result> qualitativeFeedback_Result = (List<QualitativeFeedback_Result>)ViewBag.qualitativeFeedback_Result;
+                                        }
+
+                                        @if (qualitativeFeedback_Result != null && qualitativeFeedback_Result.Count != 0)
+                                        {
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    @Html.Partial("_AutoCorrectedQualitativeCard", qualitativeFeedback_Result)
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                                <!--end:: Widgets/Profit Share-->
+                            </div>
+                            <div class="col-xl-7">
+                                @if (Model.scormPagesInfo != null)
+                                {
+                                    <!--begin:: Widgets/User Progress -->
+                                    <div class="m-portlet m-portlet--full-height mt-4">
+
+                                        <div class="m-portlet__body h-100">
+                                            <div class="tab-content">
+                                                <div class="tab-pane active" id="m_widget4_tab1_content">
+                                                    <div class="m-widget4 m-widget4--progress">
+                                                        @foreach (var scormInfo in Model.scormPagesInfo)
+                                                        {
+                                                            <div class="m-widget4__item w-100">
+
+                                                                <div class="m-widget4__info">
+                                                                    <span class="m-widget4__title">
+                                                                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPagePage")) #@scormInfo.PageNumber
+                                                                    </span>
+                                                                    <br />
+                                                                    <span class="m-widget4__title m--font-bold m--font-brand">
+                                                                        @(scormInfo.PageTitle != null ? scormInfo.PageTitle : "")
+                                                                    </span>
+                                                                    <br />
+                                                                    <div class="row mt-3">
+                                                                        <div class="col-md-6 col-12">
+                                                                            <span class="m-widget4__title">
+                                                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageMistakeError"))
+                                                                            </span>
+                                                                            <br />
+                                                                            <span class="m--font-danger ml-5">
+                                                                                @scormInfo.MistakeCount / @scormInfo.ErrorCount
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="col-md-6 col-12">
+                                                                            <span class="m-widget4__title">
+                                                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageCheck"))
+                                                                            </span>
+                                                                            <br />
+                                                                            <span class="m--font-accent ml-5">
+                                                                                @scormInfo.CheckCount
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="m-widget4__progress">
+                                                                    <div class="m-widget4__progress-wrapper">
+                                                                        <span class="m-widget17__progress-number">@scormInfo.PageGrade</span>
+
+                                                                        <div class="m-section__content">
+                                                                            <div class="progress m-progress--sm">
+                                                                                <div class="progress-bar bg-brand" role="progressbar" style="width: @scormInfo.PageGrade;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="@scormInfo.PageGrade"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        }
+                                                        <div class="m-widget4__item w-100" style="height:125px;">
+                                                            <div class="m-widget4__info">
+                                                                <br />
+                                                                <span class="m-widget4__title m--font-danger">
+                                                                    Total
+                                                                </span>
+                                                            </div>
+                                                            <div class="m-widget4__progress">
+                                                                <div class="m-widget4__progress-wrapper">
+                                                                    <span class="m-widget17__progress-number">@totalScore%</span>
+
+                                                                    <div class="m-section__content">
+                                                                        <div class="progress m-progress--sm">
+                                                                            <div class="progress-bar bg-brand" role="progressbar"
+                                                                                 style="width: @progressPercentage%;" aria-valuenow="@totalScore"
+                                                                                 aria-valuemin="0" aria-valuemax="@maxScore"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+
+
+                                                        @*<div class="m-widget4__item w-100">
+
+                                                                <div class="m-widget4__info">
+                                                                    <span class="m-widget4__title">
+                                                                        Milano Esco
+                                                                    </span><br>
+                                                                    <span class="m-widget4__sub">
+                                                                        Product Designer, Apple Inc
+                                                                    </span>
+                                                                </div>
+                                                                <div class="m-widget4__progress">
+                                                                    <div class="m-widget4__progress-wrapper">
+                                                                        <span class="m-widget17__progress-number">33%</span>
+                                                                        <span class="m-widget17__progress-label">Paris</span>
+                                                                        <div class="progress m-progress--sm">
+                                                                            <div class="progress-bar bg-success" role="progressbar" style="width: 33%;" aria-valuenow="45" aria-valuemin="0" aria-valuemax="33"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                            <div class="m-widget4__item w-100">
+
+                                                                <div class="m-widget4__info">
+                                                                    <span class="m-widget4__title">
+                                                                        Nick Bold
+                                                                    </span><br>
+                                                                    <span class="m-widget4__sub">
+                                                                        Web Developer, Facebook Inc
+                                                                    </span>
+                                                                </div>
+                                                                <div class="m-widget4__progress">
+                                                                    <div class="m-widget4__progress-wrapper">
+                                                                        <span class="m-widget17__progress-number">13%</span>
+                                                                        <span class="m-widget17__progress-label">London</span>
+                                                                        <div class="progress m-progress--sm">
+                                                                            <div class="progress-bar bg-brand" role="progressbar" style="width: 13%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="13"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                            <div class="m-widget4__item w-100">
+
+                                                                <div class="m-widget4__info">
+                                                                    <span class="m-widget4__title">
+                                                                        Wiltor Delton
+                                                                    </span><br>
+                                                                    <span class="m-widget4__sub">
+                                                                        Project Manager, Amazon Inc
+                                                                    </span>
+                                                                </div>
+                                                                <div class="m-widget4__progress">
+                                                                    <div class="m-widget4__progress-wrapper">
+                                                                        <span class="m-widget17__progress-number">93%</span>
+                                                                        <span class="m-widget17__progress-label">New York</span>
+                                                                        <div class="progress m-progress--sm">
+                                                                            <div class="progress-bar bg-danger" role="progressbar" style="width: 93%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="93"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>*@
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                    <!--end:: Widgets/User Progress -->
+                                }
+                                else
+                                {
+                                    @Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
+                                                                                                                                          { "title", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_EmptySlateTitle")).ToString() },
+                                                                                                                                          { "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_InProgress")).ToString() }
+                                                                                                                                          , { "description", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_ResultSoon")).ToString() }
+                                                                                                                                          , { "action", false },
+                                                                                                                                          { "actionBtnId", "" },
+                                                                                                                                          { "actionBtnText", "" } })
+                                }
+
+                            </div>
+                        </div>
+                    }
+                }
+                <div class="m-subheader">
+                    <div class="d-flex align-items-center">
+                        <div class="mr-auto">
+                            <h3 class="m-subheader__title ">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageSubmissionComments"))</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="allCommentsLogContainer">
+                    @{
+                        int userId = int.Parse(ViewBag.userId);
+                        var groupedBYCommentsTeacher = Model.getCommentResultModel.comments.Where(c => c.userid != userId).GroupBy(item => item.fullname).Select(group => new { Customer = group.Key, Items = group.ToList() }).ToList();
+                        var groupedBYCommentsStudent = Model.getCommentResultModel.comments.Where(c => c.userid == userId).GroupBy(item => item.fullname).Select(group => new { Customer = group.Key, Items = group.ToList() }).ToList();
+                    }
+
+                    @foreach (var content in Model.getCommentResultModel.comments.OrderBy(c => c.timecreated))
+                    {
+                        <div class="col-12 m-3">
+                            @if (content.userid != userId)
+                            {
+                                <h4 class="m--font-brand">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageYou"))</h4>
+                            }
+                            else
+                            {
+                                <h4 class="m--font-accent">@content.fullname</h4>
+                            }
+
+                            @Html.Raw(content.content)
+                            <p>
+                                @RLI.Common.Managers.UtilitiesManager.ConvertFromUnixTimestamp(content.timecreated)
+
+                                @if (content.userid != userId)
+                                {
+                                    <a href="" data-CommentId="@content.id" class="m-5 deleteComment"><i class="fa fa-trash"></i></a>
+                                }
+                            </p>
+
+                        </div>
+                    }
+
+
+                </div>
+
+
+                <div class="m-portlet mt-4" id="commentsContainer">
+                    <div class="m-portlet__body">
+                        <div class="col-12">
+                            <textarea class="form-control" id="teacherComment" style="text-decoration:none;resize:none;min-height:200px;border:none;" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageCommentsPlaceHolder"))"></textarea>
+                        </div>
+                        <div class="col-12 mb-2 mt-2" style="text-align:end">
+                            <button class="btn m-btn--pill btn-secondary @(iscoordinator ? "coordinator" : "")" id="cancelOwnFeedback">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageClose"))</button>
+                            <button class="btn m-btn--pill m-btn m-btn--gradient-from-brand m-btn--gradient-to-brand @(iscoordinator ? "coordinator" : "")" id="addCommentBtnSave">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageSubmit"))</button>
+                        </div>
+                    </div>
+                </div>
+
+
+                @*<div id="modale" class="m-subheader">
+                        <div class="d-flex align-items-center">
+                            <div class="mr-auto">
+                                <h3 class="m-subheader__title ">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageSubmission"))</h3>
+                            </div>
+
+                        </div>
+                    </div>*@
+                <div class="">
+                    <div class="m-portlet__body m--padding-10">
+
+                        <!--<div class="row mt-4">
+                        <div class="col-xl-12 table-responsive">
+                            <table>
+
+                                <tr>
+                                    <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageSubmissionStatus"))</b></td>
+                                    @if (Model.SubmissionStatus == "submitted")
+                                    {
+                                        <td class="m--font-success">@Model.SubmissionStatus</td>
+                                    }
+                                    else
+                                    {
+                                        <td class="m--font-brand">@Model.SubmissionStatus</td>
+                                    }
+                                </tr>
+                                <tr>
+
+                                    <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGradingStatus"))</b></td>
+                                    @if (Model.GradingStatus == "graded")
+                                    {
+                                        <td class="m--font-success">@Model.GradingStatus</td>
+                                    }
+                                    else
+                                    {
+                                        <td class="m--font-brand">@Model.GradingStatus</td>
+                                    }
+                                </tr>
+                                @if (Model.FeedbackComments != null)
+                                {
+                                    <tr>
+
+                                        <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageFeedback"))</b></td>
+
+                                        <td>@Html.Raw(Model.FeedbackComments.FirstOrDefault())</td>
+                                    </tr>
+                                }
+
+                                <tr>
+                                    <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGrade"))</b></td>
+                                    @if (Model.Grade != "" && Model.Grade != null)
+                                    {
+                                        <td>
+                                            @Html.Raw(Model.Grade)
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                </tr>
+                                <tr>
+                                    <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageDueDate"))</b></td>
+                                    <td>@Model.DueDate</td>
+                                </tr>-->
+                        @*<tr>
+                                <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageTimeRemaining"))</b></td>
+                                @{
+                                    var timeRemaining = Model.TimeRemaining.Value;
+                                    var timeRemainingHours = timeRemaining.Hours;
+                                    var timeRemainingMinutes = timeRemaining.Minutes;
+                                }
+                                @if (timeRemainingHours != 0 && timeRemainingMinutes != 0)
+                                {
+                                    if (timeRemainingHours == 0)
+                                    {
+                                <td>@timeRemainingMinutes m @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Remaining"))</td>
+
+                                    }
+                                    else
+                                    {
+                                <td>@timeRemainingHours h @timeRemainingMinutes m @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Remaining"))</td>
+                                    }
+                                }
+                                else
+                                {
+                                <td class="m--font-danger">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_DueDateSubmissionMessage"))</td>
+                                }
+                            </tr>*@
+                        <!--<tr>
+                            <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageExtensionDate"))</b></td>
+                            @if (Model.ExtensionDueDate != null)
+                            {
+                                <td>@Model.ExtensionDueDate</td>
+                            }
+                        </tr>
+
+                        <tr>
+                            <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageLastModified"))</b></td>
+                            <td>@Model.LastModified</td>
+                        </tr>
+                        <tr>
+                            <td><b>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageSubmissionComments"))</b></td>-->
+                        @*<td>
+
+                                @{
+                                    int userId = int.Parse(ViewBag.userId);
+                                    var groupedBYCommentsTeacher = Model.getCommentResultModel.comments.Where(c => c.userid != userId).GroupBy(item => item.fullname).Select(group => new { Customer = group.Key, Items = group.ToList() }).ToList();
+                                    var groupedBYCommentsStudent = Model.getCommentResultModel.comments.Where(c => c.userid == userId).GroupBy(item => item.fullname).Select(group => new { Customer = group.Key, Items = group.ToList() }).ToList();
+                                }
+                                @foreach (var content in groupedBYCommentsStudent)
+                                {
+                                <h6>@content.Customer</h6>
+                                    foreach (AddCommentResultModel item in content.Items)
+                                    {
+                                <p>@Html.Raw(item.content)</p>
+                                    }
+                                }
+                                <h6>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageMyComments"))</h6>
+                                <div id="teacherCommentsContainer">
+                                    @foreach (var content in groupedBYCommentsTeacher)
+                                    {
+                                        foreach (AddCommentResultModel item in content.Items)
+                                        {
+                                    <div class="row">
+                                        <div class="col-lg-8">
+                                            @Html.Raw(item.content)
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <a href="" data-CommentId="@item.id" class="deleteComment"><i class="fa fa-trash"></i></a>
+                                        </div>
+                                    </div>
+                                        }
+                                    }
+                                </div>
+
+
+                                <a href="" data-toggle="modal" data-target="#addCommentModal" id="addCommentBtn"><u>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageAddComments"))</u></a>
+                            </td>*@
+                        <!--</tr>
+                                </table>
+
+                            </div>
+
+                        </div>-->
+                        @{
+                            var today = DateTime.Now;
+                        }
+                        @if (Model.SubmissionStatus == "submitted" || (Model.SubmissionStatus == "draft" && Model.DueDate.Value < today))
+                        {
+                            <div class="row mt-4" style="text-align:center;">
+
+
+                                <div class="col-xl-4 mt-1 mb-1">
+                                    <button class="btn btn-brand @(iscoordinator ? "coordinator" : "")" id="GradeBTnToMoodleLMSPage">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGrade"))</button>
+                                </div>
+                                <div class="col-xl-4 mt-1 mb-1">
+                                </div>
+                                <div class="col-xl-4 mt-1">
+                                    <button class="btn btn-brand mb-1 @(iscoordinator ? "coordinator" : "")" data-toggle="modal" data-target="#m_scrollable_modal_1">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGrantextension"))</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-3" style="text-align:justify">
+                        <button id="prevBtn" class="btn btn-prev">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPagePrevious"))</button>
+                    </div>
+                    <div class="col-6">
+
+                    </div>
+                    <div class="col-3" style="text-align:end">
+                        <button id="nextBtn" class="btn btn-next">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageNext"))</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="modal fade" id="m_scrollable_modal_1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top:55px">
+    <div id="files" class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGrantExtension11"))</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="m-scrollable" data-scrollbar-shown="true" data-scrollable="true">
+                    <input id="grantExtensionDate" type="text" value="" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageSelectDateAndTime11"))" style="width:100%; cursor:pointer">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="closeExtension" type="button" class="btn btn-secondary" data-dismiss="modal">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageClose"))</button>
+                <button id="saveExtensions" type="button" data-dismiss="modal" class="btn btn-primary">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageAccept"))</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@*<div class="modal fade" id="addCommentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top:55px">
+        <div id="files" class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myCommentLabel">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageMyComments"))</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="teacherComment" style="width:100%;"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageClose"))</button>
+                    <button id="addCommentBtnSave" type="button" data-dismiss="modal" class="btn btn-primary">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageSave"))</button>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+
+<div class="modal fade" id="grade_modal_1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top:55px">
+    <div id="files" class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGrade"))</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="m-scrollable" data-scrollbar-shown="true" data-scrollable="true">
+                    <input id="gradeInput" type="number" min="0" max="100" value="" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGrade"))" style="width:100%; cursor:pointer">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="closeGrade" type="button" class="btn btn-secondary" data-dismiss="modal">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageClose"))</button>
+                <button id="saveGrade" type="button" class="btn btn-primary">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageSave"))</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<span hidden id="stringNextFullName">@stringNextFullName</span>
+@if (Model.ScormOverallGrade != null)
+{
+    <span hidden id="stringValueChart">@Model.ScormOverallGrade.Replace('%', ' ')</span>
+}
+else
+{
+    <span hidden id="stringValueChart"></span>
+}
+<span hidden id="stringUserId">@ViewBag.userId</span>
+
+@section Scripts{
+    @Scripts.Render("~/assets/vendors/bootstrap-datepicker/dist/js/bootstrap-datepicker.js")
+    @Scripts.Render("~/assets/vendors/bootstrap-datepicker/dist/locales/bootstrap-datepicker.ar-tn.min.js")
+    @Scripts.Render("~/assets/vendors/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr-CH.min.js")
+}

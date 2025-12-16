@@ -1,0 +1,101 @@
+﻿@model RLI.Common.DataObjects.ConversationMessagesModel
+@using RLI.Common.Managers
+@{ 
+    List<RLI.Common.DataObjects.ConversationMessagesModel.Member> members = Model.members;
+    List<RLI.Common.DataObjects.ConversationMessagesModel.Message> messages = Model.messages.OrderBy(m => m.timecreated).ToList<RLI.Common.DataObjects.ConversationMessagesModel.Message>();
+    //supose that my id is 10
+    RLI.Common.DataObjects.ConversationMessagesModel.Member fromUser = members.Where(m => m.id != 10).FirstOrDefault();
+    RLI.Common.DataObjects.ConversationMessagesModel.Member currentUser = members.Where(m => m.id == 10).FirstOrDefault();
+
+}
+
+<div class="m-portlet__body" id="m_section_">
+    <div id="m_quick_sidebar_tabs_messenger">
+        <div class="m-messenger m-messenger--message-arrow m-messenger--skin-light">
+            <div id="messenger_messages_container_" class="m-messenger__messages m-scrollable messenger_messages_container" style="max-height:500px;overflow-y:scroll;">
+             
+                @if (messages != null)
+                {
+                    string dateToShow = "";
+                    string previousDate = "";
+                    string[] currentDateList = ViewBag.currentDateList;
+                    int currentDay = int.Parse(currentDateList[0] + "");
+                    int currentMonth = int.Parse(currentDateList[1] + "");
+                    int currentYear = int.Parse(currentDateList[2] + "");
+                    foreach (RLI.Common.DataObjects.ConversationMessagesModel.Message message in messages)
+                    {
+
+                        string mssgDate = RLI.Common.Managers.UtilitiesManager.ConvertFromUnixTimestamp(message.timecreated) + "";
+                        string[] mssgDateList = mssgDate.Split(' ');
+                        string[] mssgDateSended = mssgDateList[0].Split('/');
+                        int mssgDay = int.Parse(mssgDateSended[0] + "");
+                        int mssgMonth = int.Parse(mssgDateSended[1] + "");
+                        int mssgYear = int.Parse(mssgDateSended[2] + "");
+                        if(currentDay == mssgDay && currentMonth == mssgMonth && currentYear == mssgYear)
+                        {
+                            dateToShow = "today";
+
+                        } else
+                        {
+                            dateToShow = mssgDateSended[0] + "/" + mssgDateSended[1] + "/" + mssgDateSended[2];
+                        }
+
+                        <div class="m-messenger__datetime">
+                            @if(dateToShow != previousDate)
+                             {
+                                previousDate = dateToShow;
+                                <span>  @dateToShow</span>
+                             }
+                        </div>
+                        <div class="m-messenger__wrapper">
+                            <div class="m-messenger__message @(message.useridfrom == 10 ? "m-messenger__message--out" : "m-messenger__message--in")">
+                                @if (message.useridfrom != 10)
+                                {
+                                    <div class="m-messenger__message-pic">
+                                        <img class="profilePhoto" src="@Url.Content("~/Content/testImage.png")" alt=" " />
+                                    </div>
+                                }
+                                <div class="m-messenger__message-body" style="width:500px!important;">
+
+                                    <div class="m-messenger__message-content">
+                                        <div class="m-messenger__message-username">
+                                            <span style="font-weight:bold; font-size:1.5em">@(message.useridfrom == 10 ? currentUser.fullname : fromUser.fullname)</span>
+                                        </div>
+                                        <div class="m-messenger__message-text">
+                                            <span style="font-size:1.3em">@Html.Raw(message.text)</span>
+                                        </div>
+                                        <div class="m-messenger__message-username">
+                                            @{
+                                                string date = RLI.Common.Managers.UtilitiesManager.ConvertFromUnixTimestamp(message.timecreated) + "";
+                                                string[] dateList = date.Split(' ');
+                                                string[] timeList = dateList[1].Split(':');
+                                                string AMPM = dateList[2];
+                                                string time = timeList[0] + ":" + timeList[1];
+                                                string convertedTime = time + " " + AMPM;
+                                            }
+                                            <span>@convertedTime</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                 }
+            </div>
+
+
+            <div class="m-messenger__seperator"></div>
+            <div class="m-messenger__form">
+                <div class="m-messenger__form-controls">
+                    <input id="messenger_text_input" type="text" name="" placeholder="Type here..." class="m-messenger__form-input messenger_text_input" data-user_id="">
+                </div>
+                <div class="m-messenger__form-tools">
+                    
+                    <a id="messenger_send_message" class="m-messenger__form-attachment messenger_send_message" data-user_id="@ViewBag.to_userId" data-conv_id="@Model.id" style="margin-bottom:30px">
+                        <i class="la la-send"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

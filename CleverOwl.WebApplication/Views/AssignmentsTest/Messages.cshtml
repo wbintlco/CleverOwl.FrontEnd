@@ -1,0 +1,331 @@
+﻿@model RLI.Common.DataObjects.MessageConversationsModel
+@using RLI.EntityFramework.EDM
+@{
+    //Jihad 10/07/2019 - BEGIN
+    //Dictionary<string, string> Locale = ViewBag.Locale;
+    //Jihad 10/07/2019 - END
+
+    List<RLI.Common.DataObjects.MessageConversationsModel.Conversation> conversations = Model.conversations;
+
+}
+
+<style>
+    .profilePhoto {
+        width: 3.2rem;
+        height: 3.2rem;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .conversationTab-newMessage {
+        background: linear-gradient(90deg, rgba(89, 194, 185, 0.4)0%, rgba(0,0,0,0) 8%);
+        border-radius: 25px;
+    }
+
+    .deleteIcon {
+        float: right;
+        width: 20px !important;
+        height: 20px !important;
+        margin-bottom: 5px !important;
+    }
+
+    .m-tabs__item-active {
+        border-radius: 2rem !important;
+        background-color: #f7f8fa !important;
+    }
+
+    .input-icons i {
+        position: absolute;
+    }
+
+    .input-icons {
+        width: 100%;
+    }
+
+    .icon {
+        padding: 10px;
+        min-width: 40px;
+    }
+
+    .input-field {
+        width: 100%;
+        padding: 10px;
+        text-align: center;
+    }
+
+    @@media (min-width: 1025px) {
+        .msgNote {
+            margin-left: 18%;
+        }
+    }
+
+    @@media (max-width: 1400px) {
+
+    }
+</style>
+
+<div class="m-portlet m-portlet--space" style="margin-top: 100px">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <span class="m-portlet__head-icon">
+                    <i class="fa flaticon-chat-1"></i>
+                </span>
+                <h3 class="m-portlet__head-text" style="font-size:2.5rem;">
+                    Messages
+                </h3>
+            </div>
+        </div>
+        <div class="m-portlet__head-tools" style="display:none;">
+            <ul class="m-portlet__nav">
+                <li class="m-portlet__nav-item">
+                    <input type="text" class="form-control m-input" id="newRecipient" />
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="m-portlet__body">
+        <div class="row">
+            <div class="col-xl-4">
+                <div class="input-icons" style="">
+                    <i class="fas fa-search icon" style="margin-top:8px"></i>
+                    <input id="search" class="input-field" type="text" placeholder="search or start a new chat" />
+                </div>
+                <div style="max-height:600px; overflow-y: scroll;">
+                    <ul class="m-nav m-nav--active-bg m-nav--active-bg-padding-lg m-nav--font-lg m-nav--font-bold m--margin-bottom-20 m--margin-top-10 m--margin-right-40 m_nav-active m-messenger m-messenger--message-arrow m-messenger--skin-light" id="m_nav" role="tablist">
+                        @for (int i = 0; i < conversations.Count(); i++)
+                        {
+                            List<RLI.Common.DataObjects.MessageConversationsModel.Member> members = conversations.ElementAt(i).members;
+                            for (int j = 0; j < members.Count(); j++)
+                            {
+                                <li id="conversationTab_@i" class="m-nav__item activateItem m-messenger__messages m-scrollable messenger_messages_container" data-conversation_id="@conversations.ElementAt(i).id" data-member_id="@members.ElementAt(j).id" data-index="@i">
+                                    <a id="conversationItem_@i" class="m-nav__link m-tabs__item conversationItem" href="#">
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <img class="profilePhoto" src="@members.ElementAt(j).profileimageurlsmall" />
+                                            </div>
+                                            <div class="col-9 m-auto">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <span class="m-nav__link-text" style="font-size:1.1em;white-space: nowrap;overflow: hidden;">@members.ElementAt(j).fullname</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-9">
+                                                        <span style="font-size:0.7em;white-space: nowrap;overflow: hidden;">@Html.Raw(conversations.ElementAt(i).messages.ElementAt(0).text)</span>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        @if (conversations.ElementAt(i).isread == false)
+                                                        {
+                                                            <span class="m--font-success" style="font-size:0.7em; text-align:end">new</span>
+
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="m-messenger__seperator"></div>
+                                    </a>
+
+                                </li>
+
+                            }
+
+
+                        }
+
+                    </ul>
+                </div>
+                
+            </div>
+            <div class="col-xl-8">
+                <div class="m-tabs-content" id="m_sections">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@using (Html.BeginForm("GetConversation", "Assignments", FormMethod.Post, new { id = "GetConversation" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("id", "")
+    @Html.Hidden("toUser_id", "")
+}
+
+@using (Html.BeginForm("SearchChat", "Assignments", FormMethod.Post, new { id = "SearchChat" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("convId", "")
+    @Html.Hidden("username", "")
+}
+
+@using (Html.BeginForm("SendMessage", "Assignments", FormMethod.Post, new { id = "SendMessage" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("converId", "")
+    @Html.Hidden("message", "")
+    @Html.Hidden("fromUserID", "")
+    @Html.Hidden("toUserID", "")
+}
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <!--Reference the SignalR library. -->
+    @Scripts.RenderFormat("<script src='https://" + Request.Url.Host + "/{0}'></script>", "~/Scripts/jquery.signalR-2.4.1.min.js")
+    <!--Reference the autogenerated SignalR hub script. -->
+    @Scripts.RenderFormat("<script src='https://" + Request.Url.Host + "/{0}'></script>", "~/signalr/hubs")
+
+    <script>
+        function getConversations(convId, toUserIid) {
+            console.log('int the getConversations()');
+            $("#id").val(convId);
+            $("#toUser_id").val(toUserIid);
+            $("#GetConversation").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == "error") {
+                        swal("Error", "error in get conversation 1", "error");
+                        return;
+                    }
+                    $('#m_sections').empty();
+                    $('#m_sections').append(data);
+                    var element = $('#messenger_messages_container_');
+                    element.scrollTop('9999999999999999999999999999999');
+                    mApp.unblock('#m_sections');
+
+                },
+                error: function (xhr, status, error) {
+                    swal("Error", "error in get conversation 2", "error");
+                    console.log("Error In GetConversation !!!!!!!");
+                    mApp.unblock('#m_sections');
+                }
+            });
+        }
+        $(document).ready(function () {
+
+            $(document).on('keyup', '#messenger_text_input', function () {
+                var keyCode = (event.keyCode ? event.keyCode : event.which);
+                if (keyCode == 13) {
+                    $('#messenger_send_message').trigger('click');
+                }
+            });
+            $(document).on('click', '#messenger_send_message', function () {
+                mApp.block('#m_sections');
+                var mssgToSend = $('#messenger_text_input').val();
+                if (mssgToSend != '') {
+
+
+                    $("#converId").val($(this).attr('data-conv_id'));
+                    $("#message").val($('#messenger_text_input').val());
+                    $("#fromUserID").val('10');
+                    $("#toUserID").val($(this).attr('data-user_id'));
+                    $('#messenger_text_input').val("");
+                    $("#SendMessage").ajaxSubmit({
+                        beforeSubmit: function () {
+                        },
+                        success: function (data) {
+                            if (data == "error") {
+                                swal("Error", "error in get conversation 1", "error");
+                                return;
+                            }
+                            $('#m_sections').empty();
+                            $('#m_sections').append(data);
+                            var element = $('#messenger_messages_container_');
+                            element.scrollTop('9999999999999999999999999999999');
+                            mApp.unblock('#m_sections');
+                        },
+                        error: function (xhr, status, error) {
+                            swal("Error", "error in get conversation 2", "error");
+                            console.log("Error In GetConversation !!!!!!!");
+                            mApp.unblock('#m_sections');
+                        }
+                    });
+                }
+            });
+            var conversationItem_before = '';
+            
+            $(document).on('click', '.m-nav__item', function () {
+                mApp.block('#m_sections');
+                var index = $(this).attr('data-index');
+                if (conversationItem_before != '') {
+                    conversationItem_before.removeClass('m-tabs__item--active');
+                }
+                $('#conversationItem_' + index).addClass('m-tabs__item--active');
+                conversationItem_before = $('#conversationItem_' + index);
+                var convid = $(this).attr('data-conversation_id');
+                var toUserId = $(this).attr('data-member_id');
+                $(function () {
+                    // Reference the auto-generated proxy for the hub.
+                    var alertsManager = $.connection.alertsManager;
+                    // Create a function that the hub can call back to display messages.
+                    alertsManager.client.addNewMessageToPage = function (type, payload) {
+                        console.log('addNEw');
+                        getConversations(convid, toUserId);
+                    };
+                    // Start the connection.
+                    $.connection.hub.start().done(function () {
+                        console.log('hiiiii');
+                    });
+                    var count = 0;
+                    if (count == 0) {
+                        console.log('im here');
+                        getConversations(convid, toUserId);
+                        count++;
+                    }
+
+                });
+
+            });
+            $('#search').keyup(function () {
+
+                mApp.block('#m_nav');
+                var userNameToFound = $(this).val();
+                $("#convId").val('10');
+                $("#username").val(userNameToFound);
+                $("#SearchChat").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        if (data == "error") {
+                            swal("Error", "error in get conversation 1", "error");
+                            return;
+                        }
+                        $('#m_nav').empty();
+                        $('#m_nav').append(data);
+                        mApp.unblock('#m_nav');
+                    },
+                    error: function (xhr, status, error) {
+                        swal("Error", "error in get conversation 2", "error");
+                        console.log("Error In GetConversation !!!!!!!");
+                        mApp.unblock('#m_nav');
+                    }
+                });
+
+
+            });
+            $(function () {
+                // Reference the auto-generated proxy for the hub.
+                var alertsManager = $.connection.alertsManager;
+                // Create a function that the hub can call back to display messages.
+                alertsManager.client.addNewMessageToPage = function (type, payload) {
+                    console.log('addNEw22');
+                    getConversations(convid, toUserId);
+                };
+                // Start the connection.
+                $.connection.hub.start().done(function () {
+                    console.log('hiiiii22');
+                });
+
+            });
+
+            
+        });
+    </script>
+
+}

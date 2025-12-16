@@ -1,0 +1,68 @@
+﻿@model RLI.WebApplication.Models.ContentContributionViewModel
+@using RLI.Common.Managers
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+
+
+@using (Html.BeginForm("ContentContribution", "CrowdContent", FormMethod.Post, new { @class = "m-form m-form--fit m-form--label-align-right m-form--group-seperator-dashed", @id = "contentCategoriesForm", role = "form" }))
+{
+    <div class="m-form__section m-form__section--first">
+        <div class="m-form__heading">
+            <h3 class="font-weight-bold">
+                <i class="fa fa-book-reader" style="padding-right: 20px;font-size:3rem;"></i>
+                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateContentCategoriesContentSharingTitle"))
+            </h3>
+        </div>
+        <div class="m-form__heading m--margin-top-40">
+            <h3 class="m-form__heading-title"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateContentCategoriesSubjectsGradesTitle"))</h3>
+            <span class="m-form__help"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateContentCategoriesSelectSubjectsGradesSpan"))</span>
+        </div>
+        <div class="m-portlet__body">
+            @Html.AntiForgeryToken()
+
+            <div class="m-form__content">
+                @Html.ValidationSummary("", new { @class = "text-danger mt-4" })
+            </div>
+            <div id="contentContributionRepeater">
+                <div class="form-group  m-form__group row">
+                    <div data-repeater-list="ContentContribution" class="col-12">
+                        <div data-repeater-item class="row m--margin-bottom-20">
+                            <div class="col-lg-5">
+                                <div class="input-group m-input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i class="la la-sort-numeric-asc"></i></span></div>
+                                    @Html.DropDownList("ContributionGrade", null, "", htmlAttributes: new { @id = "", @class = "gradeSelect form-control m-select2" })
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                                <div class="input-group m-input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i class="la la-sort-alpha-asc"></i></span></div>
+                                    @Html.DropDownList("ContributionSubject", null, "", htmlAttributes: new { @id = "", @class = "subjectsSelect form-control m-select2" })
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <a href="#" data-repeater-delete="" class="btn btn-danger m-btn m-btn--icon m-btn--icon-only">
+                                    <i class="la la-remove"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div data-repeater-create="" class="btn btn btn-primary m-btn m-btn--icon m--margin-left-30-desktop">
+                            <span>
+                                <i class="la la-plus"></i>
+                                <span> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateContentCategoriesAddAnotherContributionSpan"))</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+

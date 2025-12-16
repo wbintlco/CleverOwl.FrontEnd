@@ -1,0 +1,62 @@
+﻿
+@model RLI.EntityFramework.EDM.Cycle
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+
+}
+@using RLI.Common.Managers
+
+<div class="m-portlet m-portlet--mobile">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DeletePageDeleteCycle"))
+                </h3>
+            </div>
+        </div>
+    </div>
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "createForm" }))
+    {
+        <div class="m-portlet__body" style="padding:10px">
+            <div class="m-portlet__body">
+                <input name="__RequestVerificationToken" type="hidden" value="6_i5zil_nxzC9FDgDQ_tLGovXnHkHLTlVsNW1cA0goQL6d3FoiDaaRpy7npeM39aIZU5K5zJ7AAc53XWNob3vWXy2LEogxFlBuQZc5vzJnLrA-2PJzw44-6k1MkHqfAOlOKiZJIBuZDkCaVGFhFXdw2">
+                <div class="m-form__content">
+                    <div class="validation-summary-valid text-danger mt-4" data-valmsg-summary="true">
+                        <ul>
+                            <li style="display:none"></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="m-alert m-alert--icon alert alert-danger m-5" role="alert">
+                    <div class="m-alert__icon">
+                        <i class="flaticon-danger"></i>
+                    </div>
+                    <div class="m-alert__text">
+                        <strong>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DeletePageAreYouSureDelete1"))</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="m-portlet__foot">
+            <div class="m-portlet__foot m-portlet__no-border m-portlet__foot--fit">
+                <div class="m-form__actions m-form__actions--solid">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <button type="submit" class="btn m-btn--pill btn-outline-danger m-btn m-btn--outline-2x w-100">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DeletePageDelete111"))</button>
+
+                        </div>
+                        <div class="col-lg-4">
+
+                        </div>
+                        <div class="col-lg-4">
+                            <a class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100" href="@Url.Action("Index","Cycles")">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DeletePageBackToCycles"))</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+

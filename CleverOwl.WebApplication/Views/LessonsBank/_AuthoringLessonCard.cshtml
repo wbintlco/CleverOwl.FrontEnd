@@ -1,0 +1,185 @@
+﻿@model IEnumerable<RLI.EntityFramework.EDM.TeachersFile>
+@using RLI.Common.Managers
+@using RLI.EntityFramework.EDM
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    bool iscoordinator = true;
+
+}
+<style>
+    .post-post-grid{
+        overflow:visible!important;
+    }
+    .coordinator {
+        pointer-events: none;
+        opacity: 0.5;
+        cursor: not-allowed;
+        filter: grayscale(100%);
+    }
+</style>
+@if (Model == null || Model.Count() == 0)
+{
+
+    @Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
+                        { "title", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_EmptySlateTitle")).ToString() },
+                        { "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsYouDontSeemToHaveAnyLessons")).ToString() }
+                        , { "description", "" }
+                        , { "action", false },
+                        { "actionBtnId", "" },
+                        { "actionBtnText", "" } })
+
+}
+else
+{
+    @*<div>@Model.FirstOrDefault().File.FileName</div>*@
+        foreach (TeachersFile teachersFile in Model)
+        {
+            
+                string fName = "";
+        var file = teachersFile.File;
+         fName = file.MetaData == null ? file.FileName.Replace("-", " ").Replace(".zip", "") : file.MetaData;
+
+<div class="col-md-4 col-12">
+    <article class="post-post-grid">
+        <div class="m-portlet m-portlet--full-height " style="margin:0">
+            <div class="m-portlet__head" style="height:100%">
+                <div class="m-portlet__body row" style="padding:25px;">
+                    <div class="m-widget3">
+                        <div class="m-widget3__item">
+                            <div class="m-widget3__header">
+                                <div class="m-widget3__user-img">
+                                    <i class="m-menu__link-icon left_bar_menu_link_icon_personalize fas fa-book-open fa-2x"></i>
+                                </div>
+                                <div class="m-widget3__info">
+                                    <span class="m-widget3__username m--font-secondary">
+                                            @file.CreationDate
+                                        </span>
+                                </div>
+                            </div>
+                            <div class="m-widget3__body">
+                                <h3>
+                                        @fName
+                                    </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-portlet__head-tools row" style="display:block">
+                    <ul class="m-portlet__nav">
+                        <li class="m-portlet__nav-item m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" m-dropdown-toggle="hover" aria-expanded="true">
+                            <a href="#" class="m-portlet__nav-link m-portlet__nav-link--icon m-portlet__nav-link--icon-xl m-dropdown__toggle">
+                                <i class="la la-ellipsis-h m--font-primary"></i>
+                            </a>
+                            <div class="m-dropdown__wrapper">
+                                <div class="m-dropdown__inner">
+                                    <div class="m-dropdown__body">
+                                        <div class="m-dropdown__content">
+                                            <ul class="m-nav">
+                                                @if (file.ExtendedDatas.FirstOrDefault() != null)
+                                                {
+                                                    if (file.StatusKey == (int)RLI.Common.Enums.StatusEnum.StatusApproved)
+                                                    {
+                                                        <li class="m-nav__item">
+                                                            <a href="@Url.Action("OpenMoodleScorm", "Utilities")/?url=@file.Lessons.FirstOrDefault().LessonURL" target="_blank" class="m-nav__link">
+                                                                <i class="m-nav__link-icon fa fa-eye"></i>
+                                                                <span class="m-nav__link-text">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsViewLesson"))</span>
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li class="m-nav__item">
+                                                            <a href="@(Url.Action("index", "ScormPlayer") + "?fileName=" + file.ExtendedDatas.FirstOrDefault().FilePath)" target="_blank" class="m-nav__link">
+                                                                <i class="m-nav__link-icon fa fa-eye"></i>
+                                                                <span class="m-nav__link-text">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsViewLesson"))</span>
+                                                            </a>
+                                                        </li>
+                                                    }
+
+                                                }
+
+                                                @if (file.StatusKey == (int)RLI.Common.Enums.StatusEnum.StatusPending)
+                                                {
+                                                    <li class="m-nav__item @(iscoordinator ? "coordinator" : "")">
+
+                                                        <a href="javascript:MakeFinalJavascript('@file.FileKey')" class="m-nav__link">
+                                                            <i class="m-nav__link-icon fas fa-upload"></i>
+                                                            <span class="m-nav__link-text">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsMakeFinal"))</span>
+                                                        </a>
+
+                                                    </li>
+
+                                                }
+
+                                                @if (file.StatusKey == (int)RLI.Common.Enums.StatusEnum.StatusApproved)
+                                                {
+
+                                                    <li class="m-nav__item @(iscoordinator ? "coordinator" : "")">
+                                                        <a href="@(Url.Action("CreateAuthoringToolLesson", "Lessons", new { fileKey =file.FileKey }))" target="_blank" class="m-nav__link">
+                                                            <i class="m-nav__link-icon fas fa-plus"></i>
+                                                            <span class="m-nav__link-text">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsAddToCurriculum"))</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="m-nav__item @(iscoordinator ? "coordinator" : "")">
+                                                        <a class="m-nav__link dropdown-item assignIcon" style="cursor:pointer;" data-lessonName="@file.Lessons.FirstOrDefault().LessonName" data-lessonKey="@file.Lessons.FirstOrDefault().LessonKey" data-url="@file.Lessons.FirstOrDefault().LessonURL" data-toggle="modal" data-target="#m_modal_56">
+                                                            <i class="m-nav__link-icon fas fa-forward"></i>
+                                                            <span class="m-nav__link-text">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsAssignLesson"))</span>
+                                                        </a>
+                                                    </li>
+                                                }
+                                                @if (file.StatusKey == (int)RLI.Common.Enums.StatusEnum.StatusPending)
+                                                {
+                                                    <li class="m-nav__item @(iscoordinator ? "coordinator" : "")">
+                                                        <a href="javascript:DeleteFileFromLessonBank('@teachersFile.TeacherFileKey')" class="m-nav__link">
+                                                            <i class="m-nav__link-icon fa fa-trash"></i>
+                                                            <span class="m-nav__link-text">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Delete"))</span>
+                                                        </a>
+                                                    </li>
+                                                }
+
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-8 col-6"></div>
+                <div class="col-xl-4 col-6" style="padding-bottom:10px;">
+                    @{
+                        int statusKey = file.StatusKey;
+                        string statusLabelText = "";
+                        string statusLabelFontColor = "";
+                        switch (statusKey)
+                        {
+                            case (int)RLI.Common.Enums.StatusEnum.StatusPending:
+                                statusLabelText = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsPending")).ToString();
+                                statusLabelFontColor = "m--font-warning";
+                                break;
+                            case (int)RLI.Common.Enums.StatusEnum.StatusApproved:
+                                statusLabelText = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsApproved")).ToString();
+                                statusLabelFontColor = "m--font-success";
+                                break;
+                            case (int)RLI.Common.Enums.StatusEnum.StatusRejected:
+                                statusLabelText = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsRejected")).ToString();
+                                statusLabelFontColor = "m--font-danger";
+                                break;
+                            default:
+                                statusLabelText = "";
+                                statusLabelFontColor = "";
+                                break;
+                        }
+                    }
+                    <span class="@statusLabelFontColor">@statusLabelText</span>
+                </div>
+            </div>
+        </div>
+    </article>
+</div>
+    }
+    <div class="loader col-12" style="min-height:20px"></div>
+}

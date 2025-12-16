@@ -1,0 +1,993 @@
+﻿@model IEnumerable<RLI.EntityFramework.EDM.Assignment>
+@using RLI.Common.Managers
+@using RLI.Common.DataObjects
+
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageAssignments"));
+}
+
+<style>
+    .page-banner {
+        margin-top: 100px;
+        height: fit-content;
+        margin-bottom: 30px;
+        background-color: #ffffff;
+    }
+
+    .page-body {
+        padding: 0;
+        margin-bottom: 50px;
+    }
+
+    .grid-card {
+        box-shadow: rgb(99 99 99 / 20%) 0px 2px 8px 0px;
+        border-radius: 25px;
+        padding: 40px;
+        background: linear-gradient( to left, rgb(115 110 197 / 80%) 0%, rgb(68 60 182) 100% ) left bottom #ffffff no-repeat;
+        background-size: 100% 18px;
+    }
+
+    .grid-card-head-title {
+        margin-top: 20px;
+    }
+
+    .grid-card-head-datetime {
+        margin-top: 20px;
+    }
+
+    .grid-card-body {
+        margin-top: 25px;
+        font-weight: 100;
+    }
+
+    .grid-card-footer {
+        margin-top: 50px;
+        margin-bottom: -10px;
+    }
+
+    [class^='select2'] {
+        border-radius: 30px !important;
+        background: #ffffff;
+        border-width: 3px;
+        border-color: #a4a3bf
+    }
+
+    .table-row {
+        display: table-row;
+        height: auto;
+    }
+
+    .table-cell1 {
+        border: none;
+        display: table-cell;
+        padding: 2px;
+        width: 80%
+    }
+
+    .table-cell2 {
+        border: none;
+        display: table-cell;
+        padding: 2px;
+    }
+
+    .select2-container .select2-selection--single {
+        height: 100%;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 0px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 1.5;
+    }
+</style>
+
+<section class="page-banner">
+    <div class="container">
+        <div class="page-title-wrapper">
+            <div>
+                <ul class="bradcurmed">
+                    <li><a href="@Url.Action("Index","Dashboard")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageHome"))</a></li>
+                    <li><a href="@Url.Action("Index","Assignments")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageAssignments"))</a></li>
+                </ul>
+            </div>
+            <div class="row m--margin-top-40-desktop">
+                <div class="col-lg-1 m-auto m--hidden-mobile">
+                    @Html.Partial("~/Views/SharedSvgs/_AssignmentsIcon.cshtml")
+                </div>
+                <div class="col-lg-5 col-12 m-auto">
+                    <h1 class="page-title"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageAssignments"))</h1>
+                </div>
+                <div class="col-lg-3  m-auto">
+                </div>
+                <div class="col-lg-3 col-12 m-auto">
+                    <button id="createButton" type="button" class="btn m-btn--pill m-btn m-btn--gradient-from-primary m-btn--gradient-to-info pull-right m--padding-top-15 m--padding-bottom-15 m--padding-left-20 m--padding-right-20 w-100-mobile">
+                        <i class="fa fa-plus m--padding-right-5"></i>
+                        <span>
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageCreateAssignment"))
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+        <div>
+            <div class="row mt-4">
+                <div class="col-md-12 col-12">
+                    <div class="containerr">
+                        <div class="table-row">
+                            <div class="table-cell1">
+                                <div class="m-input-icon m-input-icon--left m-input-icon--right" style="">
+                                    <input id="searchInput" type="text" class="form-control" style="border-radius:30px 0px 0px 30px" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageSearchAssignment"))">
+                                    <span class="m-input-icon__icon m-input-icon__icon--right mr-3"><span><i class="fas fa-search"></i></span></span>
+                                </div>
+                            </div>
+                            <div class="table-cell2">
+                                <div class="m-input-icon m-input-icon--left m-input-icon--right" style="">
+                                    <select class="form-control" style="border-radius:0px 30px 30px 0px" id="recordsDropdown">
+                                        <option disabled selected>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageMostRecent"))</option>
+                                        <option>10</option>
+                                        <option>20</option>
+                                        <option selected>50</option>
+                                    </select>
+                                    <span class="m-input-icon__icon m-input-icon__icon--right mr-3" style="margin-top:20px"><i class="fas fa-chevron-down"></i></span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4 col-12">
+                            @Html.DropDownList("GradesDropDown", (SelectList)ViewBag.Grades, "Grades", htmlAttributes: new { @class = "form-control", @id = "GradeDropDown", @style = "width:100%;" })
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-12">
+                            @Html.DropDownList("SubjectDropDown", (SelectList)ViewBag.Subjects, "Subjects", htmlAttributes: new { @class = "form-control", @id = "SubjectDropDown", @style = "width:100%;" })
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-12">
+                            @Html.DropDownList("DueDates", (SelectList)ViewBag.DueDates, "DueDates", htmlAttributes: new { @class = "form-control", @id = "DueDatesDropDown", @style = "width:100%;" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<button type="button" class="btn form-control m-input" data-toggle="modal" data-target="#m_scrollable_modal_1">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageChooseFiles"))</button>
+
+<div class="modal fade" id="m_scrollable_modal_1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div id="files" class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">File Types</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="m-scrollable" data-scrollbar-shown="true" data-scrollable="true" data-height="200">
+                    <div>
+                        <label class="m-checkbox m-checkbox--air">
+                            <input type="checkbox" class="allFiles">All
+                            <span></span>
+                        </label>
+                    </div>
+                    <div data-display="hide">
+                        <label class="m-checkbox m-checkbox--air">
+                            Archive<input type="checkbox" class="fileType parent_archive" data-child="archive" />
+                            <span></span>
+                        </label>
+                        <ul style="display:none">
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".7z"> .7z
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".bdoc"> .bdoc
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".cdoc"> .cdoc
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".ddoc"> .ddoc
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".gtar"> .gtar
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".tgz"> .tgz
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".gz"> .gz
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".gzip"> .gzip
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".hqx"> .hqx
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".rar"> .rar
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".sit"> .sit
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".tar"> .tar
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".zip"> .zip
+                                    <span></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                    <div data-display="hide">
+                        <label class="m-checkbox m-checkbox--air">
+                            Audio<input type="checkbox" class="fileType parent_audio" data-child="audio" />
+                            <span></span>
+                        </label>
+                        <ul style="display:none">
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".aac"> .aac
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".aif"> .aif
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".aiff"> .aiff
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".aifc"> .aifc
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".au"> .au
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".flac"> .flac
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".m3u"> .m3u
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".mp3"> .mp3
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".m4a"> .m4a
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".oga"> .oga
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".ogg"> .ogg
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".ra"> .ra
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".ram"> .ram
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".rm"> .rm
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".wav"> .wav
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".wma"> .wma
+                                    <span></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                    <div data-display="hide">
+                        <label class="m-checkbox m-checkbox--air">
+                            <input type="checkbox" class="fileType parent_document" data-child="document">Document
+                            <span></span>
+                        </label>
+                        <ul style="display:none">
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".doc"> .doc
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".docx"> .docx
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".epub"> .epub
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".gdoc"> .gdoc
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".odt"> .odt
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".ott"> .ott
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".oth"> .oth
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".pdf"> .pdf
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".rtf"> .rtf
+                                    <span></span>
+                                </label>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                    <div data-display="hide">
+                        <label class="m-checkbox m-checkbox--air">
+                            <input type="checkbox" class="fileType parent_image" data-child="image">Image
+                            <span></span>
+                        </label>
+                        <ul style="display:none">
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".ai"> .ai
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".bmp"> .bmp
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".gdraw"> .gdraw
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".gif"> .gif
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".ico"> .ico
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".jpe"> .jpe
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".jpeg"> .jpeg
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".jpg"> .jpg
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".pct"> .pct
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".pic"> .pic
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".pict"> .pict
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".png"> .png
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".svg"> .svg
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".svgz"> .svgz
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".tif"> .tif
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".tiff"> .tiff
+                                    <span></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                    <div data-display="hide">
+                        <label class="m-checkbox m-checkbox--air">
+                            Presentation<input type="checkbox" class="fileType parent_presentation" data-child="presentation" />
+                            <span></span>
+                        </label>
+                        <ul style="display:none">
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".gslides"> .gslides
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".odp"> .odp
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".otp"> .otp
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".pps"> .pps
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".ppt"> .ppt
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".pptx"> .pptx
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".pptm"> .pptm
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".potx"> .potx
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".potm"> .potm
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".ppam"> .ppam
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".ppsx"> .ppsx
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".ppsm"> .ppsm
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".pub"> .pub
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".sxi"> .sxi
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".sti"> .sti
+                                    <span></span>
+                                </label>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                    <div data-display="hide">
+                        <label class="m-checkbox m-checkbox--air">
+                            <input type="checkbox" class="fileType parent_spreadsheet" data-child="spreadsheet">Spreadsheet
+                            <span></span>
+                        </label>
+                        <ul style="display:none">
+                            <li>
+                                <label class="m-radio">
+                                    <input class="spreadsheet" type="checkbox" name="spreadsheet" value=".gsheet"> .gsheet
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="spreadsheet" type="checkbox" name="spreadsheet" value=".csv"> .csv
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="spreadsheet" type="checkbox" name="spreadsheet" value=".xlsm"> .xlsm
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="spreadsheet" type="checkbox" name="spreadsheet" value=".xlsx"> .xlsx
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="spreadsheet" type="checkbox" name="spreadsheet" value=".xls"> .xls
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="spreadsheet" type="checkbox" name="spreadsheet" value=".ods"> .ods
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="spreadsheet" type="checkbox" name="spreadsheet" value=".ots"> .ots
+                                    <span></span>
+                                </label>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div data-display="hide">
+                        <label class="m-checkbox m-checkbox--air">
+                            <input type="checkbox" class="fileType parent_video" data-child="video">Video
+                            <span></span>
+                        </label>
+                        <ul style="display:none">
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".3gp"> .3gp
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".avi"> .avi
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".dv"> .dv
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".dif"> .dif
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".flv"> .flv
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".f4v"> .f4v
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".fmp4"> .fmp4
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".mov"> .mov
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".movie"> .movie
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".mp4"> .mp4
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".m4v"> .m4v
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".mpeg"> .mpeg
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".mpe"> .mpe
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".mpg"> .mpg
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".ogv"> .ogv
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".qt"> .qt
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".rmvb"> .rmvb
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".rv"> .rv
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".swf"> .swf
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".swfl"> .swfl
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".ts"> .ts
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".webm"> .webm
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".wmv"> .wmv
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".asf"> .asf
+                                    <span></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="closeExtension" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="saveExtensions" type="button" data-dismiss="modal" class="btn btn-primary">Accept</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm("DeleteAssignment", "AssignmentsTest", FormMethod.Post, new { id = "DeleteAssignmentHidden", @class = "", @style = "display:none;" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("assignmentId", "")
+    @Html.Hidden("courseId", "")
+    @Html.Hidden("courseModule", "")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+
+    <script>
+        $("#createButton").click(function () {
+        window.location='@Url.Action("Create")';
+    });
+            $(document).ready(function () {
+                $('#GradeDropDown').select2({
+                    placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageGrade"))'
+                });
+                $('#SubjectDropDown').select2({
+                    placeholder:'@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageSubject"))'
+                });
+                $('#DueDatesDropDown').select2({
+                    placeholder:'@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageType"))'
+                });
+
+                //$('.readMoreBtn').click(function () {
+                //    var parent = $(this).parent();
+                //    var more = parent.find('.more');
+                //    var dots = parent.find('.dots');
+                //    var lessBtn = parent.find('.lessBtn');
+                //    more.show();
+                //    $(this).hide();
+                //    dots.hide();
+                //    lessBtn.show();
+
+                //});
+                //$('.lessBtn').click(function () {
+                //    var parent = $(this).parent().parent();
+                //    var more = parent.find('.more');
+                //    var dots = parent.find('.dots');
+                //    var readMoreBtn = parent.find('.readMoreBtn');
+                //    more.hide();
+                //    $(this).hide();
+                //    dots.show();
+                //    readMoreBtn.show();
+                //});
+
+
+            });
+    function Delete(assId, courseId, moduleId) {
+
+             swal({
+                title: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageDeleteAssignment"))",
+                text: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageDeleteAssignmentPromptMsg"))",
+                type: "warning",
+                showCancelButton: true,
+                cancelButtonText: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageNo"))",
+                confirmButtonClass: "btn btn-brand m-btn",
+                confirmButtonText: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageYes"))"
+                }).then(function (e) {
+                    if (e.dismiss !== "cancel") {
+                        mApp.block($("#assignmentDiv"));
+                        DeleteAssignmentById(assId, courseId, moduleId);
+                } else {
+                return;
+                }
+                });
+        }
+
+    function DeleteAssignmentById(assId,courseId,moduleId) {
+
+        $("#assignmentId").val(assId);
+        $("#courseId").val(courseId);
+        $("#courseModule").val(moduleId);
+
+            $("#DeleteAssignmentHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == 200) {
+                        FilterAssignment();
+                    }
+                    },
+                error: function (xhr, status, error) {
+                    console.log("Error In DeleteAssignmentHidden !!!!!!!");
+                }
+            });
+    }
+
+    $("#recordsDropdown").change(function () {
+        mApp.block($("#assignmentDiv"));
+        FilterAssignment();
+    })
+
+    $("#GradeDropDown").change(function () {
+        mApp.block($("#assignmentDiv"));
+        FilterAssignment();
+    })
+
+    $("#SubjectDropDown").change(function () {
+        mApp.block($("#assignmentDiv"));
+        FilterAssignment();
+    })
+
+    $("#DueDatesDropDown").change(function () {
+        mApp.block($("#assignmentDiv"));
+        FilterAssignment();
+    })
+
+    $("#searchInput").keyup(function () {
+        setTimeout(function () {
+            mApp.block($("#assignmentDiv"));
+            FilterAssignment();
+        }, 1000);
+    })
+
+    function FilterAssignment() {
+            var search = $("#searchInput").val();
+            var records = $("#recordsDropdown option:selected").val();
+            var grade = $("#GradeDropDown option:selected").val();
+            var subject = $("#SubjectDropDown option:selected").val();
+            var dueDate = $("#DueDatesDropDown option:selected").val();
+            $.ajax({
+                url: '@Url.Action("AssignmentsFilter", "AssignmentsTest")',
+                type: 'POST',
+                dataType: "html",
+                data: {
+                    query:search,records: records, gradeKey: grade, subjectKey: subject, dueDate: dueDate,
+                    __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+                },
+                success: function (data) {
+                    $("#assignmentDiv").empty();
+                    $("#assignmentDiv").html(data);
+                    mApp.unblock($("#assignmentDiv"));
+                }
+            });
+        }
+    </script>
+}

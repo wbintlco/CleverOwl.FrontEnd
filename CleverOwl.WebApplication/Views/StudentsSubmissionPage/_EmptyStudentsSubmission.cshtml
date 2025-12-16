@@ -1,0 +1,21 @@
+﻿
+@using RLI.Common.Managers
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+@Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
+                        { "title", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_EmptySlateTitle")).ToString() },
+                        { "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Youdontseemtohaveanysubmissions")).ToString() }
+                        , { "description", "" }
+                        , { "action", false },
+                        { "actionBtnId", "" },
+                        { "actionBtnText", "" } })
+@*<div class="blankslate m-auto col-12">
+    <div class="mb-3">
+        @Html.Partial("~/Views/SharedSvgs/_EmptySlateIcon.cshtml")
+    </div>
+    <h3 class="mb-1">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Youdontseemtohaveanysubmissions"))</h3>
+
+</div>*@
+

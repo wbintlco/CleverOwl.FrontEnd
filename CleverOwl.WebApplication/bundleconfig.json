@@ -1,0 +1,92 @@
+[
+  {
+    "outputFileName": "assets/files/base/scripts.bundle.min.js",
+    "inputFiles": [
+      "assets/files/base/scripts.bundle.js"
+    ]
+  },
+  {
+    "outputFileName": "assets/vendors/block-ui/jquery.blockUI.min.js",
+    "inputFiles": [
+      "assets/vendors/block-ui/jquery.blockUI.js"
+    ]
+  },
+  {
+    "outputFileName": "assets/vendors/jquery.parallax-scroll/js/jquery.parallax-scroll.min.js",
+    "inputFiles": [
+      "assets/vendors/jquery.parallax-scroll/js/jquery.parallax-scroll.js"
+    ]
+  },
+  {
+    "outputFileName": "assets/vendors/wow/css/animate.min.css",
+    "inputFiles": [
+      "assets/vendors/wow/css/animate.css"
+    ]
+  },
+  {
+    "outputFileName": "assets/vendors/magnific-popup/css/magnific-popup.min.css",
+    "inputFiles": [
+      "assets/vendors/magnific-popup/css/magnific-popup.css"
+    ]
+  },
+  {
+    "outputFileName": "assets/vendors/vendors/flaticon/css/flaticon.min.css",
+    "inputFiles": [
+      "assets/vendors/vendors/flaticon/css/flaticon.css"
+    ]
+  },
+  {
+    "outputFileName": "assets/vendors/simple-line-icons/css/simple-line-icons.min.css",
+    "inputFiles": [
+      "assets/vendors/simple-line-icons/css/simple-line-icons.css"
+    ]
+  },
+  {
+    "outputFileName": "assets/vendors/js-cookie/src/js.cookie.min.js",
+    "inputFiles": [
+      "assets/vendors/js-cookie/src/js.cookie.js"
+    ]
+  },
+  {
+    "outputFileName": "assets/vendors/wnumb/wNumb.min.js",
+    "inputFiles": [
+      "assets/vendors/wnumb/wNumb.js"
+    ]
+  },
+  {
+    "outputFileName": "assets/vendors/jquery.appear/jquery.appear.min.js",
+    "inputFiles": [
+      "assets/vendors/jquery.appear/jquery.appear.js"
+    ]
+  },
+  {
+    "outputFileName": "assets/vendors/jquery-validation/dist/additional-methods.min.js",
+    "inputFiles": [
+      "assets/vendors/jquery-validation/dist/additional-methods.js"
+    ]
+  },
+  {
+    "outputFileName": "assets/vendors/bootstrap-daterangepicker/daterangepicker.min.js",
+    "inputFiles": [
+      "assets/vendors/bootstrap-daterangepicker/daterangepicker.js"
+    ]
+  },
+  {
+    "outputFileName": "assets/vendors/bootstrap-maxlength/src/bootstrap-maxlength.min.js",
+    "inputFiles": [
+      "assets/vendors/bootstrap-maxlength/src/bootstrap-maxlength.js"
+    ]
+  },
+  {
+    "outputFileName": "Themes/demo-cleverowl/css/style.bundle.min.css",
+    "inputFiles": [
+      "Themes/demo-cleverowl/css/style.bundle.css"
+    ]
+  },
+  {
+    "outputFileName": "Themes/demo-cleverowl/css/style.bundle.rtl.min.css",
+    "inputFiles": [
+      "Themes/demo-cleverowl/css/style.bundle.rtl.css"
+    ]
+  }
+]

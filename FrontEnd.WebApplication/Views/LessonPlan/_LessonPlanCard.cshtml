@@ -1,0 +1,37 @@
+﻿@model RLI.EntityFramework.EDM.LessonPlan
+@using RLI.EntityFramework.EDM
+@using RLI.Common.Managers
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    Language currentLanguage = ViewBag.CurrentLanguage;
+    AspNetUser currentUser = ViewBag.CurrentUser;
+}
+<div class="col-6 m-widget4 grid effect-2 teacherGrid">
+    <div class="m-widget4__item  teacherCard mb-5 ml-5 mr-5 p-3">
+        <div class="m-widget4__img m-widget4__img--pic">
+            <i class="fas fa-graduation-cap fa-2x"></i>
+        </div>
+        <div class="m-widget4__info">
+            <span class="m-widget4__title">@Model.Title</span><br>
+            <span class="m-widget4__sub">@Model.Grade.Grade1 - @Model.Subject.Subject1</span>
+        </div>
+        <div class="m-widget4__ext">
+            <a href="@Url.Action("Details", "LessonPlan",new { id=Model.LessonPlanKey})" target="_blank" class="btn m-btn--pill btn-sm btn-info ">View</a>
+        </div>
+    </div>
+</div>
+
+
+@*<li class="m-widget4__item  teacherCard mb-5 ml-5 mr-5 p-3">
+        <div class="m-widget4__img m-widget4__img--pic">
+            <i class="fas fa-graduation-cap fa-2x"></i>
+        </div>
+        <div class="m-widget4__info">
+            <span class="m-widget4__title">@Model.Title</span><br>
+            <span class="m-widget4__sub">@Model.Grade.Grade1 - @Model.Subject.Subject1</span>
+        </div>
+        <div class="m-widget4__ext">
+            <a href="@Url.Action("Index", "LessonPlan",new { id=Model.LessonPlanKey})" target="_blank" class="btn m-btn--pill btn-sm btn-info ">View</a>
+        </div>
+    </li>*@

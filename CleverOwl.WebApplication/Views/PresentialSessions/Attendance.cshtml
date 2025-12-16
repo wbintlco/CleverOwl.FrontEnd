@@ -1,0 +1,298 @@
+﻿@model List<RLI.EntityFramework.EDM.Student>
+@{ 
+    int silderNumber = 0;
+    var Presentialid =ViewBag.Presentialkey;
+}
+<style>
+    .fa-user-circle {
+        color: black;
+    }
+
+    .usericon {
+        margin-right: 30px;
+    }
+
+    .userflname {
+        font-size: 1.5rem;
+        color: black;
+    }
+
+    .middlename {
+        font-size: 1rem;
+        color: black;
+    }
+
+    .m-portlet .m-portlet__head {
+        color: black !important;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        filter: invert(100%);
+    }
+
+    .yesnobtn {
+        width: 15%;
+        height:50%;
+        border-radius: 15px;
+        font-weight:bold;
+        color:white;
+
+    }
+
+    @@media (min-width: 310px) {
+        .fa-user-circle {
+            font-size: 5rem !important;
+        }
+
+        .userflname {
+            font-size: 1rem;
+        }
+
+        .middlename {
+            font-size: 0.8rem;
+            color: black;
+        }
+
+        .usericon {
+            margin-right: 10px;
+        }
+    }
+
+    @@media (min-width: 400px) {
+        .fa-user-circle {
+            font-size: 5rem !important;
+        }
+
+        .userflname {
+            font-size: 1.2rem;
+        }
+
+        .middlename {
+            font-size: 1rem;
+            color: black;
+        }
+
+        .usericon {
+            margin-right: 18px;
+        }
+    }
+
+    @@media (min-width: 576px) {
+        .fa-user-circle {
+            font-size: 5rem !important;
+        }
+
+        .userflname {
+            font-size: 1.2rem;
+        }
+
+        .usericon {
+            margin-right: 25px;
+        }
+    }
+
+
+    @@media (min-width: 768px) {
+        .fa-user-circle {
+            font-size: 10rem !important;
+        }
+
+        .userflname {
+            font-size: 1.3rem;
+        }
+
+        .usericon {
+            margin-right: 30px;
+        }
+    }
+
+
+    @@media (min-width: 992px) {
+        .nextsl {
+            margin-right: 13%;
+        }
+
+        .prevsl {
+            margin-left: 13%;
+        }
+
+        .fa-user-circle {
+        }
+
+        .userflname {
+            font-size: 1.3rem;
+        }
+    }
+
+
+    @@media (min-width: 1200px) {
+        .fa-user-circle {
+        }
+
+        .userflname {
+            font-size: 1.5rem;
+        }
+    }
+
+
+    @@media (min-width: 1400px) {
+        .nextsl {
+            margin-right: 20%;
+        }
+
+        .prevsl {
+            margin-left: 20%;
+        }
+    }
+    .yesssbtn {
+        background-color: #007854;
+        border: 5px solid #007854;
+    }
+    .nooobtn {
+        background-color: #EB8828;
+        border: 5px solid #EB8828;
+    }
+</style>
+<div class="row sliderrow mt-5 justify-content-center">
+    <!-- Add justify-content-center to center the carousel -->
+    <div id="carouselExampleControls" class="carousel slide w-100 mt-5" data-interval="false">
+        <!-- Adjust the width of the carousel -->
+        <div class="carousel-inner">
+            @foreach (var item in Model)
+            {
+                string activeClass = "";
+
+                if (Model.IndexOf(item) == 0)
+                {
+                    activeClass = "active";
+                }
+            <div class="carousel-item @activeClass" data-student-id="@item.StudentKey" data-slider-number = "@silderNumber">
+                <div class="d-flex justify-content-center">
+                    <!-- Center the content horizontally -->
+                    @Html.Partial("~/Views/PresentialSessions/_PresentialUserCard.cshtml",item)
+                </div>
+            </div>
+                silderNumber++;
+            }
+            
+        </div>
+        <a class="carousel-control-prev prevsl" href="#carouselExampleControls" role="button" data-slide="prev" data-toggle="tooltip" title="Press Spacebar for Previous">
+            <span class="carousel-control-prev-icon" aria-hidden="true" style="color: black;"></span> <!-- Set color to black -->
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next nextsl" href="#carouselExampleControls" role="button" data-slide="next" data-toggle="tooltip" title="Press Enter for Next">
+            <span class="carousel-control-next-icon" aria-hidden="true" style="color: black;"></span> <!-- Set color to black -->
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+</div>
+<div id="successMessage" style="display: none; text-align: center; margin-top: 200px;">
+    <h6 style="font-size:2rem;color:#00416A;">The attendance is taken successfully.</h6>
+</div>
+<div class="row">
+    <div class="col-12 d-flex justify-content-center">
+        <button class="m-5 yesnobtn nooobtn " id="noBtn">No</button>
+        <button class="m-5 yesnobtn yesssbtn " id="yesBtn">Yes</button>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script>
+ $(document).ready(function () {
+    console.log("fetttt");
+    $('.carousel').carousel();
+    const carousel = $('#carouselExampleControls');
+     const successMessageDiv = $('#successMessage');
+     const nextBtn = $('.carousel-control-next');
+     const prevBtn = $('.carousel-control-prev');
+
+     function checkEmpty() {
+         const slideCount = carousel.find('.carousel-item').length;
+         if (slideCount === 0) {
+             // Hide or remove the entire slider
+             carousel.hide(); // Or use .remove() to remove it from the DOM
+             $('.yesnobtn').hide();
+             successMessageDiv.show();
+         }
+         else if (slideCount === 1) {
+             // Hide next and prev buttons
+             nextBtn.hide();
+             prevBtn.hide();
+         } else {
+             // Show next and prev buttons
+             nextBtn.show();
+             prevBtn.show();
+         }
+     }
+     checkEmpty();
+$('#yesBtn').click(function () {
+    console.log("Yes button clicked");
+    carousel.carousel('next');
+    setTimeout(() => {
+        const slideCount = carousel.find('.carousel-item').length;
+        if (slideCount === 1) {
+            carousel.find('.carousel-item').eq(0).remove();
+        } else {
+            const sliderNumber = parseInt(carousel.find('.carousel-item.active').data('slider-number'));
+            console.log("sliderNumber (Yes button):", sliderNumber);
+            if (sliderNumber > 0) {
+                console.log("not 0");
+                const currentIndex = carousel.find('.carousel-item.active').prev().index();
+                carousel.find('.carousel-item').eq(currentIndex).remove();
+            }
+        }
+        checkEmpty();
+    }, 1000);
+    const studentId = carousel.find('.carousel-item.active').data('student-id');
+    // Your AJAX call here
+    $.ajax({
+        url: '@Url.Action("SaveAttendance")',
+        type: 'POST',
+        data: {
+            __RequestVerificationToken: $('@Html.AntiForgeryToken()').val(),
+            PresentialSessionKey:'@Presentialid',
+            studentId: studentId,
+        },
+        success: function (data) {
+        },
+        error: function (error) {
+        }
+    });
+});
+
+$('#noBtn').click(function () {
+    console.log("No button clicked");
+    carousel.carousel('next');
+    setTimeout(() => {
+        const slideCount = carousel.find('.carousel-item').length;
+        if (slideCount === 1) {
+            carousel.find('.carousel-item').eq(0).remove();
+        } else {
+            const sliderNumber = parseInt(carousel.find('.carousel-item.active').data('slider-number'));
+            console.log("sliderNumber (Yes button):", sliderNumber);
+            if (sliderNumber > 0) {
+                console.log("not 0");
+                const currentIndex = carousel.find('.carousel-item.active').prev().index();
+                carousel.find('.carousel-item').eq(currentIndex).remove();
+            }
+        }
+        checkEmpty();
+    }, 1000);
+});
+
+    // Start enter for yes, space for no
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            $('#yesBtn').click();
+        } else if (event.key === ' ') {
+            $('#noBtn').click();
+        }
+    });
+    // End enter for yes, space for no
+});
+
+
+</script>
+
+}

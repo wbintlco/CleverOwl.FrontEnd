@@ -1,0 +1,215 @@
+﻿@model RLI.WebApplication.Models.VerifyPhoneNumberViewModel
+@using RLI.Common.Managers
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+
+<style>
+    .phone-verification-timer-container {
+        position: relative;
+        top: 30px;
+        width: 300px;
+        margin: 0 auto;
+    }
+
+        .phone-verification-timer-container .controls {
+            position: absolute;
+            left: 60px;
+            top: 136px;
+            text-align: center;
+        }
+
+        .phone-verification-timer-container .display-remain-time {
+            font-family: 'Montserrat', sans-serif !important;
+            font-weight: 100;
+            font-size: 65px;
+            color: #0E8BF2;
+        }
+
+        .phone-verification-timer-container .e-c-base {
+            fill: none;
+            stroke: #B6B6B6;
+            stroke-width: 4px
+        }
+
+        .phone-verification-timer-container .e-c-progress {
+            fill: none;
+            stroke: #0E8BF2;
+            stroke-width: 4px;
+            transition: stroke-dashoffset 0.7s;
+        }
+
+        .phone-verification-timer-container .e-c-pointer {
+            fill: #FFF;
+            stroke: #0E8BF2;
+            stroke-width: 2px;
+        }
+
+    #e-pointer {
+        transition: transform 0.7s;
+    }
+</style>
+
+@using (Html.BeginForm("VerifyPhoneNumber", "Manage", new { returnUrl = ViewBag.returnUrl }, FormMethod.Post, new { @class = "m-form m-form--fit m-form--label-align-right m-form--group-seperator-dashed", @id = "phoneVerificationForm", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <input name="modelOnly" value="true" type="hidden" />
+    <div class="m-form__section m-form__section--first">
+        <div class="m-form__heading">
+            <h3 class="font-weight-bold">
+                <i class="fa fa-phone" style="padding-right: 20px;font-size:3rem;"></i>
+                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePhoneVerificationMobileVerificationTitle"))
+            </h3>
+        </div>
+        <div class="form-group m-form__group row  m--hidden-mobile">
+            <div class="col-xl-12 col-lg-12">
+                <div class="phone-verification-timer-container">
+                    <div class="circle">
+                        <svg width="300" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+                            <g transform="translate(110,110)">
+                                <circle r="100" class="e-c-base" />
+                                <g transform="rotate(-90)">
+                                    <circle r="100" class="e-c-progress" />
+                                    <g id="e-pointer">
+                                        <circle cx="100" cy="0" r="8" class="e-c-pointer" />
+                                    </g>
+                                </g>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="controls">
+                        <div class="display-remain-time">01:00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="m-separator m-separator--dashed m-separator--lg"></div>
+    <div class="m-form__section">
+        <div class="m-form__heading">
+            <h3 class="m-form__heading-title">
+                 @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePhoneVerificationVerificationTitle"))
+                <i data-toggle="m-tooltip" data-width="auto" class="m-form__heading-help-icon flaticon-info" title="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePhoneVerificationGetACodeWithinMinuteToolTip"))"></i>
+            </h3>
+            @Html.ValidationSummary("", new { @class = "text-danger" })
+        </div>
+        <div class="form-group m-form__group row">
+            <div class="col-12">
+                <p class="text-muted">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "VerifyPhoneNumberFormCodeSentInfoParagraph"))
+                    <span class="m--font-info" style="font-weight:600;" id="verifiedPhoneNumberDisplay"></span>
+                </p>
+            </div>
+        </div>
+        <div class="form-group m-form__group row">
+            <label class="col-lg-2 col-form-label"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePhoneVerificationSMSCodeLabel"))</label>
+            <div class="col-10">
+                <div class="input-group m-input-group">
+                    <div class="input-group-prepend"><span class="input-group-text"><i class="la la-link"></i></span></div>
+                    @Html.TextBoxFor(m => m.Code, new { @class = "form-control m-input", autocomplete = "off" })
+                </div>
+                <span class="m-form__help"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePhoneVerificationEnterCodeFromSMSSpan"))</span>
+            </div>
+        </div>
+        <div class="form-group m-form__group row">
+            <div class="col-12">
+                <span>
+                    <a id="resendLink" href="javascript:void(0);" class="m--font-brand m-link">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "VerifyPhoneNumberFormResendCodeLink"))</a>
+                </span>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+
+    function populatePhoneNumber() {
+
+        var phoneNumber = $('#PhoneNumber');
+        $('#verifiedPhoneNumberDisplay').text(phoneNumber.val());
+
+        $(phoneNumber).appendTo("#phoneVerificationForm");
+    }
+
+    //circle start
+    let progressBar = document.querySelector('.e-c-progress');
+    let indicator = document.getElementById('e-indicator');
+    let pointer = document.getElementById('e-pointer');
+    let length = Math.PI * 2 * 100;
+
+    progressBar.style.strokeDasharray = length;
+
+    function update(value, timePercent) {
+        var offset = - length - length * value / (timePercent);
+        progressBar.style.strokeDashoffset = offset;
+        pointer.style.transform = `rotate(${360 * value / (timePercent)}deg)`;
+    };
+
+    //circle ends
+    const displayOutput = document.querySelector('.display-remain-time')
+
+    let intervalTimer;
+    let timeLeft;
+    let wholeTime = 1 * 60; // manage this to set the whole time
+    let isPaused = false;
+    let isStarted = false;
+
+
+    update(wholeTime, wholeTime); //refreshes progress bar
+    displayTimeLeft(wholeTime);
+
+    function changeWholeTime(seconds) {
+        if ((wholeTime + seconds) > 0) {
+            wholeTime += seconds;
+            update(wholeTime, wholeTime);
+        }
+    }
+
+    function timer(seconds) { //counts time, takes seconds
+        let remainTime = Date.now() + (seconds * 1000);
+        displayTimeLeft(seconds);
+
+        intervalTimer = setInterval(function () {
+            timeLeft = Math.round((remainTime - Date.now()) / 1000);
+            if (timeLeft < 0) {
+                clearInterval(intervalTimer);
+                isStarted = false;
+
+                displayTimeLeft(wholeTime);
+                return;
+            }
+            displayTimeLeft(timeLeft);
+        }, 1000);
+    }
+    function toggleTimer() {
+        if (isStarted === false) {
+            timer(wholeTime);
+            isStarted = true;
+
+        } else if (isPaused) {
+            timer(timeLeft);
+            isPaused = isPaused ? false : true
+        } else {
+            clearInterval(intervalTimer);
+            isPaused = isPaused ? false : true;
+        }
+    }
+
+    function displayTimeLeft(timeLeft) { //displays time on the input
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+        let displayString = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        displayOutput.textContent = displayString;
+        update(timeLeft, wholeTime);
+    }
+
+    function resetTimer(seconds) {
+        //timer zbele needs replacing
+        timer(wholeTime);
+        isStarted = false;
+        toggleTimer();
+    }
+
+</script>

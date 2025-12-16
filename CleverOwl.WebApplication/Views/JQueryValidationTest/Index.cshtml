@@ -1,0 +1,678 @@
+﻿<style>
+    .page-banner {
+        margin-top: 100px;
+        height: fit-content;
+        margin-bottom: 30px;
+        background-color: #FFFFFF;
+    }
+
+    .page-body {
+        padding: 0;
+        margin-bottom: 50px;
+    }
+
+    .bootstrap-touchspin-down, .bootstrap-touchspin-up {
+        height: 100%;
+    }
+
+    .m-form .m-form__heading {
+        margin-bottom: 35px;
+    }
+
+    .m-portlet .m-portlet__body {
+        overflow: visible;
+    }
+
+    .m-portlet__body {
+        padding-right: 40px;
+        padding-left: 40px;
+        padding-top: 80px;
+    }
+
+    .m-portlet .m-portlet__foot {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .m-form .m-form__actions {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .col-form-label {
+        font-size: 1.4rem !important;
+    }
+
+    .m-portlet .m-portlet__head {
+        border-bottom: none;
+    }
+
+    .modal-dialog {
+        margin-top: 95px;
+    }
+
+    .tool {
+        position: relative;
+        display: inline-block;
+    }
+        /* Tooltip text */
+        .tool .tooltiptext {
+            visibility: hidden;
+            width: 100px;
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            padding: 5px 0;
+            border-radius: 3px;
+            /* Position the tooltip text */
+            position: absolute;
+            z-index: 1;
+            bottom: -125%;
+            left: 50%;
+            margin-left: -60px;
+            /* Fade in tooltip */
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+            /*Tooltip arrow */
+            .tool .tooltiptext::after {
+                content: "";
+                position: absolute;
+                top: -39%;
+                left: 50%;
+                margin-left: -5px;
+                border-width: 5px;
+                border-style: solid;
+                border-color: transparent transparent black transparent;
+            }
+        /* Show the tooltip text when you mouse over the tooltip container */
+        .tool:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+    .bar-done {
+        margin-top: 20px;
+        background: linear-gradient( 90deg, rgba(249,120,53,1) 0%, rgba(252,152,64,1) 50%, rgba(255,188,76,1) 100%);
+        height: 20px;
+        border-radius: 20px;
+    }
+
+    .bar-current {
+        margin-top: 20px;
+        background: #A4A3BF;
+        height: 20px;
+        border-radius: 20px;
+    }
+
+    svg {
+        height: 50px
+    }
+
+    .bar {
+        margin-top: 20px;
+        background: #CCCCCC;
+        height: 20px;
+        border-radius: 20px;
+    }
+
+    .m-wizard__step.m-wizard__step--current {
+        border-bottom: 0px solid !important;
+    }
+
+    .m-wizard.m-wizard--5.m-wizard--success
+    .m-wizard__head .m-wizard__steps
+    .m-wizard__step.m-wizard__step--done
+    .m-wizard__step-info
+    .m-wizard__step-number
+    .m-wizard__step-label {
+        color: #2A224F !important;
+        font-weight: bold;
+    }
+
+    .m-wizard.m-wizard--5.m-wizard--success
+    .m-wizard__head .m-wizard__steps
+    .m-wizard__step.m-wizard__step--done
+    .m-wizard__step-info
+    .m-wizard__step-number
+    .m-wizard__step-seq {
+        color: #2A224F !important;
+        font-weight: bold;
+    }
+
+    .m-wizard.m-wizard--5.m-wizard--success
+    .m-wizard__head .m-wizard__steps
+    .m-wizard__step.m-wizard__step--current
+    .m-wizard__step-info
+    .m-wizard__step-number
+    .m-wizard__step-label {
+        color: #A4A3BF !important;
+        font-weight: bold;
+    }
+
+    .m-wizard.m-wizard--5.m-wizard--success
+    .m-wizard__head .m-wizard__steps
+    .m-wizard__step.m-wizard__step--current
+    .m-wizard__step-info
+    .m-wizard__step-number
+    .m-wizard__step-seq {
+        color: #A4A3BF !important;
+        font-weight: bold;
+    }
+
+    .m-wizard.m-wizard--5
+    .m-wizard__head
+    .m-wizard__nav
+    .m-wizard__steps
+    .m-wizard__step
+    .m-wizard__step-info
+    .m-wizard__step-number
+    .m-wizard__step-label {
+        color: #CCCCCC !important;
+        font-weight: bold;
+    }
+
+    .m-wizard.m-wizard--5
+    .m-wizard__head
+    .m-wizard__nav
+    .m-wizard__steps
+    .m-wizard__step
+    .m-wizard__step-info
+    .m-wizard__step-number
+    .m-wizard__step-seq {
+        color: #CCCCCC !important;
+        font-weight: bold;
+    }
+
+    @@media (max-width: 910px) {
+        .m-wizard.m-wizard--5 .m-wizard__head .m-wizard__nav .m-wizard__steps {
+            width: auto;
+            margin: 1.5rem 0 0 0 !important;
+        }
+
+            .m-wizard.m-wizard--5 .m-wizard__head .m-wizard__nav .m-wizard__steps .m-wizard__step {
+                padding: 0 0 0.5rem 0;
+                display: compact;
+                margin: 2rem 0 0rem 0;
+                width: auto;
+            }
+    }
+
+    @@media (max-width:1200px) and (min-width:911px) {
+        .m-wizard.m-wizard--5 .m-wizard__head .m-wizard__nav .m-wizard__steps {
+            width: auto;
+            margin: 2rem 0 0 0;
+            display: flex;
+        }
+
+            .m-wizard.m-wizard--5 .m-wizard__head .m-wizard__nav .m-wizard__steps .m-wizard__step {
+                padding: 0 0 0.5rem 0;
+                margin: 1.5rem 0 2rem 0;
+                width: auto;
+                display: initial;
+            }
+    }
+
+    @@media (max-width: 769px) {
+        .head {
+            margin: 0px !important;
+        }
+
+        .m-wizard.m-wizard--5 .m-wizard__head {
+            margin: -1rem 0 1rem 0;
+        }
+    }
+
+    @@media (min-width: 769px) {
+        .m-wizard.m-wizard--5 .m-wizard__head {
+            margin: -4rem 0 1rem 0;
+        }
+    }
+</style>
+<style>
+    video {
+        width: 420px;
+        height: 240px;
+        margin: 20px;
+    }
+
+    @@media(max-width: 450px) {
+        video {
+            width: 220px;
+            height: 180px;
+            margin: 10px;
+        }
+    }
+
+    @@media (max-width:1024px) and (min-width:451px) {
+        video {
+            width: 300px;
+            height: 200px;
+            margin: 10px;
+        }
+    }
+
+    @@media (min-width:1025px) {
+        video {
+            width: 450px;
+            height: 300px;
+            margin: 10px;
+        }
+    }
+
+    audio {
+        margin-top: 20px;
+        margin-left: 20px;
+    }
+
+    .modal-dialog {
+        margin-top: 95px;
+    }
+
+    .tool {
+        position: relative;
+        display: inline-block;
+    }
+        /* Tooltip text */
+        .tool .tooltiptext {
+            visibility: hidden;
+            width: 100px;
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            padding: 5px 0;
+            border-radius: 3px;
+            /* Position the tooltip text */
+            position: absolute;
+            z-index: 1;
+            bottom: -125%;
+            left: 50%;
+            margin-left: -60px;
+            /* Fade in tooltip */
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+            /*Tooltip arrow */
+            .tool .tooltiptext::after {
+                content: "";
+                position: absolute;
+                top: -39%;
+                left: 50%;
+                margin-left: -5px;
+                border-width: 5px;
+                border-style: solid;
+                border-color: transparent transparent black transparent;
+            }
+        /* Show the tooltip text when you mouse over the tooltip container */
+        .tool:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+    .bar-done {
+        margin-top: 20px;
+        background: linear-gradient( 90deg, rgba(249,120,53,1) 0%, rgba(252,152,64,1) 50%, rgba(255,188,76,1) 100%);
+        height: 20px;
+        border-radius: 20px;
+    }
+
+    .bar-current {
+        margin-top: 20px;
+        background: #A4A3BF;
+        height: 20px;
+        border-radius: 20px;
+    }
+
+    .bar {
+        margin-top: 20px;
+        background: #CCCCCC;
+        height: 20px;
+        border-radius: 20px;
+    }
+
+    @@media (max-width: 769px) {
+        .head {
+            margin: 0px !important;
+        }
+
+        .m-wizard.m-wizard--5 .m-wizard__head {
+            margin: -1rem 0 1rem 0;
+        }
+    }
+
+    @@media (min-width: 769px) {
+        .m-wizard.m-wizard--5 .m-wizard__head {
+            margin: -4rem 0 1rem 0;
+        }
+    }
+</style>
+
+<section class="page-banner">
+    <div class="container">
+        <div class="page-title-wrapper">
+            <div>
+
+            </div>
+            <div class="row m--margin-top-40-desktop">
+                <div class="col-lg-1 m-auto m--hidden-mobile">
+                    @Html.Partial("~/Views/SharedSvgs/_AssignmentsIcon.cshtml")
+                </div>
+                <div class="col-lg-5 col-12 m-auto">
+
+
+                </div>
+                <div class="col-lg-3  m-auto">
+                </div>
+                <div class="col-lg-3 col-12 m-auto">
+
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-12">
+                    <div class="head">
+                        <div class="m-portlet m-portlet--mobile">
+
+                            <div class="m-wizard m-wizard--5 m-wizard--success" id="m_wizard">
+
+                                <d iv class="m-portlet__head" style="height:auto; background:#f3f3ff; border-radius:25px 25px 0px 0px; display:inline-block; width:100% !important">
+                                    <div class="m-wizard__head m-portlet__padding-x" style="height:100px!important; padding:0px!important; width:100%!important; margin: -4rem 0 1rem 0;">
+                                        <div class="row" style="display:block">
+                                            <div class="col-5">
+                                                <div class="m-wizard__nav" style="border-bottom: 0px !important">
+                                                    <div class="m-wizard__steps">
+                                                        <div class="m-wizard__step m-wizard__step--current" m-wizard-target="m_wizard_form_step_1">
+                                                            <div class="m-wizard__step-info">
+                                                                <a href="#" class="m-wizard__step-number">
+                                                                    @*<span class="m-wizard__step-seq">1.</span>*@
+                                                                    <span class="m-wizard__step-label">
+                                                                        @*@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageGeneral"))*@
+                                                                        Step 1
+                                                                       </span>
+                                                                </a>
+                                                                <div id="bar_1" class="bar-current"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="m-wizard__step" m-wizard-target="m_wizard_form_step_2">
+                                                            <div class="m-wizard__step-info">
+                                                                <a href="#" class="m-wizard__step-number">
+                                                                    @*<span class="m-wizard__step-seq">2.</span>*@
+                                                                    <span class="m-wizard__step-label">
+                                                                        @*@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAvailability"))*@
+                                                                        Step 2
+                                                                    </span>
+                                                                </a>
+                                                                <div id="bar_2" class="bar"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="m-wizard__step" m-wizard-target="m_wizard_form_step_3">
+                                                            <div class="m-wizard__step-info">
+                                                                <a href="#" class="m-wizard__step-number">
+                                                                    @*<span class="m-wizard__step-seq">3.</span>*@
+                                                                    <span class="m-wizard__step-label">
+                                                                        @*@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageSubmissionTypes"))*@
+                                                                        Step 3
+                                                                    </span>
+                                                                </a>
+                                                                <div id="bar_3" class="bar"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="m-portlet__body">
+                                    <div class="m-wizard__form">
+
+
+                                        <div class="m-portlet__body m-portlet__body--no-padding">
+
+                                            <!--begin: Form Wizard Step 1-->
+                                            <div class="m-wizard__form-step m-wizard__form-step--current" id="m_wizard_form_step_1" data-form-id="generalForm">
+                                                <h2>Example 2:</h2>
+                                                <form id="second_form" >
+                                                    <div>
+                                                        <label for="fname">First Name:</label>
+                                                        <input type="text" id="fname" name="fname"></input>
+                                                    </div>
+                                                    <div>
+                                                        <label for="lname">Last Name:</label>
+                                                        <input type="text" id="lname" name="lname"></input>
+                                                    </div>
+                                                    <div>
+                                                        <label for="user_email">Email:</label>
+                                                        <input type="email" id="user_email" name="user_email"></input>
+                                                    </div>
+                                                    <div>
+                                                        <label for="psword">Password:</label>
+                                                        <input type="password" id="psword" name="psword"></input>
+                                                    </div>
+                                                    <div>
+                                                        <input id="submitBtn" type="submit" value="Submit" />
+                                                    </div>
+                                                </form>
+                                            </div>
+
+                                            <!--end: Form Wizard Step 1-->
+                                            <!--begin: Form Wizard Step 2-->
+                                            <div class="m-wizard__form-step" id="m_wizard_form_step_2" data-form-id="availabilityForm">
+                                                <form id="availabilityForm">
+                                                    <div class="row">
+                                                        <div class="col-md-1 col-12">
+
+                                                        </div>
+                                                        <div class="col-md-10 col-12">
+                                                            <!-- to move to partial -->
+                                                            <div class="m-form__heading">
+                                                                <h3 class="font-weight-bold">
+
+                                                                    Availibility
+                                                                </h3>
+                                                            </div>
+                                                            <div class="m-portlet__body" style="padding-top:50px !important">
+                                                                <div class="row">
+                                                                    <div class="col-md-4 col-12 mt-4">
+                                                                        <lable>Submission from</lable>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12 mt-1">
+                                                                        <input id="submissionDate" class="form-control mb-0" type="datetime-local" value="" style="width:100%; cursor:pointer">
+                                                                        <span id="submissionDateHelp" class="m-form__help" style="display:none; color:red">Field Required!</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row mt-5">
+                                                                    <div class="col-md-4 col-12 mt-4">
+                                                                        <lable>Due Date</lable>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12 mt-1">
+                                                                        <input type="datetime-local" class="form-control mb-0" id="dueDate" value="" style="width:100%; cursor:pointer">
+                                                                        <span id="dueDateHelp" class="m-form__help" style="display:none; color:red">Field Required!</span>
+
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row mt-5">
+                                                                    <div class="col-md-4 col-12 mt-4">
+                                                                        <lable>Remind me to grade by</lable>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12 mt-1">
+                                                                        <input type="datetime-local" class="form-control mb-0" id="reminderDate" value="" style="width:100%; cursor:pointer">
+                                                                        <span id="reminderDateHelp" class="m-form__help" style="display:none; color:red">Field Required!</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-1 col-12"></div>
+                                                    </div>
+
+
+                                                </form>
+                                            </div>
+                                            <!--end: Form Wizard Step 2-->
+                                            <!--begin: Form Wizard Step 3-->
+                                            <div class="m-wizard__form-step" id="m_wizard_form_step_3" data-form-id="phoneVerificationForm">
+                                                <form id="infoForm">
+                                                    <div class="row">
+                                                        <div class="col-md-1 col-12"></div>
+                                                        <div class="col-md-10 col-12">
+                                                            <!-- to move to partial -->
+                                                            <div class="m-form__heading">
+                                                                <h3 class="font-weight-bold">
+
+                                                                    Submissions Types
+                                                                </h3>
+                                                            </div>
+                                                            <div class="m-portlet__body mt-5" style="padding-top:20px !important">
+                                                                <div class="row">
+                                                                    <div class="col-md-5">
+                                                                        <p></p>
+                                                                        <lable>Sub Type<lable>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <p></p>
+                                                                        <label class="m-checkbox m-checkbox--air">
+                                                                            <input class="form-control" id="onlineTextCheckBox" type="checkbox" name="submissionType" value="onlineText" />
+                                                                            <span></span>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="col-4">
+                                                                        <p></p>
+                                                                        <label class="m-checkbox m-checkbox--air">
+                                                                            <input class="form-control" id="fileCheckBox" type="checkbox" name="submissionType" value="fileSubmission" />
+                                                                            <span></span>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row onlineText mt-5" data-display="show">
+                                                                    <div class="col-md-4 col-12 mt-4">
+                                                                        <lable>World limit</lable>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12 mt-1">
+                                                                        <div class="row">
+                                                                            <div class="col-md-8 col-12 mt-1">
+                                                                                <input class="form-control" id="wordLimit" type="number" min="10" value="" disabled placeholder="enter world limit" />
+                                                                            </div>
+                                                                            <div class="col-md-4 col-12 mt-4">
+                                                                                <label class="m-checkbox m-checkbox--air">
+                                                                                    <input class="form-control" id="enableCheckBox" type="checkbox" name="submissionType" value="fileSubmission" />
+                                                                                    <span></span>
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row fileSubmission mt-5" data-display="show">
+                                                                    <div class="col-md-4 col-12 mt-4">
+                                                                        <lable>Max Number Files</lable>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12 mt-1">
+                                                                        <input class="form-control" id="filesNumber" type="number" min="0" value="" placeholder="" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-1 col-12"></div>
+                                                    </div>
+
+                                                </form>
+                                            </div>
+
+                                            <!--end: Form Wizard Step 3-->
+
+                                        </div>
+                                        <div class="m-form m-form--label-align-left- m-form--state-">
+                                            <!--begin: Form Actions -->
+                                            <div class="m-portlet__foot m-portlet__foot--fit m--margin-top-40" style="border-top:none !important">
+                                                <div class="row">
+                                                    <div class="col-md-1 col-12"></div>
+                                                    <div class="col-md-10 col-12">
+                                                        <div class="m-form__actions">
+                                                            <div class="row col-12">
+                                                                <div class="col-md-8 col-12"></div>
+                                                                <div class="col-md-2 col-6">
+                                                                    <a href="#" class="btn m-btn--pill btn-secondary btn-lg m-btn m-btn--custom" data-wizard-action="prev" style="width:100%">
+                                                                        <span>
+                                                                            <span>Back</span>
+                                                                        </span>
+                                                                    </a>
+                                                                </div>
+                                                                <div class="col-md-2 col-6">
+                                                                    <a href="#" id="submitId" style="margin-top:5px" class="btn btn-brand m-btn m-btn--custom m-btn--icon " data-wizard-action="submit">
+                                                                        <span>
+                                                                            <i class="la la-check"></i>&nbsp;&nbsp;
+                                                                            <span>Assign</span>
+                                                                        </span>
+                                                                    </a>
+                                                                    <a id="nextBtn" href="#" class="btn m-btn--pill btn-danger btn-lg m-btn m-btn--custom" data-wizard-action="next" style="width:100%; background: linear-gradient( 90deg, rgba(249,120,53,1) 0%, rgba(252,152,64,1) 50%, rgba(255,188,76,1) 100%);">
+                                                                        <span>
+                                                                            <span id="btnNextContent">Next</span>
+                                                                        </span>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-1 col-12"></div>
+                                                </div>
+
+                                            </div>
+                                            <!--end: Form Actions -->
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- /.container -->
+
+</section>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/jquery-validation/dist/jquery.validate.min.js")
+    @Scripts.Render("~/assets/files/wizard/JQueryValidation.js")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+    @Scripts.Render("~/assets/vendors/intl-tel-input/build/js/intlTelInput.min.js")
+    @Scripts.Render("~/assets/vendors/jquery.repeater/jquery.repeater.min.js")
+    @Scripts.Render("~/assets/vendors/summernote/dist/summernote.js")
+
+
+
+    <script>
+        $(document).ready(function () {
+            $('form[id="second_form"]').validate({
+                rules: {
+                    fname: 'required',
+                    lname: 'required',
+                    user_email: {
+                        required: true,
+                        email: true,
+                    },
+                    psword: {
+                        required: true,
+                        minlength: 8,
+                    }
+                },
+                messages: {
+                    fname: 'This field is required',
+                    lname: 'This field is required',
+                    user_email: 'Enter a valid email',
+                    psword: {
+                        minlength: 'Password must be at least 8 characters long'
+                    }
+                },
+            });
+            
+        });
+    </script>
+}

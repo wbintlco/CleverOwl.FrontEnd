@@ -1,0 +1,128 @@
+﻿@model RLI.WebApplication.Models.SynchronousSessionSelectAudienceViewModel
+@using RLI.Common.Managers
+@using RLI.EntityFramework.EDM
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+<style>
+    ul {
+        list-style-type: none;
+    }
+</style>
+
+@using (Html.BeginForm("SessionEditSelectAudience", "SynchronousSessions", FormMethod.Post, new { @class = "m-form m-form--label-align-left", @id = "sessionEditSelectedAudienceForm", role = "form", novalidate = "novalidate" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="row">
+        <div class="col-md-1 col-12"></div>
+        <div class="col-md-10 col-12">
+            <!-- to move to partial -->
+            <div class="m-form__heading">
+                <h3 class="font-weight-bold">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageEditSelectAudience"))
+                </h3>
+            </div>
+            <div class="mt-5">
+
+                @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Student" && ViewBag.ClassTeacher != null)
+                {
+                    Teacher ClassTeacher = ViewBag.ClassTeacher;
+                    Timeline ClassTeacherSelected = ViewBag.ClassTeacherSelected;
+                    <div class="row">
+                        <div class="col-md-4 col-12">
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageEditSelectTeacherAudience"))
+                        </div>
+                        <div class="col-md-8 col-12">
+                            <div id="enrolled_students" style="min-height:100px">
+                                @*<label class="m-checkbox m-checkbox--air">
+                                        All<input type="checkbox" class="all_students" data-child="students" checked="checked" />
+                                        <span></span>
+                                    </label>*@
+                                <ul>
+                                    <li>
+                                        @if (ClassTeacherSelected != null)
+                                        {
+                                            <label class="m-checkbox">
+                                                <input class="teacher" type="checkbox" name="selectTeacher" value="@ClassTeacher.TeacherKey" checked="checked">@ClassTeacher.FirstName @ClassTeacher.LastName
+                                                <span></span>
+                                            </label>
+                                        }
+                                        else
+                                        {
+                                            <label class="m-checkbox">
+                                                <input class="teacher" type="checkbox" name="selectTeacher" value="@ClassTeacher.TeacherKey" >@ClassTeacher.FirstName @ClassTeacher.LastName
+                                                <span></span>
+                                            </label>
+                                        }
+
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-md-4 col-12">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageEditSelectStudentAudience"))
+                    </div>
+                    <div class="col-md-8 col-12">
+                        <div id="enrolled_students" style="min-height:100px">
+
+                            @if (Model.SelectedStudentsEnrolled.Count() == Model.StudentsEnrolled.Count())
+                            {
+                                <label class="m-checkbox m-checkbox--air">
+                                    All<input type="checkbox" class="all_students" data-child="students" checked="checked" />
+                                    <span></span>
+                                </label>
+                            }
+                            else
+                            {
+                                <label class="m-checkbox m-checkbox--air">
+                                    All<input type="checkbox" class="all_students" data-child="students" />
+                                    <span></span>
+                                </label>
+                            }
+
+                            <ul>
+                                @foreach (var student in Model.StudentsEnrolled)
+                                {
+                                    @*<li>
+                                            <label class="m-checkbox">
+                                                <input class="student" type="checkbox" name="studentsSelected" value="@student.StudentKey" checked="checked">@student.StudentName
+                                                <span></span>
+                                            </label>
+                                        </li>*@
+
+                                    <li>
+                                        <label class="m-checkbox">
+                                            @if (Model.SelectedStudentsEnrolled.Where(ss => ss.StudentKey == student.StudentKey).Count() > 0)
+                                            {
+                                                <input class="student" type="checkbox" name="studentsSelected" value="@student.StudentKey" checked="checked">@student.StudentName
+                                            }
+                                            else
+                                            {
+                                                <input class="student" type="checkbox" name="studentsSelected" value="@student.StudentKey">@student.StudentName
+                                            }
+                                            <span></span>
+                                        </label>
+                                    </li>
+
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-1 col-12"></div>
+    </div>
+
+}
+
+
+
+

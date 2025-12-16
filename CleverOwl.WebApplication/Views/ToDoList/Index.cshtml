@@ -1,0 +1,965 @@
+﻿@model CleverOwl.WebApplication.Models.ToDoViewModel
+
+@using RLI.Common.Managers
+
+
+@{
+    ViewBag.Title = "To Do List";
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+@Styles.Render("~/assets/vendors/select2/dist/css/select2.min.css")
+@Styles.Render("~/assets/vendors/jstree/dist/themes/default/style.min.css")
+@Styles.Render("~/assets/vendors/select2/dist/css/select2.min.css")
+
+<style>
+    .select2-results {
+        padding: 15% !important;
+    }
+
+    svg {
+        height: 50px;
+    }
+
+    .page-banner {
+        margin-top: 45px !important;
+        height: fit-content;
+        /*margin-bottom: 30px;*/
+        background-color: #ffffff;
+        overflow: visible !important;
+    }
+
+    .page-body {
+        padding: 0;
+        margin-bottom: 50px;
+    }
+
+    .grid-card {
+        box-shadow: rgb(99 99 99 / 20%) 0px 2px 8px 0px;
+        border-radius: 25px;
+        padding: 40px;
+        background: linear-gradient( to left, rgb(115 110 197 / 80%) 0%, rgb(68 60 182) 100% ) left bottom #ffffff no-repeat;
+        background-size: 100% 18px;
+        cursor: pointer;
+    }
+
+        .grid-card:hover {
+            background: #c3c3c31f;
+        }
+
+
+
+    .grid-card-body {
+        margin-top: 25px;
+        font-weight: 100;
+    }
+
+    .grid-card-footer {
+        margin-top: 50px;
+        margin-bottom: -10px;
+    }
+
+    .table-row {
+        display: table-row;
+        height: auto;
+    }
+
+    .table-cell1 {
+        border: none;
+        display: table-cell;
+        padding: 2px;
+        width: 80%
+    }
+
+    .table-cell2 {
+        border: none;
+        display: table-cell;
+        padding: 2px;
+    }
+
+    video {
+        max-width: 398px;
+        max-height: 130px;
+    }
+
+
+    .select2-selection__clear {
+        padding-top: 8px !important;
+    }
+
+    .show-calendar {
+        visibility: hidden;
+    }
+
+    h2 {
+        /*font-size: 31px;*/
+        width: 100%;
+        font-weight: bold;
+        text-align: center;
+    }
+
+
+    .completed-todo {
+        background: #6bff622e;
+    }
+
+    .duedate-todo {
+        background: #f388881f;
+    }
+
+
+    .previousDayBtn, .nextDayBtn {
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .m-portlet {
+        background: #fdfafa;
+        padding: 5px;
+    }
+
+    p {
+        margin-top: 10px;
+    }
+
+    .searchInput {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+
+    .previousDayBtn i, .nextDayBtn i {
+        font-size: 40px;
+        color: #f98e47;
+    }
+
+
+    .head-title {
+        width: 100%;
+        padding: 10px;
+    }
+
+        .head-title h3 {
+            color: #c3c3c3;
+            padding-left: 33px;
+            font-style: italic;
+        }
+
+    #dateText {
+        cursor: pointer;
+    }
+
+    .upper-part {
+        margin-top: 24px;
+    }
+
+    .calendar {
+        position: absolute;
+        top: 30px;
+        left: 50%;
+        right: 50%;
+        transform: translate(-50%, 10px);
+        z-index: 2;
+    }
+
+    .month-list > div {
+        cursor: pointer;
+    }
+
+    .arrow-container button {
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .info-error-container {
+        margin-top: -19px;
+        border-radius: 49px;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        background: white;
+        padding: 11px 20px;
+    }
+
+    #go-mobile {
+        display: none;
+    }
+
+    .courseBtn {
+        border: 0;
+        padding: 10px 20px;
+        border-radius: 16px;
+        margin-top: 10px;
+        color: #2b2376;
+        background: #f9f5f7;
+    }
+
+        .courseBtn:hover {
+            color: white;
+            background: #f98e47;
+        }
+
+    .show-grades {
+        display: none;
+    }
+
+    .gradefilterAll {
+        background: rgb(43, 35, 80);
+        color: white !important;
+    }
+
+    .gradeBtn:hover {
+        color: white;
+        background: rgb(43, 35, 80);
+    }
+
+
+    @@media(max-width:985px) {
+        .head-title h3 {
+            padding-left: 34px;
+        }
+
+        p {
+            margin-top: 0px;
+        }
+    }
+
+
+
+
+
+    @@media(max-width:580px) {
+        /* h2 {
+            font-size: 1.1em;
+        }*/
+
+        .m-accordion {
+            display: none;
+        }
+
+        .show-grades {
+            display: block;
+            border: 0px;
+            border-radius: 16px;
+            margin: 10px;
+        }
+
+        .select {
+            margin: 0px;
+        }
+
+        .calendar-header {
+            font-size: 18px !important;
+        }
+    }
+
+    @@media(max-width:450px) {
+        /* h2 {
+            font-size: 1em;
+        }*/
+    }
+</style>
+
+
+
+<section class="page-banner">
+    <div class="container">
+        <div class="page-title-wrapper">
+            <div>
+                <ul class="bradcurmed">
+                    <li><a href="@Url.Action("Index", "Dashboard")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DashboardTitle"))</a></li>
+                    <li><a href="@Url.Action("Index", "ToDoList")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ToDoPageTitle1"))</a></li>
+                </ul>
+            </div>
+            <div class="row m--margin-top-20-desktop">
+                <div class="col-lg-1 m-auto m--hidden-tablet m--hidden-mobile">
+
+                    @Html.Partial("~/Views/SharedSvgs/_AssignmentsIcon.cshtml")
+
+                </div>
+                <div class="col-lg-5 col-12 m-auto">
+                    <h1 class="page-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ToDoPageTitle1"))</h1>
+                </div>
+                <div class="col-lg-3  m-auto">
+                </div>
+                <div class="col-lg-3 col-12 m-auto">
+
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+</section>
+
+<section class="page-body">
+    <div class="container">
+        @*@if (User.IsInRole("Teacher"))
+            {
+                <div class="row m-auto">
+
+                    <div class="col-lg-2 m-auto" style="text-align:center;">
+
+                        <div class=" m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-left m-dropdown--align-push  m-auto" m-dropdown-toggle="click" style="text-align: center;" aria-expanded="true">
+
+
+                            <a href="#" class=" m-dropdown__toggle">
+                                <i class="fa fa-2x fa-share "> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Share"))</i>
+                            </a>
+
+
+                            <div class="m-dropdown__wrapper" style="z-index: 101;">
+                                <span class="m-dropdown__arrow m-dropdown__arrow--left m-dropdown__arrow--adjust"></span>
+                                <div class="m-dropdown__inner">
+                                    <div class="m-dropdown__body">
+                                        <div class="m-dropdown__content">
+                                            <ul class="m-nav">
+                                                <li class="m-nav__item">
+                                                    @Html.DropDownList("GradesDropDown", (SelectList)ViewBag.Grades, "", new { @class = "form-control", style = "width:100%", id = "GradesDropDown" })
+                                                </li>
+
+                                                <li class="m-nav__separator m-nav__separator--fit">
+                                                </li>
+
+                                                <li class="m-nav__item">
+
+                                                    <aside class="f_widget social_widget">
+
+                                                        <ul class="list">
+                                                            @{
+                                                                int sstgKey =(int) ViewBag.SSTGKey;
+                                                                string encodeParam = RLI.Common.Managers.UtilitiesManager.Base64Encode(sstgKey.ToString());
+                                                            }
+                                                            <li><a style="cursor:pointer;" data-url="@HttpContext.Current.Request.Url/View/@encodeParam" class="copyLink" data-type="copy" data-title=""><i class=" fa fa-copy fa-2x"></i></a></li>
+                                                            <li><a href="" target="_blank" class="social_share" data-url="@HttpContext.Current.Request.Url/View/@encodeParam" data-type="fb" data-title=""><i class=" fab fa-facebook-f fa-2x"></i></a></li>
+                                                            <li><a href="" target="_blank" class="social_share" data-url="@HttpContext.Current.Request.Url/View/@encodeParam" data-type="twitter" data-title=""><i class=" fab fa-twitter fa-2x"></i></a></li>
+                                                            <li><a href="" target="_blank" class="social_share" data-url="@HttpContext.Current.Request.Url/View/@encodeParam" data-type="whatsapp" data-title=""><i class=" fab fa-whatsapp fa-2x"></i></a></li>
+                                                        </ul>
+                                                    </aside>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            }*@
+
+        <div class="row m-auto" dir="ltr">
+            <div class="upper-part col-xl-12 col-lg-12">
+                @Html.Partial("_UpperPartPartial", Model)
+            </div>
+        </div>
+    </div>
+
+
+</section>
+
+
+
+@section Scripts{
+
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+    @Scripts.Render("~/assets/JS-Share-master/src/jsshare.js")
+<script>
+    $(document).on("click", "#shareBtn", function () {
+        $(this).next().toggle();
+    })
+
+     $(document).on('click',".copyLink",function() {
+        var url = $(this).attr("data-url");
+        console.log(url);
+
+         navigator.clipboard.writeText(url);
+    });
+
+        $('#GradesDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAssignmentSelectGrade"))',
+        });
+
+
+    $('#shareTypeDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAssignmentSelectGrade"))',
+        });
+    $(document).on('change','#GradesDropDown',function () {
+        var sstgKey = btoa($(this).val());
+        var baseUrl = '@HttpContext.Current.Request.Url.Authority' + '/ToDoList/View/?';
+         var shareType = $("#shareTypeDropDown option:selected").val();
+
+        if (shareType == "Day") {
+            $('.copyLink').attr("data-url", baseUrl + "id=" + sstgKey + "&dateShared=" + '@ViewBag.dateToShare');
+            $('.social_share').attr("data-url", baseUrl + "id=" + sstgKey + "&dateShared=" + '@ViewBag.dateToShare');
+        } else {
+            $('.copyLink').attr("data-url", baseUrl + "id=" + sstgKey);
+            $('.social_share').attr("data-url", baseUrl + "id=" + sstgKey);
+        }
+        //$('.copyLink').attr("data-url", baseUrl + sstgKey);
+        //$('.social_share').attr("data-url", baseUrl + sstgKey);
+    });
+
+    $(document).on('change','#shareTypeDropDown',function () {
+        var sstgKey = btoa($("#GradesDropDown option:selected").val());
+        var baseUrl = '@HttpContext.Current.Request.Url.Authority' + '/ToDoList/View/?';
+        var shareType = $("#shareTypeDropDown option:selected").val();
+
+        if (shareType == "Day") {
+            var dateshared = $("#dateText").text().trim();
+            $('.copyLink').attr("data-url", baseUrl + "id=" + sstgKey + "&dateShared=" + dateshared);
+            $('.social_share').attr("data-url", baseUrl + "id=" + sstgKey + "&dateShared=" + dateshared);
+        } else {
+            $('.copyLink').attr("data-url", baseUrl + "id=" + sstgKey);
+            $('.social_share').attr("data-url", baseUrl + "id=" + sstgKey);
+        }
+    });
+   
+    
+
+    $(document).on('click', '.show-grades', function () {
+        if ($(this).text() === "Show filters") {
+            $(this).text("Hide filters");
+        }
+        else {
+            $(this).text("Show filters");
+        }
+        $(".m-accordion").toggle();
+    })
+
+    var grade = "-1";
+
+    $(document).on('click', '.gradeBtn', function () {
+        var btns = $('.gradeBtn');
+
+        grade = $(this).data('id');
+
+        if (grade != "all") {
+            for (var i = 0; i < btns.length; i++) {
+                if ($(btns[i]).data("filter", "all")) {
+                    $(btns[i]).removeClass("gradefilterAll");
+                }
+
+            }
+        }
+
+
+        Search();
+    })
+
+    //searchInput change
+    $(document).on('input', '.searchInput', function () {
+        if ($(".searchInput").val().length >= 3 || $(".searchInput").val().length == 0) {
+            setTimeout(function () { Search()}, 2000);
+           // Search()
+            $(".info-error-container").css('display', 'none');
+        }
+        else {
+            $(".info-error-container").css('display', 'block');
+        }
+    })
+
+        $(document).on('focusout', '.searchInput', function () {
+                $(".info-error-container").css('display', 'none');
+
+        })
+
+        //search call function
+    function Search() {
+
+            mApp.block('.todos-container');
+            var querySearch = $(".searchInput").val();
+            var dateSent = $("#dateText").text();
+            $.ajax({
+                url: '@Url.Action("Search")',
+                type: "POST",
+                dataType: "html",
+                data: {
+                    query: querySearch,
+                    date: dateSent,
+                    gradeKey: grade,
+                    __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+                },
+                success: function (response) {
+                    console.log(response);
+                    mApp.unblock('.todos-container');
+                    $(".todos-container").empty();
+                    $(".todos-container").html(response);
+                    var items = $(".item-todo");
+                    if (items.length != 0) {
+                        $(items[items.length - 1]).addClass("no-border");
+
+                    }
+
+
+                },
+                error: function () {
+                    mApp.unblock('.todos-container');
+                    swal("Something Went Wrong!", "We couldn't filter your sessions, please try again later.", "error");
+                }
+            })
+        }
+
+    var items = $(".item-todo");
+    if (items.length != 0) {
+        $(items[items.length - 1]).addClass("no-border");
+
+    }
+
+
+        //Date Manipulation (Prev)
+    $(document).on('click', '.previousDayBtn', function () {
+            grade = "-1";
+            mApp.block(".todos-container");
+            var dateSent = $("#dateText").text();
+             $.ajax({
+                url: '@Url.Action("DateManipulation")',
+                type: "POST",
+                dataType: "html",
+                 data: {
+                     optionNeeded: "prev",
+                     date: dateSent,
+                     gradeKey: grade,
+                     __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+                 },
+                 success: function (response) {
+                     mApp.unblock(".todos-container");
+                     $(".upper-part").empty();
+                     $(".upper-part").html(response);
+                     var items = $(".item-todo");
+                     if (items.length != 0) {
+                         $(items[items.length - 1]).addClass("no-border");
+
+                     }
+
+                     $('#GradesDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAssignmentSelectGrade"))',
+                     });
+
+                               $('#shareTypeDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAssignmentSelectGrade"))',
+        });
+                     initRefreshCalendar();
+                    },
+                error: function () {
+                    swal("Something Went Wrong!", "We couldn't filter your sessions, please try again later.", "error");
+                }
+            })
+        })
+
+        //DateManipulation (Next)
+    $(document).on('click', '.nextDayBtn', function () {
+            grade = "-1";
+            var dateSent = $("#dateText").text();
+            mApp.block(".todos-container");
+
+           $.ajax({
+                url: '@Url.Action("DateManipulation")',
+                type: "POST",
+                dataType: "html",
+               data: {
+                   optionNeeded: "next",
+                   date: dateSent,
+                   gradeKey: grade,
+                   __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+               },
+               success: function (response) {
+                   $(".upper-part").empty();
+                   $(".upper-part").html(response);
+                   var items = $(".item-todo");
+                   if (items.length != 0) {
+                       $(items[items.length - 1]).addClass("no-border");
+
+                   }
+
+
+                   $('#GradesDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAssignmentSelectGrade"))',
+                   });
+
+                   $('#shareTypeDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAssignmentSelectGrade"))',
+        });
+                   mApp.unblock(".container");
+                   initRefreshCalendar();
+                    },
+               error: function () {
+                   mApp.unblock(".todos-container");
+                    swal("Something Went Wrong!", "We couldn't filter your sessions, please try again later.", "error");
+                }
+            })
+       })
+
+
+
+
+        //Calendar
+        const month_names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        var currDate = new Date()
+        var curr_month = { value: currDate.getMonth() }
+        var curr_year = { value: currDate.getFullYear() }
+
+    function initRefreshCalendar() {
+
+
+        let calendar = document.querySelector('.calendar');
+
+        let month_list = $('.month-list')
+
+        generateCalendar(curr_month.value, curr_year.value)
+
+    }
+    $(document).on('click', '.month-list > div', function () {
+
+            $(".month-list").removeClass('show')
+            $(".calendar-header").css("visibility", "visible")
+            $(".calendar-body").css("visibility", "visible")
+            curr_month.value = $(this).attr('data-month')
+            generateCalendar(curr_month.value, curr_year.value)
+
+
+    })
+
+    function checkifExist(arr, elem) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] === elem) return true;
+        }
+        return false;
+    }
+        isLeapYear = (year) => {
+            return (year % 4 === 0 && year % 100 !== 0 && year % 400 !== 0) || (year % 100 === 0 && year % 400 === 0)
+        }
+
+        getFebDays = (year) => {
+            return isLeapYear(year) ? 29 : 28
+    }
+
+
+
+        var days_of_month = [31, getFebDays(year), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+        generateCalendar = (month, year) => {
+
+            let calendar_days = $('.calendar-days')
+            let calendar_header_year = $('#year')
+
+
+
+            calendar_days.empty();
+            //calendar_days.innerHTML = ''
+
+
+            let currDate = new Date()
+
+            let curr_month = `${month_names[month]}`
+
+
+
+            $("#month-picker").empty()
+            $("#month-picker").text(curr_month)
+            //month_picker.innerHTML = curr_month
+
+            calendar_header_year.empty()
+            calendar_header_year.append(year)
+
+           // calendar_header_year.innerHTML = year
+
+            // get first day of month
+
+            let first_day = new Date(year, month, 1)
+
+
+            //Test AJAX days
+            var dateToSend = month_names[month] + " " + year;
+
+
+            $.ajax({
+                url: '@Url.Action("DaysManipulation")',
+                type: "POST",
+                dataType: "json",
+               data: {
+                   date: dateToSend,
+                   __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+                },
+                success: function (response) {
+                    mApp.unblock(".calendar-body");
+                         for (let i = 0; i <= days_of_month[month] + first_day.getDay() - 1; i++) {
+
+                           let day = document.createElement('div')
+                           if (i >= first_day.getDay()) {
+                               day.classList.add('calendar-day-hover')
+                               day.innerHTML = i - first_day.getDay() + 1
+                               //hone i get the date
+
+                               var dayToCheck = i - first_day.getDay() + 1+"";
+                               if (checkifExist(response, dayToCheck)) {
+                                   day.classList.add('day-work');
+                               }
+
+
+                               if (i - first_day.getDay() + 1 === currDate.getDate() && year === currDate.getFullYear() && month === currDate.getMonth()) {
+                                   day.classList.add('curr-date')
+                               }
+
+                             }
+
+                           calendar_days.append(day)
+                           //calendar_days.appendChild(day)
+                       }
+
+                        },
+                        error: function () {
+
+                    swal("Something Went Wrong!", "We couldn't filter your sessions, please try again later.", "error");
+                }
+            })
+
+
+
+
+
+
+        }
+
+
+
+
+        let month_picker = $('#month-picker')
+
+    $(document).on('click', '#month-picker', function () {
+        let month_list = $('.month-list')
+            month_list.addClass('show')
+            $(".calendar-header").css("visibility", "hidden")
+            $(".calendar-body").css("visibility", "hidden")
+        })
+
+
+
+        generateCalendar(curr_month.value, curr_year.value)
+
+        $(document).on('click', '#prev-year', function () {
+            --curr_year.value
+            generateCalendar(curr_month.value, curr_year.value)
+        })
+
+        $(document).on('click', '#next-year', function () {
+            ++curr_year.value
+            generateCalendar(curr_month.value, curr_year.value)
+        })
+
+
+
+    $(document).on('click', '.day-work', function () {
+            grade = "-1";
+            $(".calendar").toggle();
+            var day = $(this).text();
+            var month = $("#month-picker").text();
+            var year = $("#year").text();
+            var dateToSend = day + " " + month + " " + year;
+
+            mApp.block(".todos-container");
+
+           $.ajax({
+                url: '@Url.Action("DateManipulation")',
+                type: "POST",
+                dataType: "html",
+               data: {
+                   optionNeeded: "none",
+                   date: dateToSend,
+                   gradeKey: grade,
+                   __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+               },
+               success: function (response) {
+                   $(".upper-part").empty();
+                   $(".upper-part").html(response);
+                   var items = $(".item-todo");
+                   if (items.length != 0) {
+                       $(items[items.length - 1]).addClass("no-border");
+
+                   }
+                  
+                  
+                       var shareItems = $('.social_share');
+                       var isIOS = /iPad|iPhone|iPod/.test(navigator.platform)
+                           || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                       var isAndroid = /(android)/i.test(navigator.userAgent);
+                       var options = {};
+                       if (isIOS || isAndroid) {
+                           options.link_telegram = 'tg://msg';
+                           options.link_whatsapp = 'whatsapp://send';
+                       }
+                       for (var i = 0; i < shareItems.length; i += 1) {
+                           shareItems[i].addEventListener('click', function share(e) {
+                               //console.log("dasd");
+                               //console.log(this);
+                               return JSShare.go(this, options);
+                           });
+                       }
+                  
+                   $('#GradesDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAssignmentSelectGrade"))',
+                   });
+                                          $('#shareTypeDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAssignmentSelectGrade"))',
+        });
+
+                   mApp.unblock(".container");
+                   initRefreshCalendar();
+                    },
+               error: function () {
+                   mApp.unblock(".todos-container");
+                    swal("Something Went Wrong!", "We couldn't filter your sessions, please try again later.", "error");
+                }
+            })
+
+        })
+
+
+
+
+        var month = "January";
+        var index = 0;
+
+        $(document).on('click', '#prev-year-mobile', function () {
+            var oldYear = $("#year-mobile").text();
+            var newYear = parseInt(oldYear) != NaN ? parseInt(oldYear) - 1 : oldYear;
+            $("#year-mobile").text(newYear);
+
+        })
+        $(document).on('click', '#next-year-mobile', function () {
+            var oldYear = $("#year-mobile").text();
+            var newYear = parseInt(oldYear) != NaN ? parseInt(oldYear) + 1 : oldYear;
+            $("#year-mobile").text(newYear);
+        })
+
+        $(document).on('change', "#month-select2", function () {
+            $("#day-mobile").text("1");
+           var monthSelected = $("#month-select2 option:selected").val();
+            for (var i = 0; i < month_names.length; i++) {
+                if (monthSelected === month_names[i]) {
+                    month = month_names[i];
+                    index = i;
+                }
+            }
+
+        })
+
+        //Mobile days
+
+        $(document).on('click', '#prev-day-mobile', function () {
+            var oldDay = $("#day-mobile").text();
+            var newDay = parseInt(oldDay) > 1 ? parseInt(oldDay) - 1 : 1;
+           $("#day-mobile").text(newDay);
+
+        })
+
+
+
+        $(document).on('click', '#next-day-mobile', function () {
+
+            var oldDay = $("#day-mobile").text();
+            var maxDays = parseInt(days_of_month[index]);
+            var newDay = 0;
+             newDay = parseInt(oldDay) < maxDays ? parseInt(oldDay) + 1 : maxDays;
+              $("#day-mobile").text(newDay);
+
+        })
+
+
+
+        //select2
+
+        $("#month-select2").select2({ placeholder: "Select a Month" })
+
+
+
+
+        $(document).on('click', "#go-mobile", function () {
+            $(".calendar").toggle();
+            var day = $("#day-mobile").text();
+            var month = $("#month-select2 option:selected").val();
+            var year = $("#year-mobile").text();
+            var dateToSend = day + " " + month + " " + year;
+
+            mApp.block(".todos-container");
+
+           $.ajax({
+                url: '@Url.Action("DateManipulation")',
+                type: "POST",
+                dataType: "html",
+               data: {
+                   optionNeeded: "none",
+                   date: dateToSend,
+                   gradeKey: grade,
+                   __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+               },
+               success: function (response) {
+                   $(".upper-part").empty();
+                   $(".upper-part").html(response);
+                   var items = $(".item-todo");
+                   if (items.length != 0) {
+                       $(items[items.length - 1]).addClass("no-border");
+
+                   }
+
+                   $('#GradesDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAssignmentSelectGrade"))',
+                   });
+
+                                          $('#shareTypeDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAssignmentSelectGrade"))',
+        });
+                   mApp.unblock(".container");
+                   $("#day-mobile").text("1");
+                   $("#month-select2 option:selected").val("January");
+                   grade = "-1";
+                   $("#year-mobile").text("2022");
+                   initRefreshCalendar();
+                    },
+               error: function () {
+                   mApp.unblock(".todos-container");
+                    swal("Something Went Wrong!", "We couldn't filter your sessions, please try again later.", "error");
+                }
+            })
+        })
+
+    $(document).on('click', document, function (e) {
+
+        //if (!e.target.className.includes("shareBtn") && (!e.target.id.includes("GradesDropDown") || !e.target.id.includes("shareTypeDropDown"))) {
+        //    console.log(e.target.id);
+
+        //    $(".m-dropdown__wrapper").css("display", "none");
+        //}
+
+        if (!e.target.className.includes("shareBtn") && !e.target.id.includes("GradesDropDown") && !e.target.id.includes("shareTypeDropDown")) {
+            $(".m-dropdown__wrapper").css("display", "none");
+        }
+
+        var targets = ['dateText', 'calendar','prev-year-mobile','select2-month-select2-container','next-year-mobile','month-select2','select2', 'calendar-header', 'calendar-body', 'year', 'month-picker', 'month','arrows','prev-year','next-year'];
+        for (var i = 0; i < targets.length; i++){
+            if (e.target.className === targets[i] || e.target.id === targets[i]) {
+                $(".calendar").css("display", "block");
+                if ($(".calendar-days").children().length==0) {
+
+                mApp.block(".calendar-body");
+                }
+                break;
+            }
+            else {
+                $(".calendar").css("display", "none");
+            }
+    }
+
+    })
+
+
+
+
+</script>
+
+
+
+} 

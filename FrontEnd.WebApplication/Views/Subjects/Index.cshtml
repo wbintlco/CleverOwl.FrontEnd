@@ -1,0 +1,275 @@
+﻿@model IEnumerable<RLI.EntityFramework.EDM.Subject>
+@using RLI.Common.Managers
+@{
+    ViewBag.Title = "Index";
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+<style>
+    .m-portlet__body {
+        overflow: auto !important;
+        padding: 20px;
+    }
+
+</style>
+
+
+
+<div class="m-portlet m-portlet--mobile">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPageSubjects"))
+                </h3>
+            </div>
+        </div>
+        <div class="m-portlet__head-tools">
+            <div class="m-portlet__nav">
+                <ul class="m-portlet__nav">
+                    <li class="m-portlet__nav-item">
+                        <a href="@Url.Action("Create", "Subjects")" class="m-portlet__nav-link m-portlet__nav-link--icon"><i class="la la-plus-square"><span>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPageCreate"))</span></i></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__body" style="padding:10px">
+        <div class="m-portlet m-portlet--mobile">
+            <div class="m-portlet__head">
+                <div class="m-portlet__head-caption">
+                    <div class="m-portlet__head-title">
+                        <h3 class="m-portlet__head-text">
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPageFilter"))
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div class="m-portlet__body" style="padding:20px">
+                <div class="row">
+                    <div class="col-md-3">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPageSubject"))
+                        @Html.DropDownList("SubjectDropDown", (SelectList)ViewBag.SubjectDropDown, "", new { style = "width:100%", id = "SubjectDropDown" })
+                    </div>
+                    <div class="col-md-1 mt-1">
+                        <span class="clearBtnHiddenBtn" style="visibility:hidden">clear</span>
+                        <button class="btn btn btn-sm btn-brand m-btn m-btn--icon m-btn--pill m-btn--wide btn-danger clearFilterClassBtn" data-filter="GradeDropDown">X</button>
+                    </div>
+                    <div class="col-md-3">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPageVisibility")) <br />
+                        <select id="Visibility" name="Visibility" style="width:100%">
+                            <option></option>
+                            <option value="false">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPageFalse"))</option>
+                            <option value="true">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPageTrue"))</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1 mt-1">
+                        <span class="clearBtnHiddenBtn" style="visibility:hidden">clear</span>
+                        <button class="btn btn btn-sm btn-brand m-btn m-btn--icon m-btn--pill m-btn--wide btn-danger clearFilterClassBtn" data-filter="Visibility">X</button>
+                    </div>
+                    <div class="col-md-2">
+                        <span class="clearBtnHiddenBtn" style="visibility:hidden">apply</span>
+                        <button href="" class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100" id="applyBtn">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPageApply"))</button>
+                    </div>
+                    <div class="col-md-2">
+                        <span class="clearBtnHiddenBtn" style="visibility:hidden">clear</span>
+                        <button class="btn m-btn--pill btn-outline-danger m-btn m-btn--outline-2x w-100" id="clearBtn">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPageClear"))</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="subjectTable">
+            @Html.Partial("_SubjectsTable")
+        </div>
+    </div>
+    <div class="m-portlet__foot">
+        <div class="row">
+            <div class="col-md-3">
+                <button class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100" id="previousBtn" style="display:none;">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPagePrevious"))</button>
+            </div>
+            <div class="col-md-6"></div>
+            <div class="col-md-3">
+                <button class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100" id="nextBtn">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPageNext"))</button>
+            </div>
+        </div>
+    </div>
+</div>
+@using (Html.BeginForm("GetNextOrPreviousGrades", "Domains", FormMethod.Post, new { id = "FilterHidden", @class = "", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+
+}
+@section Scripts {
+
+    <!--begin::Page Vendors -->
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+    @Scripts.Render("~/assets/vendors/custom/datatables/datatables.bundle.js")
+
+<script>
+        var table;
+        function initTable() {
+            table = $('#m-table').DataTable({
+                dom: `<'row'<'col-sm-12 col-md-9'><'col-sm-12 col-md-3 align-edge'>>
+                    <'row'<'col-sm-12'tr>>
+                    <'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 dataTables_pager'lp>>`,
+            "language": {
+                
+                "info": "@UtilitiesManager.GetFieldLabel(Locale, "DataTableShowing") _START_ @UtilitiesManager.GetFieldLabel(Locale, "DataTableTo") _END_ @UtilitiesManager.GetFieldLabel(Locale, "DataTableOf") _TOTAL_ @UtilitiesManager.GetFieldLabel(Locale, "DataTableEntries")",
+
+                
+            },
+            "paginate": false,
+            "ordering": false,
+            responsive: !0,
+            pagingType: "full_numbers",
+            columnDefs: [{
+                targets: -1,
+                title: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPageActions"))",
+                orderable: !1,
+                render: function (a, e, n, t) {
+
+                    return '\n<span class="dropdown">' +
+                        '\n<a href="#" class="btn m-btn m-btn--hover-brand m-btn--icon m-btn--icon-only m-btn--pill" data-toggle="dropdown" aria-expanded="true">' +
+                        '\n<i class="la la-ellipsis-h"></i>\n</a>\n<div class="dropdown-menu dropdown-menu-right">' +
+                        '\n                                <a class="dropdown-item" href="@Url.Action("Delete")/' + n[0] + '"><i class="la la-trash"></i>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPageDelete"))</a>' +
+                        '\n                                <a class="dropdown-item" href="@Url.Action("Edit")/?id=' + n[0] + '"><i class="la la-edit"></i> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPageEdit"))</a>' +
+                        '\n                                <a class="dropdown-item" href="@Url.Action("Details")/?id=' + n[0] + '"><i class="la la-info"></i> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsSPageDetails"))</a>' +
+                        '\n</div>\n</span>\n'
+                }
+            }, {
+                targets: 0,
+                visible: false,
+            }],
+            "stateSave": true
+        });
+
+        }
+        $(document).ready(function () {
+            initTable();
+            $('#SubjectDropDown').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPageSelectSubject"))'
+            });
+            $('#Visibility').select2({
+                placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubjectsPageSelectVisibility"))'
+            });
+
+            $('#applyBtn').on('click', function () {
+                mApp.block($("#subjectTable"));
+                $.ajax({
+                url: '@Url.Action("GetNextOrPreviousSubjects", "Subjects")',
+                type: 'POST',
+                dataType: 'html',
+                data: {
+                    skip: 0, subjectKey: $('#SubjectDropDown').val(), visibility: $('#Visibility').val(),
+                    __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+
+                },
+                    success: function (data) {
+
+
+                    if (data.includes("Empty")) {
+                        $("#subjectTable").empty();
+                        $("#subjectTable").html("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_NoResultFound"))");
+                        $('#nextBtn').hide();
+                        $('#previousBtn').hide();
+                    } else {
+                        console.log("heree");
+                        table.destroy();
+                        $("#subjectTable").empty();
+                        $("#subjectTable").html(data);
+                        $('#nextBtn').show();
+                        initTable();
+                    }
+                        mApp.unblock($("#subjectTable"));
+                }
+            });
+            });
+
+         var paginationIndexing = 0;
+            $("#nextBtn").click(function () {
+                var subject = $("#SubjectDropDown option:selected").val();
+
+                paginationIndexing++;
+                mApp.block($("#subjectTable"));
+
+                $.ajax({
+                    url: '@Url.Action("GetNextOrPreviousSubjects", "Subjects")',
+                    type: 'POST',
+                    dataType: 'html',
+                    data: {
+                        skip: paginationIndexing, subjectKey: subject, visibility: $('#Visibility').val(),
+                        __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+
+                    },
+                    success: function (data) {
+                        if (data.includes("Empty")) {
+                            paginationIndexing--;
+                            $("#nextBtn").hide();
+                            $("#previousBtn").show();
+                        } else {
+                            $("#subjectTable").empty();
+                            $("#subjectTable").html(data);
+                            initTable();
+
+                        }
+                        if (paginationIndexing == 0) {
+                            $("#previousBtn").hide();
+                        } else {
+                            $("#previousBtn").show();
+                        }
+
+                        mApp.unblock($("#subjectTable"));
+                    }
+                });
+            });
+
+        $("#previousBtn").click(function () {
+            var subject = $("#SubjectDropDown option:selected").val();
+            $("#nextBtn").show();
+            paginationIndexing= parseInt(--paginationIndexing,10);
+            mApp.block($("#subjectTable"));
+
+                $.ajax({
+                url: '@Url.Action("GetNextOrPreviousSubjects", "Subjects")',
+                type: 'POST',
+                dataType: 'html',
+                data: {
+                    skip: paginationIndexing, subjectKey: subject, visibility: $('#Visibility').val(),
+                    __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+
+                },
+                success: function (data) {
+                    $("#subjectTable").empty();
+                    $("#subjectTable").html(data);
+                    if (paginationIndexing == 0) {
+                $("#previousBtn").hide();
+            } else {
+                  $("#previousBtn").show();
+            }
+                    initTable();
+
+                    mApp.unblock($("#subjectTable"));
+                }
+            });
+
+
+        });
+
+            $("#clearBtn").click(function () {
+                $("#SubjectDropDown").val('').trigger('change');
+                $("#Visibility").val('').trigger('change');
+            });
+
+            $('.clearFilterClassBtn').click(function () {
+                var id = $(this).attr('data-filter');
+                $('#' + id).val('').trigger('change');
+            });
+    });
+
+</script>
+
+
+
+
+}

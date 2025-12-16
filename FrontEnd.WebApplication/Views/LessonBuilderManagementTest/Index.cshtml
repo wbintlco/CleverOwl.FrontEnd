@@ -1,0 +1,153 @@
+﻿
+@using RLI.Common.Managers
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+@Styles.Render("~/assets/vendors/custom/datatables/datatables.bundle.css")
+<title>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageLessonsBuilder"))</title>
+<style>
+    .m-portlet__body {
+        overflow: auto !important;
+        padding: 20px;
+    }
+
+    .dataTables_info {
+        display: none !important;
+    }
+</style>
+
+<div class="m-portlet m-portlet--mobile">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageLessonsBuilder"))
+                </h3>
+            </div>
+        </div>
+        <div class="m-portlet__head-tools">
+            <div class="m-portlet__nav">
+                <div class="m-portlet__nav-item">
+                    <a href="http://moodle.win.solutions:5000" target="_blank" class="m-portlet__nav-link btn m-btn--pill btn-outline-success m-btn m-btn--outline-2x w-100">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPagebuildlessons"))
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__body" style="padding:10px;">
+
+        <table class="table table-striped- table-bordered table-hover table-checkable dataTable no-footer dtr-inline"
+               id="m_table" role="grid">
+            <thead>
+                <tr>
+                    <th class="sorting_disabled">Lessons Names</th>
+                    <th class="sorting_disabled">Status</th>
+                    <th class="sorting_disabled">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Math</td>
+                    <td class="m--font-success">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageApproved"))</td>
+                    <td>
+                        <span class="dropdown">
+                            <a href="#" class="btn m-btn m-btn--hover-brand m-btn--icon m-btn--icon-only m-btn--pill" data-toggle="dropdown" aria-expanded="false">
+                                <i class="la la-ellipsis-h"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-32px, 27px, 0px);">
+                                <a class="dropdown-item" href="" onclick=""><i class="fas fa-eye"></i> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageViewLesson"))</a>
+                                <a class="dropdown-item" href="@Url.Action("LessonMapping", "LessonBuilderManagementTest")" target="_blank"><i class="fas fa-plus"></i>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageaddtocurriculum"))</a>
+
+                            </div>
+                        </span>
+                    </td>
+                <tr>                </tr>
+
+                <td>French</td>
+                <td class="m--font-warning">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPagePending"))</td>
+                <td>
+                    <span class="dropdown">
+                        <a href="#" class="btn m-btn m-btn--hover-brand m-btn--icon m-btn--icon-only m-btn--pill" data-toggle="dropdown" aria-expanded="false">
+                            <i class="la la-ellipsis-h"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-32px, 27px, 0px);">
+                            <a class="dropdown-item" href="" onclick=""><i class="fas fa-eye"></i> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageViewLesson"))</a>
+                            <a class="dropdown-item" href="@Url.Action("LessonMapping", "LessonBuilderManagementTest")" target="_blank"><i class="fas fa-plus"></i> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageaddtocurriculum"))</a>
+
+                        </div>
+                    </span>
+                </td>
+                </tr>
+                <tr>
+                    <td>Economy</td>
+                    <td class="m--font-danger">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageRejected"))</td>
+                    <td>
+                        <span class="dropdown">
+                            <a href="#" class="btn m-btn m-btn--hover-brand m-btn--icon m-btn--icon-only m-btn--pill" data-toggle="dropdown" aria-expanded="false">
+                                <i class="la la-ellipsis-h"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-32px, 27px, 0px);">
+                                <a class="dropdown-item" href="" onclick=""><i class="fas fa-eye"></i>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageViewLesson"))</a>
+                                <a class="dropdown-item" href="@Url.Action("LessonMapping", "LessonBuilderManagementTest")" target="_blank"><i class="fas fa-plus"></i>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageaddtocurriculum"))</a>
+
+                            </div>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Training</td>
+                    <td class="m--font-success">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageApproved"))</td>
+                    <td>
+                        <span class="dropdown">
+                            <a href="#" class="btn m-btn m-btn--hover-brand m-btn--icon m-btn--icon-only m-btn--pill" data-toggle="dropdown" aria-expanded="false">
+                                <i class="la la-ellipsis-h"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-32px, 27px, 0px);">
+                                <a class="dropdown-item" href="" onclick=""><i class="fas fa-eye"></i>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageViewLesson"))</a>
+                                <a class="dropdown-item" href="@Url.Action("LessonMapping", "LessonBuilderManagementTest")" target="_blank"><i class="fas fa-plus"></i>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageaddtocurriculum"))</a>
+
+                            </div>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Physics</td>
+                    <td class="m--font-success">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageApproved"))</td>
+                    <td>
+                        <span class="dropdown">
+                            <a href="#" class="btn m-btn m-btn--hover-brand m-btn--icon m-btn--icon-only m-btn--pill" data-toggle="dropdown" aria-expanded="false">
+                                <i class="la la-ellipsis-h"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-32px, 27px, 0px);">
+                                <a class="dropdown-item" href="" onclick=""><i class="fas fa-eye"></i>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageViewLesson"))</a>
+                                <a class="dropdown-item" href="@Url.Action("LessonMapping", "LessonBuilderManagementTest")" target="_blank"><i class="fas fa-plus"></i>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageaddtocurriculum"))</a>
+
+                            </div>
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <!--begin::Page Vendors -->
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/custom/datatables/datatables.bundle.js")
+
+
+    <script>
+
+        $(document).ready(function () {
+            $('#m_table').DataTable();
+        });
+
+    </script>
+
+}

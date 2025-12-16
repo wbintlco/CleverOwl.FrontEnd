@@ -1,0 +1,237 @@
+﻿@model List<RLI.EntityFramework.EDM.QualitativeFeedback_Result>
+
+@Styles.Render("~/assets/files/starsRating/starsRating.css")
+@{
+    string src = "";
+    string fontColor = "m--font-success";
+    string AnalyticalFontBadge = "success";
+}
+<style>
+    .qualitativeFeedbackCard {
+        overflow: hidden;
+        background-color: #FFFFFF !important;
+        height: auto !important;
+        border-radius: 25px;
+        -webkit-box-shadow: 0px 6px 14px 0px rgba(43, 35, 79, 0.1) !important;
+        box-shadow: 0px 6px 14px 0px rgba(43, 35, 79, 0.1) !important;
+        margin-bottom: 40px !important;
+    }
+    .lesson_chapter {
+        font-family: Poppins;
+        color: rgba(41,38,86,1);
+    }
+    .language_Class {
+        background: rgba(41,38,86,1);
+        border-radius: 50px;
+        height: 50px;
+        width: 50px;
+        position: absolute;
+        top: 5%;
+        right: 5%;
+    }
+    .lan{
+        color:white;
+        text-align:center;
+        padding-top:10px;
+    }
+    .extendedMenuIconClose {
+        color: #292656;
+        position:absolute;
+        right:15px;
+    }
+    .qualitativeFeedbackCard_body {
+        display: block;
+        position: relative;
+        @*background-image: url('@Url.Content("~/assets/files/media/img/Rich_media@2x.png")');*@
+        background-repeat: no-repeat;
+        background-size: 100% 375px;
+        width: 100%;
+        height: 160px;
+    }
+    .play_icon {
+        position: absolute;
+        bottom: 10%;
+        left: 5%;
+    }
+    .provider {
+        position: absolute;
+        bottom: 10%;
+        right: 5%;
+        border-radius:5px;
+        padding:unset;
+        width:100px;
+    }
+  /*  .m-portlet {
+        -webkit-box-shadow: unset;
+        box-shadow: unset;
+        background-color: unset;
+        margin-top: unset;
+         margin-bottom: unset;
+         border-radius: unset;
+    }
+    .qualitativeFeedbackCard .m-portlet .m-portlet__head {
+        border-bottom: unset;
+        padding: unset;
+    }*/
+    .m-dropdown .m-dropdown__wrapper{
+        top:-223px !important;
+    }
+    .rating {
+        position: absolute;
+        top: 5%;
+        left: 5%;
+    }
+    .rating {
+        width: 180px;
+    }
+
+    .rating__star {
+        cursor: pointer;
+        color: #dabd18b2;
+    }
+    .checked {
+        color: orange;
+    }
+
+</style>
+
+@{
+    var NominativeFeedbacks = Model.Where(q => q.QualitativeFeedbackType == "Nominative");
+    var AnalyticalFeedbacks = Model.Where(q => q.QualitativeFeedbackType == "Analytical");
+    var InstructiveFeedbacks = Model.Where(q => q.QualitativeFeedbackType == "Instructive");
+}
+<div class="qualitativeFeedbackCard col-lg-12" style="padding:8%">
+    @{
+        foreach (var nominative in NominativeFeedbacks)
+        {
+            string nominativeFeedback = nominative.Feedback.Trim();
+
+            switch (nominativeFeedback)
+            {
+                case "Excellent":
+                    src = Url.Content("~/assets/files/media/img/QualitativeImages/Excellent-owl.png");
+                    break;
+                case "Very Good":
+                    src = Url.Content("~/assets/files/media/img/QualitativeImages/Very-good-owl.png");
+                    break;
+                case "Good":
+                    src = Url.Content("~/assets/files/media/img/QualitativeImages/Good-owl.png");
+                    break;
+                case "Fair":
+                    src = Url.Content("~/assets/files/media/img/QualitativeImages/Fair-owl.png");
+                    break;
+                case "Fail":
+                    src = Url.Content("~/assets/files/media/img/QualitativeImages/Fail-owl.png");
+                    break;
+                default:
+                    src = Url.Content("~/assets/files/media/img/QualitativeImages/Fail-owl.png");
+                    break;
+            }
+
+
+            if (nominativeFeedback == "Fair")
+            {
+                fontColor = "m--font-brand";
+                AnalyticalFontBadge = "brand";
+            }
+            else
+            {
+                fontColor = "m--font-danger";
+                AnalyticalFontBadge = "danger";
+            }
+        }
+        <div class="qualitativeFeedbackCard_body" style="text-align:center;">
+            <img src="@src" />
+        </div>
+    }
+
+    <div class="lessonCard_details">
+        <div class="mb-5 mt-3">
+            @{
+                <div class="@fontColor text-center" style="font-weight:bold;font-size:22px;">
+                    @NominativeFeedbacks.FirstOrDefault().Feedback
+                </div>
+            }
+        </div>
+        <div class="row mb-2">
+            <div class="col-12 lesson_chapter">
+                @{
+                    foreach (var analytical in AnalyticalFeedbacks)
+                    {
+                        <span class="m-badge m-badge--@AnalyticalFontBadge"></span>
+                        <span style="font-weight:600;">
+                            @analytical.Feedback
+                        </span>
+                        <br />
+                    }
+                }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 lesson_chapter">
+                @{
+                    int instructiveIndex = 1;
+                    foreach (var instructive in InstructiveFeedbacks)
+                    {
+                        <span class="m-badge">@instructiveIndex</span>
+                        <span style="font-weight:600;">
+                            @instructive.Feedback
+                        </span>
+                        <br />
+                        instructiveIndex++;
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/files/starsRating/starsRating.js")
+
+    <script>
+        $(document).ready(function () {
+            initStarRating($(".svg-star-rating"), 0);
+
+            //console.log(getRate($(".svg-star-rating")));
+        });
+
+        //starRating functions
+        function initStarRating(selector, rateNumber) {
+            setReadOnly = false;
+            if (rateNumber > 0.0) {
+                setReadOnly = true;
+            }
+            selector.starRating({
+                totalStars: 5,
+                starSize: 25,
+                initialRating: rateNumber,
+                readOnly: setReadOnly,
+            });
+            var rateSelectedBeforeClick = rateNumber;
+            selector.click(function () {
+                if (rateSelectedBeforeClick == 0) {
+                    var newRateNum = getRate($(this));
+                    setOnClickListener(newRateNum);
+                    rateSelectedBeforeClick = newRateNum;
+                }
+            });
+        }
+
+        function setRate(selector, rateNumber) {
+            selector.starRating('setRating', rateNumber);
+        }
+
+        function getRate(selector) {
+            var rate = selector.starRating('getRating');
+            return rate;
+        }
+
+        function setOnClickListener(rateNumber) {
+            console.log(rateNumber);
+        }
+
+    </script>
+
+}

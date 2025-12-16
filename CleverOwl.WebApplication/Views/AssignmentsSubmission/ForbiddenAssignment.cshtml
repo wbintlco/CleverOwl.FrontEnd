@@ -1,0 +1,49 @@
+﻿@using RLI.Common.Enums
+@using RLI.Common.Managers
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = "Forbidden Assignment";
+}
+
+<style>
+    body {
+        height: 100% !important;
+    }
+
+    .m--font-error {
+        color: #2b2350;
+    }
+</style>
+<div class="m-grid m-grid--hor m-grid--root m-page">
+    <div class="m-grid__item m-grid__item--fluid m-grid  m-error-6">
+        <div class="m-error_container">
+            <div class="m-error_subtitle m--font-error">
+                <h1 style="margin-top:4rem !important;font-size:4rem;">Oops!</h1>
+            </div>
+            <h2 class="m--font-error" style="font-size: 2.5rem;font-weight:600">
+                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ForbiddenAssignmentTitle"))<br>
+            </h2>
+            <div class="m-error_subtitle m--font-error">
+                <h2>
+                    <a href="@Url.Action("Index","Home")" style="text-decoration:none;">
+                        <img src="@Url.Content("~/assets/app/media/img/error/Artboard – 1@2x.png")" style="height:300px;" />
+                    </a>
+                </h2>
+            </div>
+
+
+            <div class="m-error_subtitle" style="font-weight:bold;">
+                <h5 style="line-height:30px;">
+                    <a href="@Url.Action("Index","Home")" class="m--font-error" style="text-decoration:underline;">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ForbiddenAssignmentSubTitle1"))
+                    </a>
+                    <br />
+                    <a href="@Url.Action("Index", "Assignments")" class="m--font-error" style="text-decoration:underline;">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ForbiddenAssignmentSubTitle2"))
+                    </a>
+                </h5>
+            </div>
+        </div>
+    </div>
+</div>

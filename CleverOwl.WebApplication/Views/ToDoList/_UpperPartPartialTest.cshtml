@@ -1,0 +1,52 @@
+﻿
+@model CleverOwl.WebApplication.Models.ToDoViewModel
+
+@using RLI.Common.Managers
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+
+@if (ViewBag.dateShared == null)
+{
+    <div class="row m-auto">
+        <div class="col-lg-2 col-md-2" style="display: flex;align-items: center;">
+
+        </div>
+        <div class="col-lg-1 col-md-1 col-3" style="display: flex;align-items: center;">
+            <button class="previousDayBtn"><i class="fas fa-angle-left"></i></button>
+        </div>
+        <div class="col-lg-6 col-md-6 col-6">
+            <h2 id="dateText">@Model.TodosDate.ToString("dddd, dd MMMM yyyy") <i class=" fa fa-calendar fa-1x" style="color: #f98e47;"></i></h2>
+        </div>
+        <div class="col-lg-1 col-md-1 col-3" style="display: flex;align-items: center;justify-content: flex-end;">
+            <button class="nextDayBtn"><i class="fas fa-angle-right"></i></button>
+        </div>
+
+    </div>
+}
+
+
+<div class="row">
+    <div class="calendar-part">
+        @Html.Partial("_calendar")
+    </div>
+</div>
+
+<div class="row text-center">
+    <div class="col-lg-12  col-md-12 col-12">
+        <input type="text" class="searchInput" id="searchInput" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Search"))" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-12 info-error-container" style="display:none;">
+        <p>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SearchErrorText1"))</p>
+    </div>
+</div>
+<div class="container todos-container">
+
+    @Html.Partial("_ToDoItemTest", Model)
+
+
+
+</div>

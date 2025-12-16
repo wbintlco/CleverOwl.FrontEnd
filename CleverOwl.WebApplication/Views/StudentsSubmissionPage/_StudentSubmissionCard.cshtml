@@ -1,0 +1,75 @@
+﻿@using RLI.EntityFramework.EDM
+@using RLI.Common.Managers
+@model IEnumerable<RLI.Common.DataObjects.GetAssignmentSubmissionsResultModel>
+@{
+    int i = -1;
+    int gradedIndex = -1;
+    int notGradedIndex = -1;
+    int draftdIndex = -1;
+    int notViewedIndex = -1;
+
+}
+
+@foreach (var sub in Model)
+{
+    bool isGraded = false;
+    int index = -1;
+    //if(sub.MoodleGradeScore != "" && sub.MoodleGradeScore != null)
+    //{
+    //    isGraded = true;
+
+    //}
+    if (sub.GradingStatus == "graded" && sub.Status == "submitted")
+    {
+        isGraded = true;
+        index = ++gradedIndex;
+    }
+    if (sub.GradingStatus == "notgraded" && sub.Status == "submitted")
+    {
+        index = ++notGradedIndex;
+    }
+    if (sub.Status == "new" || sub.Status == "draft")
+    {
+        index = ++draftdIndex;
+    }
+    if (sub.Status == "notviewed")
+    {
+        index = ++notViewedIndex;
+    }
+    <div class="m-widget4 grid effect-2 studentSubmissionsGrid col-lg-4 col-md-4" data-graded ="@isGraded" data-index="@index" data-userId="@sub.UserId" data-assigId="@sub.AssignmentId" data-status="@sub.Status" title="not a button" style="-webkit-perspective:1px;perspective:1px;cursor:not-allowed;">
+        <div class="m-widget4__item  studentSubmissionCard mb-5 p-3">
+            <div class="m-widget4__img m-widget4__img--pic" style="color: #2b2350 !important;">
+                <i class="fa fa-2x fa-user-graduate"></i>
+            </div>
+
+            <div class="m-widget4__info">
+                <span class="m-widget4__title">@sub.FullName</span><br>
+                <span class="m-widget4__sub">@sub.Grade</span>
+            </div>
+            @if (isGraded)
+            {
+                double grade = Double.Parse(sub.MoodleGradeScore);
+                if (grade < 50)
+                {
+                    <div class="m-widget4__ext">
+                        <a href="@Url.Action("StudentSubmissionDetails", "StudentsSubmissionPage")" target="_blank" class="btn m-btn--pill btn-sm btn-danger">@grade %</a>
+                    </div>
+                }
+                else if (grade > 50)
+                {
+                    <div class="m-widget4__ext">
+                        <a href="@Url.Action("StudentSubmissionDetails", "StudentsSubmissionPage")" target="_blank" class="btn m-btn--pill btn-sm btn-success">@grade %</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="m-widget4__ext">
+                        <a href="@Url.Action("StudentSubmissionDetails", "StudentsSubmissionPage")" target="_blank" class="btn m-btn--pill btn-sm btn-brand">@grade %</a>
+                    </div> 
+                }
+
+            }
+        </div>
+    </div>
+}
+

@@ -1,0 +1,296 @@
+﻿@model FrontEnd.WebApplication.Models.DomainViewModel
+@using RLI.Common.Managers
+
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DomainCreatePageTitle"));
+}
+
+<style>
+    .select2-results__group {
+        color: #0E8BF2 !important;
+        font-size: 20px !important;
+        font-weight: bold;
+    }
+</style>
+
+<div class="m-portlet m-portlet--mobile" id="DomainsDiv">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageAddDomain"))
+                </h3>
+            </div>
+        </div>
+        <div class="m-portlet__head-tools">
+        </div>
+    </div>
+    <div class="m-portlet__body" style="padding:10px;">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "createForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                <label class="control-label col-md-2" for="Domain1">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageDomain"))</label>
+                <div class="col-md-12">
+                    @Html.EditorFor(model => model.Domain1, new { htmlAttributes = new { @class = "form-control", style = "width:100%" } })
+                    @Html.ValidationMessageFor(model => model.Domain1, Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ChaptersCreatePageChapterError")).ToString(), new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2" for="GradeKey">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageGrade"))</label>
+                <div class="col-md-12">
+                    @Html.DropDownList("GradeKey", null, "", htmlAttributes: new { @class = "form-control", style = "width:100%" })
+                    @Html.ValidationMessageFor(model => model.GradeKey, Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ChaptersCreatePageGradeError")).ToString(), new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2" for="SubjectKey">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageSubject"))</label>
+                <div class="col-md-12">
+                    @Html.DropDownList("SubjectKey", null, "", htmlAttributes: new { @class = "form-control", style = "width:100%" })
+                    @Html.ValidationMessageFor(model => model.SubjectKey, Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ChaptersCreatePageSubjectError")).ToString(), new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group" hidden>
+                <label class="control-label col-md-2">LanguageTransaltionKeys</label>
+                <div class="col-md-12">
+                    <input name="LanguageTransaltionKeys" id="LanguageTransaltionKeys" />
+                </div>
+            </div>
+
+            <div class="form-group" hidden>
+                <label class="control-label col-md-2">DomainNamesPerLanguage</label>
+                <div class="col-md-12">
+                    <input name="DomainNamesPerLanguage" id="DomainNamesPerLanguage" />
+                </div>
+            </div>
+
+            <div class="form-group" hidden>
+                <label class="control-label col-md-2">cnt</label>
+                <div class="col-md-12">
+                    <input name="andContinue" id="continue" value="false" />
+                </div>
+            </div>
+            <div class="form-group" hidden>
+                <label class="control-label col-md-2">DomainNamesPerLanguage</label>
+                <div class="col-md-12">
+                    <input name="DomainNamesPerLanguage" id="DomainNamesPerLanguage" />
+                </div>
+            </div>
+            
+
+            @*<div class="form-group">
+            <label class="control-label col-md-2" for="DomainIndex">DomainIndex</label>
+            <div class="col-md-12">
+
+                <select id="domainsPreview" name="DomainIndex" style="width:100%;">
+                    <option></option>
+                </select>
+                @Html.ValidationMessageFor(model => model.DomainIndex, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+
+            <div class="m-portlet m-portlet--mobile">
+                <div class="m-portlet__head">
+                    <div class="m-portlet__head-caption">
+                        <div class="m-portlet__head-title">
+                            <h3 class="m-portlet__head-text">
+                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageDomainTranslation"))
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="m-portlet__head-tools">
+                    </div>
+                </div>
+                <div class="m-portlet__body" style="padding:10px;">
+                    <div class="form-group">
+                        <label class="control-label col-md-2" for="LanguageKey">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageLanguageTranslation"))</label>
+                        <div class="col-md-4">
+                            <select id="translationLanguageDropdown" name="LanguageKey" style="width:100%">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="m-form__section m-form__section--first">
+
+                        <div id="m_repeater_1">
+                            <div class="form-group  m-form__group" id="m_repeater_1">
+
+                                <div data-repeater-list="" class="col-lg-11" id="repeaterDiv">
+                                </div>
+                            </div>
+                            <div class="m-form__group form-group row">
+
+                                <div class="col-lg-4">
+                                    <div data-repeater-create="" class="btn btn btn-sm btn-brand m-btn m-btn--icon m-btn--pill m-btn--wide" id="addLanguageTranslationBtn">
+                                        <span>
+                                            <i class="la la-plus"></i>
+                                            <span>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageAdd"))</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <input type="submit" id="submitBtn" value="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageCreate"))" class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100 submitBtn" />
+
+                    </div>
+
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <input type="submit" id="submitBtnAndContinue" value="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageCreateAndContinue"))" class="btn m-btn--pill btn-outline-brand m-btn m-btn--outline-2x w-100 submitBtn" />
+
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 mt-1">
+                        <a class="btn m-btn--pill btn-outline-metal m-btn m-btn--outline-2x w-100" href="@Url.Action("Index","Domains")">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageBackToDomains"))</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>
+
+
+@using (Html.BeginForm("CollectLanguageTranslations", "Domains", FormMethod.Post, new { id = "CollectLanguageTranslationsHidden", @class = "", @style = "display:none;" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("langKeys", "")
+    @Html.Hidden("domainNames", "")
+}
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+    @*@Scripts.Render("~/assets/files/base/vendors.bundle.js")
+
+        @Scripts.Render("~/assets/vendors/formrepeater/form-repeater.js")*@
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+
+
+<script>
+
+        $('select').select2();
+        $("#SubjectKey").select2({
+            placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageSubject"))'
+        });
+
+        $("#GradeKey").select2({
+            placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageGrade"))'
+        });
+
+
+        $("#LocalChapterGUID").select2({
+            placeholder: 'LocalChapterGUID'
+        });
+
+
+         $("#translationLanguageDropdown").select2({
+             placeholder: '@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageLanguageTranslation"))',
+             data: @Html.Raw(Json.Encode(ViewBag.LanguageKey))
+         });
+
+        $(document).ready(function () {
+            $("#ChapterTypeKey").val('@ViewBag.chapterTypeKeySelectedValue').trigger("change");
+        })
+
+
+        var languageTranslationIndex = 1;
+        var languageTranslationArrayKeys = [];
+        var languageTranslationArrayDomainsName = [];
+        $("#addLanguageTranslationBtn").click(function () {
+
+            var LanguageTranslationKey = $("#translationLanguageDropdown option:selected").val();
+            var LanguageTranslationText = $("#translationLanguageDropdown option:selected").text();
+            var lastchapterTranslationName = $(".domainNameClass").last().val();
+            if (languageTranslationArrayKeys.includes(LanguageTranslationKey) || LanguageTranslationKey==='' || lastchapterTranslationName==='') {
+                return;
+            }
+            languageTranslationArrayKeys.push(LanguageTranslationKey);
+
+            var html = '<div data-repeater-item="" id="languageTranslationRepeater_'+languageTranslationIndex+'" class="form-group m-form__group row align-items-center"><div class="col-md-4"><div class="m-form__group m-form__group--inline">';
+            html += '<div class="m-form__label control-label"><label>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageLanguageTranslation"))</label></div>';
+            html += '<div class="m-form__control"><input type="text" disabled="" class="form-control m-input" placeholder="'+LanguageTranslationText+'""></div></div>';
+            html += '<div class="d-md-none m--margin-bottom-10"></div></div><div class="col-md-4"><div class="m-form__group m-form__group--inline">';
+            html += '<div class="m-form__label"><label class="m-label m-label--single">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageDomainName"))</label></div>';
+            html += '<div class="m-form__control"><input type="text" class="form-control m-input domainNameClass" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageDomainName"))"></div></div>';
+            html += '<div class="d-md-none m--margin-bottom-10"></div></div><div class="col-md-4"><div class="m-form__label"><label class="m-label m-label--single" style="visibility:hidden;">Name</label></div>';
+            html += '<div data-repeater-delete="" data-langKey="'+LanguageTranslationKey+'" data-repeaterId="languageTranslationRepeater_'+languageTranslationIndex+'" class="btn-sm btn btn-danger m-btn m-btn--icon m-btn--pill deleteTranslationBtn"><span><i class="la la-trash-o"></i><span>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreatePageDelete"))</span></span></div></div></div>';
+
+            $("#repeaterDiv").append(html);
+            languageTranslationIndex++;
+            $("#translationLanguageDropdown ").val('').trigger("change");
+            $("#TranslationLanguageKeys").val(JSON.stringify(languageTranslationArrayKeys));
+
+
+            console.log(languageTranslationArrayKeys);
+
+        })
+
+        function removeKeyFromArray(array,i) {
+            const index = array.indexOf(i);
+if (index > -1) {
+  array.splice(index, 1);
+}
+        }
+    $(document).on("click", ".deleteTranslationBtn", function () {
+        var divToDelete = $(this).attr("data-repeaterId");
+        var langKey = $(this).attr("data-langKey");
+
+        removeKeyFromArray(languageTranslationArrayKeys, langKey);
+        $("#" + divToDelete).remove();
+        console.log(languageTranslationArrayKeys);
+    });
+
+        $(".submitBtn").click(function () {
+            mApp.block($("#DomainsDiv"));
+            if ($(this).attr("id") == "submitBtn") {
+                event.preventDefault();
+                $('.domainNameClass').each(function (index, value) {
+                    languageTranslationArrayDomainsName.push($(this).val());
+                });
+                $("#LanguageTransaltionKeys").val(JSON.stringify(languageTranslationArrayKeys));
+                $("#DomainNamesPerLanguage").val(JSON.stringify(languageTranslationArrayDomainsName));
+
+                $('#createForm').submit();
+            } else {
+                console.log("continue");
+                event.preventDefault();
+                $('.domainNameClass').each(function (index, value) {
+                    languageTranslationArrayDomainsName.push($(this).val());
+                });
+                $("#LanguageTransaltionKeys").val(JSON.stringify(languageTranslationArrayKeys));
+                $("#DomainNamesPerLanguage").val(JSON.stringify(languageTranslationArrayDomainsName));
+                $('#continue').val("true");
+                console.log($('#continuecontinue').val("true"));
+                $('#createForm').submit();
+            }
+            
+            
+         });
+
+
+
+        $("#GradeKey").change(function () {
+            $("#ChapterTypeKey").val('').trigger("change");
+            $("#SubjectKey").val('').trigger("change");
+        })
+
+         $("#SubjectKey").change(function () {
+            $("#ChapterTypeKey").val('').trigger("change");
+        })
+</script>
+}
+

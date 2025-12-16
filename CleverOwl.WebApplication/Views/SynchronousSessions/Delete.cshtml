@@ -1,0 +1,107 @@
+﻿@model RLI.EntityFramework.EDM.SynchronousSession
+@using RLI.Common.Managers
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = "Delete";
+    Layout = "_LayoutPlus";
+}
+
+<h2>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageDeleteDelete"))</h2>
+
+<h3>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageDeleteAreyousureyouwanttodeletethis?"))</h3>
+<div>
+    <h4>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageDeleteSynchronousSession"))</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Topic)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Topic)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Descriprion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Descriprion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreationDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreationDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SessionDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SessionDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MeetingDuration)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MeetingDuration)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MeetingURL)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MeetingURL)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MeetingRecurrenceRule)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MeetingRecurrenceRule)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TimeZone)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TimeZone)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.AspNetUser.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AspNetUser.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ESystem.ESystemName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ESystem.ESystemName)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

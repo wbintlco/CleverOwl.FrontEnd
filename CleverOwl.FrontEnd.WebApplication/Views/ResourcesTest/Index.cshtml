@@ -1,0 +1,371 @@
+﻿@using RLI.Common.Managers
+@using Everest.OpenCurate.EntityFramework.EDM
+@using Everest.OpenCurate.WebApplication.Controllers
+@model IEnumerable<Everest.OpenCurate.EntityFramework.EDM.Candidate>
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = "Content Browser";
+    int content_index = 0;
+    int gradeIndex = 0;
+    int subjectIndex = 0;
+}
+
+<style>
+   .feature-image {
+        background: url("@Url.Content("~/assets/files/media/img/loader/loader2.gif")");
+        min-height: 315px;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    #searchContainer {
+        position: relative;
+        z-index: 10;
+        padding-top: 40px;
+    }
+
+    .select2-search__field {
+        background: transparent !important;
+        border: 0 !important;
+        padding: 19px 10px 19px 30px !important;
+        font-size: 16px !important;
+        font-weight: 400 !important;
+        margin: 0 !important;
+        border-radius: 45px !important;
+        border: 1px solid #efe7e7 !important;
+        -webkit-transition: all 0.3s ease-in-out;
+        -o-transition: all 0.3s ease-in-out !important;
+        transition: all 0.3s ease-in-out !important;
+    }
+
+    .select2-container--default .select2-selection--multiple {
+        background: transparent !important;
+        border: 0 !important;
+    }
+
+    .select2-container--default.select2-container--focus .select2-selection--multiple {
+        background: transparent !important;
+        border: 0 !important;
+    }
+
+    .select2-dropdown {
+        margin-top: 10px;
+        background-color: #ffffff !important;
+        border-radius: 45px !important;
+    }
+
+    .select2-results {
+        padding: 20px !important;
+    }
+
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #fdf1f1 !important;
+    }
+
+
+</style>
+
+<!--==========================-->
+<!--=         Banner         =-->
+<!--==========================-->
+<section class="page-banner">
+    <div class="container">
+        <div class="page-title-wrapper">
+            <h1 class="page-title">Content Browser</h1>
+
+            <ul class="bradcurmed">
+                @*<li><a href="" rel="noopener noreferrer">Home</a></li>*@
+                <li>Home</li>
+                <li>Content Browser</li>
+            </ul>
+        </div>
+        <!-- /.page-title-wrapper -->
+        <div id="searchContainer" class="row">
+            <div class="col-12">
+                <div id="search" class="widget widget_search">
+                    <form role="search" class="search-form-widget">
+                        <label>
+                            <select id="quicksearch_input" class="search-field" multiple="multiple" name="param">
+                                <option></option>
+                            </select>
+                        </label>
+                        <button type="submit" class="search-submit">
+                            <i class="ei ei-icon_search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- /.container -->
+
+    <svg class="circle" data-parallax='{"x" : -200}' xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="950px" height="950px">
+        <path fill-rule="evenodd" stroke="rgb(250, 112, 112)" stroke-width="100px" stroke-linecap="butt" stroke-linejoin="miter" opacity="0.051" fill="none" d="M450.000,50.000 C670.914,50.000 850.000,229.086 850.000,450.000 C850.000,670.914 670.914,850.000 450.000,850.000 C229.086,850.000 50.000,670.914 50.000,450.000 C50.000,229.086 229.086,50.000 450.000,50.000 Z" />
+    </svg>
+
+    <ul class="animate-ball">
+        <li class="ball"></li>
+        <li class="ball"></li>
+        <li class="ball"></li>
+        <li class="ball"></li>
+        <li class="ball"></li>
+    </ul>
+</section>
+<!-- /.page-banner -->
+<!--========================-->
+<!--=         Blog         =-->
+<!--========================-->
+<div class="blog-post-archive">
+    <div class="container">
+        <div class="row">
+            
+
+            <div class="col-lg-9">
+
+                <div id="appendCandidates" class="row">
+                    @foreach (Candidate candidate in Model.Take(10))
+                    {
+                        //var fileKey =  CurateController.CheckCandidateScreenshot(candidate.CandidateKey).Result;
+
+                        <div id="content_@content_index" class="col-lg-6 contents">
+                            <article class="post-post-grid" id="lazyScrollLoading_ImageMode">
+                                <div class="feature-image">
+                                    <a href="@candidate.URL">
+                                        <img loading="lazy" class="resourceThumbnail" src="@Url.Action("Screenshot", "Files")/@candidate.CandidateKey" alt="">@*https://api.screenshotlayer.com/api/capture?access_key=93e7c0050b5906e0e17f158aa45e6962&url=@(candidate.URL)&width=600*@
+                                    </a>
+                                </div>
+                                <div class="blog-content">
+                                    <ul class="post-meta">
+                                        <li><a href="#">@candidate.Topic.Topic1</a></li>
+                                    </ul>
+
+                                    <h3 class="entry-title"><a href="@candidate.URL" target="_blank">@candidate.Title</a></h3>
+
+                                    <div class="author">
+                                        <img loading="lazy" src="@Url.Content("~/assets/files/media/img/icons/curriculum_mesh@2x.png")" alt="author">
+                                        <a href="#" class="author-link">@candidate.Grade.Grade1 > @candidate.Subject.Subject1</a>
+                                    </div>
+
+                                </div><!-- /.post-content -->
+                            </article><!-- /.post -->
+                        </div>
+                        <!-- /.col-lg-4 -->
+                        content_index++;
+                    }
+                    <div class="col-12" id="loader_0"></div>
+                    @*append here*@
+                </div>
+            </div>
+            <!-- /.row -->
+
+        </div><!-- /.container -->
+    </div>
+</div><!-- /.blog-post-archive -->
+
+
+@using (Html.BeginForm("GetNextCandidates", "ResourcesTest", FormMethod.Post, new { id = "GetNextCandidates" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("currentIndex", "")
+    @Html.Hidden("gradesStr", "")
+    @Html.Hidden("subjectsStr", "")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+
+
+<script>
+
+    var cur_index = 10;
+    var eventFired = false;
+    var i = 0;
+    if (@content_index > 0) {
+        i = @content_index - 1;
+    }
+    var gardeKeysArray = [];
+    var subjectKeysArray = [];
+    var loader_index = 0;
+    var FilterClicked = false;
+
+    function getNextCandidates() {
+        if (FilterClicked) {
+            mApp.block('.blog-post-archive');
+        }
+            $("#currentIndex").val(cur_index);
+            var jsonGrade = "";
+            if (gardeKeysArray.length > 0) {
+                var jsonGrade = JSON.stringify(gardeKeysArray);
+            }
+            $("#gradesStr").val(jsonGrade);
+            var jsonSubject ="";
+            if (subjectKeysArray.length > 0) {
+                jsonSubject = JSON.stringify(subjectKeysArray);
+            }
+            $("#subjectsStr").val(jsonSubject);
+             mApp.block($('#loader_' + loader_index));
+            $("#GetNextCandidates").ajaxSubmit({
+                        beforeSubmit: function () {
+                        },
+                        success: function (data) {
+                            if (data == "empty") {
+                                mApp.unblock($('#loader_' + loader_index));
+                                mApp.unblock('.blog-post-archive');
+                            } else {
+                                cur_index += 10;
+                                var html = '';
+                                $.each(data, function (index, value) {
+                                    i++;
+                                    html += '<div id="content_' + i + '" style="display:none" class="col-lg-6 contents">';
+                                    html += '<article class="post-post-grid" id="lazyScrollLoading_ImageMode">';
+                                    html += '<div class="feature-image">';
+                                    html += '<a href="' + value.URL + '">';
+                                    html += '<img loading="lazy" class="resourceThumbnail" src="@Url.Action("Screenshot", "Files")/' + value.candidateKey + '" alt=""> @*https://api.screenshotlayer.com/api/capture?access_key=93e7c0050b5906e0e17f158aa45e6962&url=@(candidate.URL)&width=600*@';
+                                    html += '</a>';
+                                    html += '</div>';
+                                    html += '<div class="blog-content">';
+                                    html += '<ul class="post-meta">';
+                                    html += '<li><a href="#">' + value.topic + '</a></li>';
+                                    html += '</ul>';
+                                    html += '<h3 class="entry-title"><a href="' + value.URL + '" target="_blank">' + value.title + '</a></h3>';
+                                    html += '<div class="author">';
+                                    html += '<img loading="lazy" src="@Url.Content("~/assets/files/media/img/icons/curriculum_mesh@2x.png")" alt="author">';
+                                    html += '<a href="#" class="author-link">' + value.grade + ' > ' + value.subject + '</a>';
+                                    html += '</div>';
+                                    html += '</div>';
+                                    html += '</article>';
+                                    html += '</div>';
+                                });
+                                html += '<div class="col-12" id="loader_' + (loader_index + 1) + '"></div>'
+                                $('#appendCandidates').append(html);
+                                $('.contents').show(2000);
+                                mApp.unblock($('#loader_' + loader_index));
+                                loader_index++;
+                                eventFired = false;
+                                mApp.unblock('.blog-post-archive');
+                            }
+
+                        },
+                        error: function (xhr, status, error) {
+                            eventFired = false;
+                            mApp.unblock('.blog-post-archive');
+                            swal('Error', 'error occur please try agian later', 'error');
+                        }
+                    });
+        }
+    $('document').ready(function () {
+        var gradeKeys = [];
+        var subjectKeys = [];
+        $(window).scrollTop(0);
+        console.log($('#content_' + i + '').offset().top);
+            $(window).scroll(function () {
+                    var lastContentOffsetTop = $('#content_' + i + '').offset().top;
+                    var currentPosition = $(document).scrollTop();
+                    if (currentPosition > lastContentOffsetTop && eventFired === false) {
+                        eventFired = true;
+                        getNextCandidates();
+                    }
+            });
+
+            $('.Grade_Filter').click(function () {
+                gardeKeysArray = [];
+                var remove_icon = $(this).find('.remove');
+                if (remove_icon.attr("data-display") == "false") {
+                    remove_icon.show();
+                    remove_icon.attr("data-display", "true");
+                    gradeKeys[$(this).attr('data-index')] = $(this).attr('data-key');
+                } else {
+                    remove_icon.hide();
+                    remove_icon.attr("data-display", "false");
+                    delete gradeKeys[$(this).attr('data-index')];
+                }
+                
+                for (var g in gradeKeys) {
+                    if (gradeKeys[g] != null) {
+                        gardeKeysArray.push(gradeKeys[g]);
+                    }
+                }
+                cur_index = 0;
+                $('#appendCandidates').empty();
+                FilterClicked = true;
+                getNextCandidates();
+            });
+
+        $('.Subject_Filter').click(function () {
+            subjectKeysArray = [];
+            var remove_icon = $(this).find('.remove');
+            if (remove_icon.attr("data-display") == "false") {
+                remove_icon.show();
+                remove_icon.attr("data-display", "true");
+                subjectKeys[$(this).attr('data-index')] = $(this).attr('data-key');
+            } else {
+                remove_icon.hide();
+                remove_icon.attr("data-display", "false");
+                delete subjectKeys[$(this).attr('data-index')];
+            }
+
+            for (var s in subjectKeys) {
+                if (subjectKeys[s] != null) {
+                    subjectKeysArray.push(subjectKeys[s]);
+                }
+            }
+            cur_index = 0;
+            $('#appendCandidates').empty();
+            FilterClicked = true;
+            getNextCandidates();
+        });
+
+        $('.resourceThumbnail').on("error", function () {
+            this.src ="@Url.Content("~/assets/files/media/img/others/resource_image_placeholder.jpg")";
+        });
+
+        $('#quicksearch_input').select2({
+            ajax: {
+                url: '@Url.Action("Search", "Resources")',
+                dataType: 'json',
+                type: 'POST',
+                delay: 250,
+                cache: true,
+                allowClear: true,
+                multiple: true,
+                maximumSelectionLength: 1,
+                data: function (params) {
+                    var query = {
+                        query: params.term,
+                         __RequestVerificationToken : $('@Html.AntiForgeryToken()').val()
+                    }
+
+                    return query;
+                },
+                processResults: function (data, params) {
+                    return {
+                        results: data
+                    };
+                }
+            },
+            placeholder: 'Search...',
+            escapeMarkup: function (markup) { return markup; },
+            minimumInputLength: 3,
+            maximumSelectionLength: 1,
+            templateSelection: function (data) {
+
+                return data.text;
+            }
+        });
+
+        $('#quicksearch_input').on('select2:select', function (e) {
+
+            $('#quicksearch_input').prop("disabled", true);
+
+            window.location = e.params.data.location;
+
+        });
+
+    });
+
+</script>
+}

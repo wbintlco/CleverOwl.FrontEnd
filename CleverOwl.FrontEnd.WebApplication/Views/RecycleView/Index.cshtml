@@ -1,0 +1,83 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<div class="blog-post-archive">
+ 
+    
+    <div class="row">
+
+        @for (int i = 0; i < 10; i++)
+        {
+            <div class="col-md-3"></div>
+            <div class="col-md-6 col-12">
+                @Html.Partial("_RecycleView")
+            </div>
+            <div class="col-md-3"></div>
+        }
+
+    </div>
+
+    </div>
+
+@section Scripts {
+
+    <!--begin::Page Vendors -->
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+    <script>
+       
+        $(document).ready(function () {
+
+            $('.save_ic').on('click', function () {
+                var active = $(this).attr("data-active");
+                if (active == "desactive") {
+                    $(this).removeClass("far fa-bookmark");
+                    $(this).addClass("fas fa-bookmark");
+                    $(this).attr("data-active", "active");
+                } else if (active == "active") {
+                    $(this).removeClass("fas fa-bookmark");
+                    $(this).addClass("far fa-bookmark");
+                    $(this).attr("data-active", "desactive");
+                }
+            });
+
+            $('.like_ic').on('click', function () {
+                var active = $(this).attr("data-active");
+                if (active == "desactive") {
+                    $(this).removeClass('far fa-heart');
+                    $(this).addClass('fas fa-heart');
+                    $(this).attr("data-active", "active");
+                } else if (active == "active") {
+                    $(this).removeClass('fas fa-heart');
+                    $(this).addClass('far fa-heart');
+                    $(this).attr("data-active", "desactive");
+                }
+            });
+        });
+
+        $('.comment_ic').on('click', function () {
+            var active = $(this).attr("data-active");
+            if (active == "desactive") {
+                $(this).parent().parent().parent().parent().find('.comment_field').show(500);
+                $(this).removeClass('far fa-comment');
+                $(this).addClass('fas fa-comment');
+                $(this).attr("data-active", "active");
+                
+            } else if (active == "active") {
+                $(this).parent().parent().parent().parent().find('.comment_field').hide(500);
+                $(this).next('.comment_field').hide(500);
+                $(this).removeClass('fas fa-comment');
+                $(this).addClass('far fa-comment');
+                $(this).attr("data-active", "desactive");
+                
+            }
+        });
+
+    </script>
+
+}
+

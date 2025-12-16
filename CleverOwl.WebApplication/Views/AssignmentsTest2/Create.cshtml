@@ -1,0 +1,2566 @@
+﻿@using RLI.Common.Managers
+@using RLI.EntityFramework.EDM
+@model CleverOwl.WebApplication.Models.AssigViewModel
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    Language currentLanguage = null;
+    ViewBag.Title = "Assignments - Create";
+}
+@Styles.Render("~/assets/vendors/summernote/dist/summernote.css")
+@if (currentLanguage == null || !currentLanguage.IsRTL)
+{
+    @Styles.Render("~/assets/vendors/dropzone/dist/min/dropzone.min.css")
+}
+else
+{
+    <!--RTL CSS-->
+    @Styles.Render("~/assets/vendors/dropzone/dist/min/dropzone.min.rtl.css")
+}
+@Styles.RenderFormat("<link rel=\"preload\" href=\"{0}\" as=\"style\" onload=\"this.rel='stylesheet'\">", "~/assets/vendors/bootstrap-datetime-picker/css/bootstrap-datetimepicker.min.css")
+@if (currentLanguage == null || !currentLanguage.IsRTL)
+{
+    @Styles.RenderFormat("<link rel=\"preload\" href=\"{0}\" as=\"style\" onload=\"this.rel='stylesheet'\">", "~/assets/vendors/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.css")
+}
+else
+{
+    @Styles.RenderFormat("<link rel=\"preload\" href=\"{0}\" as=\"style\" onload=\"this.rel='stylesheet'\">", "~/assets/vendors/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.rtl.css")
+}
+<style>
+    .page-banner {
+        margin-top: 100px;
+        height: fit-content;
+        margin-bottom: 30px;
+        background-color: #FFFFFF;
+    }
+
+    .page-body {
+        padding: 0;
+        margin-bottom: 50px;
+    }
+
+    .bootstrap-touchspin-down, .bootstrap-touchspin-up {
+        height: 100%;
+    }
+
+    .m-form .m-form__heading {
+        margin-bottom: 35px;
+    }
+
+    .m-portlet .m-portlet__body {
+        overflow: visible;
+    }
+
+    .m-portlet__body {
+        padding-right: 40px;
+        padding-left: 40px;
+        padding-top: 80px;
+    }
+
+    .m-portlet .m-portlet__foot {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .m-form .m-form__actions {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .col-form-label {
+        font-size: 1.4rem !important;
+    }
+
+    .m-portlet .m-portlet__head {
+        border-bottom: none;
+    }
+
+    .modal-dialog {
+        margin-top: 95px;
+    }
+
+    .tool {
+        position: relative;
+        display: inline-block;
+    }
+        /* Tooltip text */
+        .tool .tooltiptext {
+            visibility: hidden;
+            width: 100px;
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            padding: 5px 0;
+            border-radius: 3px;
+            /* Position the tooltip text */
+            position: absolute;
+            z-index: 1;
+            bottom: -125%;
+            left: 50%;
+            margin-left: -60px;
+            /* Fade in tooltip */
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+            /*Tooltip arrow */
+            .tool .tooltiptext::after {
+                content: "";
+                position: absolute;
+                top: -39%;
+                left: 50%;
+                margin-left: -5px;
+                border-width: 5px;
+                border-style: solid;
+                border-color: transparent transparent black transparent;
+            }
+        /* Show the tooltip text when you mouse over the tooltip container */
+        .tool:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+    .bar-done {
+        margin-top: 20px;
+        background: linear-gradient( 90deg, rgba(249,120,53,1) 0%, rgba(252,152,64,1) 50%, rgba(255,188,76,1) 100%);
+        height: 20px;
+        border-radius: 20px;
+    }
+
+    .bar-current {
+        margin-top: 20px;
+        background: #A4A3BF;
+        height: 20px;
+        border-radius: 20px;
+    }
+
+    svg {
+        height: 50px
+    }
+
+    .bar {
+        margin-top: 20px;
+        background: #CCCCCC;
+        height: 20px;
+        border-radius: 20px;
+    }
+
+    .m-wizard__step.m-wizard__step--current {
+        border-bottom: 0px solid !important;
+    }
+
+    .m-wizard.m-wizard--5.m-wizard--success
+    .m-wizard__head .m-wizard__steps
+    .m-wizard__step.m-wizard__step--done
+    .m-wizard__step-info
+    .m-wizard__step-number
+    .m-wizard__step-label {
+        color: #2A224F !important;
+        font-weight: bold;
+    }
+
+    .m-wizard.m-wizard--5.m-wizard--success
+    .m-wizard__head .m-wizard__steps
+    .m-wizard__step.m-wizard__step--done
+    .m-wizard__step-info
+    .m-wizard__step-number
+    .m-wizard__step-seq {
+        color: #2A224F !important;
+        font-weight: bold;
+    }
+
+    .m-wizard.m-wizard--5.m-wizard--success
+    .m-wizard__head .m-wizard__steps
+    .m-wizard__step.m-wizard__step--current
+    .m-wizard__step-info
+    .m-wizard__step-number
+    .m-wizard__step-label {
+        color: #A4A3BF !important;
+        font-weight: bold;
+    }
+
+    .m-wizard.m-wizard--5.m-wizard--success
+    .m-wizard__head .m-wizard__steps
+    .m-wizard__step.m-wizard__step--current
+    .m-wizard__step-info
+    .m-wizard__step-number
+    .m-wizard__step-seq {
+        color: #A4A3BF !important;
+        font-weight: bold;
+    }
+
+    .m-wizard.m-wizard--5
+    .m-wizard__head
+    .m-wizard__nav
+    .m-wizard__steps
+    .m-wizard__step
+    .m-wizard__step-info
+    .m-wizard__step-number
+    .m-wizard__step-label {
+        color: #CCCCCC !important;
+        font-weight: bold;
+    }
+
+    .m-wizard.m-wizard--5
+    .m-wizard__head
+    .m-wizard__nav
+    .m-wizard__steps
+    .m-wizard__step
+    .m-wizard__step-info
+    .m-wizard__step-number
+    .m-wizard__step-seq {
+        color: #CCCCCC !important;
+        font-weight: bold;
+    }
+
+    @@media (max-width: 910px) {
+        .m-wizard.m-wizard--5 .m-wizard__head .m-wizard__nav .m-wizard__steps {
+            width: auto;
+            margin: 1.5rem 0 0 0 !important;
+        }
+
+            .m-wizard.m-wizard--5 .m-wizard__head .m-wizard__nav .m-wizard__steps .m-wizard__step {
+                padding: 0 0 0.5rem 0;
+                display: compact;
+                margin: 2rem 0 0rem 0;
+                width: auto;
+            }
+    }
+
+    @@media (max-width:1200px) and (min-width:911px) {
+        .m-wizard.m-wizard--5 .m-wizard__head .m-wizard__nav .m-wizard__steps {
+            width: auto;
+            margin: 2rem 0 0 0;
+            display: flex;
+        }
+
+            .m-wizard.m-wizard--5 .m-wizard__head .m-wizard__nav .m-wizard__steps .m-wizard__step {
+                padding: 0 0 0.5rem 0;
+                margin: 1.5rem 0 2rem 0;
+                width: auto;
+                display: initial;
+            }
+    }
+
+    @@media (max-width: 769px) {
+        .head {
+            margin: 0px !important;
+        }
+
+        .m-wizard.m-wizard--5 .m-wizard__head {
+            margin: -1rem 0 1rem 0;
+        }
+    }
+
+    @@media (min-width: 769px) {
+        .m-wizard.m-wizard--5 .m-wizard__head {
+            margin: -4rem 0 1rem 0;
+        }
+    }
+</style>
+<style>
+    video {
+        width: 420px;
+        height: 240px;
+        margin: 20px;
+    }
+
+    @@media(max-width: 450px) {
+        video {
+            width: 220px;
+            height: 180px;
+            margin: 10px;
+        }
+    }
+
+    @@media (max-width:1024px) and (min-width:451px) {
+        video {
+            width: 300px;
+            height: 200px;
+            margin: 10px;
+        }
+    }
+
+    @@media (min-width:1025px) {
+        video {
+            width: 450px;
+            height: 300px;
+            margin: 10px;
+        }
+    }
+
+    audio {
+        margin-top: 20px;
+        margin-left: 20px;
+    }
+
+    .modal-dialog {
+        margin-top: 95px;
+    }
+
+    .tool {
+        position: relative;
+        display: inline-block;
+    }
+        /* Tooltip text */
+        .tool .tooltiptext {
+            visibility: hidden;
+            width: 100px;
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            padding: 5px 0;
+            border-radius: 3px;
+            /* Position the tooltip text */
+            position: absolute;
+            z-index: 1;
+            bottom: -125%;
+            left: 50%;
+            margin-left: -60px;
+            /* Fade in tooltip */
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+            /*Tooltip arrow */
+            .tool .tooltiptext::after {
+                content: "";
+                position: absolute;
+                top: -39%;
+                left: 50%;
+                margin-left: -5px;
+                border-width: 5px;
+                border-style: solid;
+                border-color: transparent transparent black transparent;
+            }
+        /* Show the tooltip text when you mouse over the tooltip container */
+        .tool:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+    .bar-done {
+        margin-top: 20px;
+        background: linear-gradient( 90deg, rgba(249,120,53,1) 0%, rgba(252,152,64,1) 50%, rgba(255,188,76,1) 100%);
+        height: 20px;
+        border-radius: 20px;
+    }
+
+    .bar-current {
+        margin-top: 20px;
+        background: #A4A3BF;
+        height: 20px;
+        border-radius: 20px;
+    }
+
+    .bar {
+        margin-top: 20px;
+        background: #CCCCCC;
+        height: 20px;
+        border-radius: 20px;
+    }
+
+    @@media (max-width: 769px) {
+        .head {
+            margin: 0px !important;
+        }
+
+        .m-wizard.m-wizard--5 .m-wizard__head {
+            margin: -1rem 0 1rem 0;
+        }
+    }
+
+    @@media (min-width: 769px) {
+        .m-wizard.m-wizard--5 .m-wizard__head {
+            margin: -4rem 0 1rem 0;
+        }
+    }
+</style>
+
+<section class="page-banner">
+    <div class="container">
+        <div class="page-title-wrapper">
+            <div>
+                <ul class="bradcurmed">
+                    <li><a href="@Url.Action("Index","Dashboard")" rel="noopener noreferrer">Home</a></li>
+                    <li><a href="@Url.Action("Index","Assignments")" rel="noopener noreferrer">Assignments</a></li>
+                    <li><a href="@Url.Action("Index","Create")" rel="noopener noreferrer">Create</a></li>
+                </ul>
+            </div>
+            <div class="row m--margin-top-40-desktop">
+                <div class="col-lg-1 m-auto m--hidden-mobile">
+                    @Html.Partial("~/Views/SharedSvgs/_AssignmentsIcon.cshtml")
+                </div>
+                <div class="col-lg-5 col-12 m-auto">
+                    @if (@Model.IsCreatePage)
+                    {
+                        <h1 class="page-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageCreate"))</h1>
+                    }
+                    else
+                    {
+                        <h1 class="page-title">Edit</h1>
+                    }
+
+                </div>
+                <div class="col-lg-3  m-auto">
+                </div>
+                <div class="col-lg-3 col-12 m-auto">
+
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-12">
+                    <div class="head">
+                        <div class="m-portlet m-portlet--mobile">
+
+                            <div class="m-wizard m-wizard--5 m-wizard--success" id="m_wizard">
+
+                                <div class="m-portlet__head" style="height:auto; background:#f3f3ff; border-radius:25px 25px 0px 0px; display:inline-block; width:100% !important">
+                                    <div class="m-wizard__head m-portlet__padding-x" style="height:100px!important; padding:0px!important; width:100%!important; margin: -4rem 0 1rem 0;">
+                                        <div class="row" style="display:block">
+                                            <div class="col-5">
+                                                <div class="m-wizard__nav" style="border-bottom: 0px !important">
+                                                    <div class="m-wizard__steps">
+                                                        <div class="m-wizard__step m-wizard__step--current" m-wizard-target="m_wizard_form_step_1">
+                                                            <div class="m-wizard__step-info">
+                                                                <a href="#" class="m-wizard__step-number">
+                                                                    @*<span class="m-wizard__step-seq">1.</span>*@
+                                                                    <span class="m-wizard__step-label">
+                                                                        @*@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageGeneral"))*@
+                                                                        Step 1
+                                                                    </span>
+                                                                </a>
+                                                                <div id="bar_1" class="bar-current"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="m-wizard__step" m-wizard-target="m_wizard_form_step_2">
+                                                            <div class="m-wizard__step-info">
+                                                                <a href="#" class="m-wizard__step-number">
+                                                                    @*<span class="m-wizard__step-seq">2.</span>*@
+                                                                    <span class="m-wizard__step-label">
+                                                                        @*@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAvailability"))*@
+                                                                        Step 2
+                                                                    </span>
+                                                                </a>
+                                                                <div id="bar_2" class="bar"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="m-wizard__step" m-wizard-target="m_wizard_form_step_3">
+                                                            <div class="m-wizard__step-info">
+                                                                <a href="#" class="m-wizard__step-number">
+                                                                    @*<span class="m-wizard__step-seq">3.</span>*@
+                                                                    <span class="m-wizard__step-label">
+                                                                        @*@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageSubmissionTypes"))*@
+                                                                        Step 3
+                                                                    </span>
+                                                                </a>
+                                                                <div id="bar_3" class="bar"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="m-wizard__step" m-wizard-target="m_wizard_form_step_4">
+                                                            <div class="m-wizard__step-info">
+                                                                <a href="#" class="m-wizard__step-number">
+                                                                    @*<span class="m-wizard__step-seq">4.</span>*@
+                                                                    <span class="m-wizard__step-label">
+                                                                        @*@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAdditional"))*@
+                                                                        Step 4
+                                                                    </span>
+                                                                </a>
+                                                                <div id="bar_4" class="bar"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="m-portlet__body">
+                                    <div class="m-wizard__form">
+                                        <div class="m-portlet__body m-portlet__body--no-padding">
+
+                                            <!--begin: Form Wizard Step 1-->
+                                            <div class="m-wizard__form-step m-wizard__form-step--current" id="m_wizard_form_step_1" data-form-id="generalForm">
+                                                <form id="generalForm">
+                                                    <div class="row">
+                                                        <div class="col-md-1 col-12">
+
+                                                        </div>
+                                                        <div class="col-md-10 col-12">
+                                                            <!-- to move to partial -->
+                                                            <div class="m-form__heading">
+                                                                <h3 class="font-weight-bold">
+                                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageGeneral"))
+                                                                </h3>
+                                                            </div>
+                                                            <div class="m-portlet__body" style="padding-top:50px !important">
+                                                                <div class="row mb-5">
+                                                                    <div class="col-md-4 col-12 mt-2">
+                                                                        <lable>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAssignmentName"))</lable>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12 mt-1">
+                                                                        <span>
+                                                                            <input type="text" class="form-control mb-0" id="assignmentName" value="@Model.AssignmetName" name="assignmentName" style="width:100%" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAssigName"))" />
+                                                                        </span>
+                                                                        <span id="assignmentNameHelp" class="m-form__help" style="display:none; color:red">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageFieldRequired"))</span>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row mb-5">
+                                                                    <div class="col-md-4 col-12 mt-4">
+                                                                        <lable>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageSchool"))</lable>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12 mt-1">
+                                                                        <span>
+                                                                            @Html.DropDownList("SchoolsDropDown", (SelectList)ViewBag.Schools, "", new { @class = "form-control", style = "width:100%", id = "SchoolsDropDown" })
+                                                                        </span>
+                                                                        <span id="assignmentSchoolHelp" class="m-form__help" style="display:none; color:red">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageFieldRequired"))</span>
+                                                                    </div>
+                                                                </div>
+                                                                @*<div class="row mb-5">
+                                                                        <div class="col-md-4 col-12 mt-4">
+                                                                            <lable>Course</lable>
+                                                                        </div>
+                                                                        <div class="col-md-8 col-12 mt-1">
+                                                                            <span>
+                                                                                @Html.DropDownList("UserCourseDropDown", (SelectList)ViewBag.UserCoursesDropDown, "", new { @class = "form-control", style = "width:100%", id = "UserCourseDropDown" })
+                                                                            </span>
+                                                                            <span id="assignmentCourseHelp" class="m-form__help" style="display:none; color:red">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageFieldRequired"))</span>
+                                                                        </div>
+                                                                    </div>*@
+                                                                <div class="row mb-5">
+                                                                    <div class="col-md-4 col-12 mt-4">
+                                                                        <lable>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAssignmentGrade"))</lable>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12 mt-1">
+                                                                        <span>
+                                                                            @Html.DropDownList("GradesDropDown", (SelectList)ViewBag.Grades, "", new { @class = "form-control", style = "width:100%", id = "GradesDropDown" })
+                                                                        </span>
+                                                                        <span id="assignmentGradeHelp" class="m-form__help" style="display:none; color:red">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageFieldRequired"))</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row mb-5">
+                                                                    <div class="col-md-4 col-12 mt-4">
+                                                                        <lable>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAssignmentSubject"))</lable>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12 mt-1">
+                                                                        <span>
+                                                                            @Html.DropDownList("SubjectsDropDown", (SelectList)ViewBag.Subjects, "", new { @class = "form-control", style = "width:100%", id = "SubjectsDropDown" })
+                                                                        </span>
+                                                                        <span id="assignmentSubjectHelp" class="m-form__help" style="display:none; color:red">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageFieldRequired"))</span>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row">
+
+                                                                    <div class="col-md-4 col-12">
+                                                                        <lable>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageDescription"))</lable>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12">
+                                                                        <div id="description" class="summernote" style="width:100%">
+
+                                                                        </div>
+                                                                        <span id="descriptionHelp" class="m-form__help" style="display:none; color:red">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageFieldRequired"))</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row mt-5">
+                                                                    <div class="col-md-4 col-12">
+                                                                        <p>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAdditionalFiles"))</p>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12">
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <div class="m-dropzone dropzone m-dropzone--metal" id="pageImageDropZone">
+                                                                                    <div class="m-dropzone__msg dz-message needsclick">
+                                                                                        @*<h3 class="m-dropzone__msg-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageUploadFile"))</h3>*@
+                                                                                        <div>
+                                                                                            <i class="fa fa-file-upload fa-8x" style="margin-bottom:20px;"></i>
+                                                                                        </div>
+                                                                                        <span class="m-dropzone__msg-desc">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageDrag/drop"))</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <span class="field-validation-valid m-form__help text-danger fileUpload" data-valmsg-for="LessonName" data-valmsg-replace="false">*</span>
+                                                                                <span id="pageImageDropZoneHelp" class="m-form__help" style="display:none; color:red">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageFieldRequired"))</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+
+                                                                                @foreach (var attachment in Model.IntroAttachments)
+                                                                                {
+                                                                                    int i = 0;
+                                                                                    <div id="index_@i" class="row" style="margin:10px">
+                                                                                        <div class="col-8" style="text-align:center;">
+                                                                                            <a href="@attachment.fileurl.Replace("webservice", "")?forcedownload=1" download="download" style="word-break:break-word;">@attachment.filename</a>
+                                                                                        </div>
+                                                                                        <div class="col-4">
+                                                                                            <a class="removeFile m--font-danger" data-index="@i" href="#" data-file-name="@attachment.filename" data-attachment-id="@Model.Attachements">remove file</a>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    i++;
+                                                                                }
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-1 col-12">
+
+                                                        </div>
+                                                    </div>
+
+                                                </form>
+                                            </div>
+
+                                            <!--end: Form Wizard Step 1-->
+                                            <!--begin: Form Wizard Step 2-->
+                                            <div class="m-wizard__form-step" id="m_wizard_form_step_2" data-form-id="availabilityForm">
+                                                <form id="availabilityForm">
+                                                    <div class="row">
+                                                        <div class="col-md-1 col-12">
+
+                                                        </div>
+                                                        <div class="col-md-10 col-12">
+                                                            <!-- to move to partial -->
+                                                            <div class="m-form__heading">
+                                                                <h3 class="font-weight-bold">
+
+                                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAvailability"))
+                                                                </h3>
+                                                            </div>
+                                                            <div class="m-portlet__body" style="padding-top:50px !important">
+                                                                <div class="row">
+                                                                    <div class="col-md-4 col-12 mt-4">
+                                                                        <lable>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAllowSubFrom"))</lable>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12 mt-1">
+                                                                        <input id="submissionDate" class="form-control mb-0" type="datetime-local" value="@Model.AllowSubmissionFrom" style="width:100%; cursor:pointer">
+                                                                        <span id="submissionDateHelp" class="m-form__help" style="display:none; color:red">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageFieldRequired"))</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row mt-5">
+                                                                    <div class="col-md-4 col-12 mt-4">
+                                                                        <lable>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageDueDate"))</lable>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12 mt-1">
+                                                                        <input type="datetime-local" class="form-control mb-0" id="dueDate" value="@Model.DueDate" style="width:100%; cursor:pointer">
+                                                                        <span id="dueDateHelp" class="m-form__help" style="display:none; color:red">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageFieldRequired"))</span>
+                                                                        <span id="dueDateLowerThanSubDate" class="m-form__help" style="display:none; color:red">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageDueDateBeforeSubDate"))</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row mt-5">
+                                                                    <div class="col-md-4 col-12 mt-4">
+                                                                        <lable>Remind me to grade by</lable>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12 mt-1">
+                                                                        <input type="datetime-local" class="form-control mb-0" id="reminderDate" value="@Model.RemindMeToGradeBy" style="width:100%; cursor:pointer">
+                                                                        <span id="reminderDateHelp" class="m-form__help" style="display:none; color:red">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageFieldRequired"))</span>
+                                                                        <span id="reminderDateLowerThanSubDate" class="m-form__help" style="display:none; color:red">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPagereminderDateBeforeSubDate"))</span>
+                                                                        <span id="reminderDateLowerThanDueDate" class="m-form__help" style="display:none; color:red">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPagereminderDateBeforeDueDate"))</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-1 col-12"></div>
+                                                    </div>
+
+
+                                                </form>
+                                            </div>
+                                            <!--end: Form Wizard Step 2-->
+                                            <!--begin: Form Wizard Step 3-->
+                                            <div class="m-wizard__form-step" id="m_wizard_form_step_3" data-form-id="phoneVerificationForm">
+                                                <form id="infoForm">
+                                                    <div class="row">
+                                                        <div class="col-md-1 col-12"></div>
+                                                        <div class="col-md-10 col-12">
+                                                            <!-- to move to partial -->
+                                                            <div class="m-form__heading">
+                                                                <h3 class="font-weight-bold">
+
+                                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageSubmissionTypes"))
+                                                                </h3>
+                                                            </div>
+                                                            <div class="m-portlet__body mt-5" style="padding-top:20px !important">
+                                                                <div class="row">
+                                                                    <div class="col-md-5">
+                                                                        <p></p>
+                                                                        <lable>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageSubmissionTypes"))<lable>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <p></p>
+                                                                        <label class="m-checkbox m-checkbox--air">
+                                                                            <input class="form-control" id="onlineTextCheckBox" type="checkbox" name="submissionType" value="onlineText" @(Model.OnlineText == true ? "checked" : "")>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageOnlineText"))
+                                                                            <span></span>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="col-4">
+                                                                        <p></p>
+                                                                        <label class="m-checkbox m-checkbox--air">
+                                                                            <input class="form-control" id="fileCheckBox" type="checkbox" name="submissionType" value="fileSubmission" @(Model.FilesSubmission == true ? "checked" : "")>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageSubmissionFilesSubmission"))
+                                                                            <span></span>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row onlineText mt-5" data-display="show">
+                                                                    <div class="col-md-4 col-12 mt-4">
+                                                                        <lable>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageWordLimit"))</lable>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12 mt-1">
+                                                                        <div class="row">
+                                                                            <div class="col-md-8 col-12 mt-1">
+                                                                                <input class="form-control" id="wordLimit" type="number" min="10" value="@Model.WordLimit" disabled placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageEnterWordLimit"))" />
+                                                                            </div>
+                                                                            <div class="col-md-4 col-12 mt-4">
+                                                                                <label class="m-checkbox m-checkbox--air">
+                                                                                    <input class="form-control" id="enableCheckBox" type="checkbox" name="submissionType" value="fileSubmission" @(Model.EnableWordLimit == true ? "checked" : "")>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageEnableWorlLimit"))
+                                                                                    <span></span>
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row fileSubmission mt-5" data-display="show">
+                                                                    <div class="col-md-4 col-12 mt-4">
+                                                                        <lable>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageMaxNumFiles"))</lable>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12 mt-1">
+                                                                        <input class="form-control" id="filesNumber" type="number" min="0" value="@Model.MaxFilesNumber" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageEnterNumFiles"))" />
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row fileSubmission mt-5" data-display="show">
+                                                                    <div class="col-md-4 col-12 mt-4">
+                                                                        <lable>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageMaxSubSize"))</lable>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12 mt-1">
+                                                                        <select id="maxSize" class="form-control">
+                                                                            <option selected value="104857600">100 MB</option>
+                                                                            <option value="52428800">50 MB</option>
+                                                                            <option value="20971520">20 MB</option>
+                                                                            <option value="10485760">10 MB</option>
+                                                                            <option value="5242880">5 MB</option>
+                                                                            <option value="2097152">2 MB</option>
+                                                                            <option value="1048576">1 MB</option>
+                                                                            <option value="512000">500 KB</option>
+                                                                            <option value="102400">100 KB</option>
+                                                                            <option value="51200">50 KB</option>
+                                                                            <option value="10240">10 KB</option>
+                                                                        </select>
+
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row fileSubmission mt-5" data-display="show">
+                                                                    <div class="col-md-4 col-12 mt-4">
+                                                                        <lable>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAcceptedFiles"))<lable>
+                                                                    </div>
+                                                                    <div class="col-md-8 col-12 mt-1">
+                                                                        <button type="button" class="btn btn-outline-secondary form-control m-input" data-toggle="modal" data-target="#m_modal_1_2">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageChooseFiles"))</button>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row mt-2">
+                                                                    <div class="col-12 displayFiles">
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-1 col-12"></div>
+                                                    </div>
+
+                                                </form>
+                                            </div>
+
+                                            <!--end: Form Wizard Step 3-->
+                                            <!--begin: Form Wizard Step 4-->
+                                            <div class="m-wizard__form-step" id="m_wizard_form_step_4" data-form-id="">
+                                                <form id="infoForm">
+                                                    <div class="row">
+                                                        <div class="col-md-1 col-12"></div>
+                                                        <div class="col-md-10 col-12">
+                                                            <!-- to move to partial -->
+                                                            <div class="m-form__heading">
+                                                                <h3 class="font-weight-bold">
+
+                                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAdditional"))
+                                                                </h3>
+                                                            </div>
+                                                            <div class="m-portlet__body mt-4" style="padding-top:20px !important">
+                                                                <div class="row">
+                                                                    <div class="col-4 mt-4">
+                                                                        <lable>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageGradeToPass"))</lable>
+                                                                    </div>
+                                                                    <div class="col-8 mt-1">
+                                                                        <input class="form-control" id="passGrade" type="number" min="0" max="500" name="gradeToPass" style="width:100%" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPagegradeToPass"))" value="@Model.GradeToPass" />
+                                                                    </div>
+                                                                </div>
+                                                                @*<div class="row" style="margin-top:35px">
+                                                                        <div class="col-4">
+                                                                            <p></p>
+                                                                            <lable>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageTags"))</lable>
+                                                                        </div>
+                                                                        <div class="col-8">
+                                                                            <select id="tagsDropDown" style="width:100%">
+                                                                                <option></option>
+                                                                                <option value="tag1"> tag 1 </option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>*@
+                                                                <div class="row mt-5">
+                                                                    <div class="col-4">
+                                                                        <lable>hide from students<lable>
+                                                                    </div>
+                                                                    <div class="col-8">
+                                                                        <label class="m-checkbox m-checkbox--air">
+                                                                            <input class="form-control" id="hideFromStudentsCheckBox" type="checkbox" name="submissionType">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPagehideFromStudents"))
+                                                                            <span></span>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-1 col-12"></div>
+                                                    </div>
+
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="m-form m-form--label-align-left- m-form--state-">
+                                            <!--begin: Form Actions -->
+                                            <div class="m-portlet__foot m-portlet__foot--fit m--margin-top-40" style="border-top:none !important">
+                                                <div class="row">
+                                                    <div class="col-md-1 col-12"></div>
+                                                    <div class="col-md-10 col-12">
+                                                        <div class="m-form__actions">
+                                                            <div class="row col-12">
+                                                                <div class="col-md-8 col-12"></div>
+                                                                <div class="col-md-2 col-6">
+                                                                    <a href="#" class="btn m-btn--pill btn-secondary btn-lg m-btn m-btn--custom" data-wizard-action="prev" style="width:100%">
+                                                                        <span>
+                                                                            <span>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageBack"))</span>
+                                                                        </span>
+                                                                    </a>
+                                                                </div>
+                                                                <div class="col-md-2 col-6">
+                                                                    <a href="#" id="submitId" style="margin-top:5px" class="btn btn-brand m-btn m-btn--custom m-btn--icon " data-wizard-action="submit">
+                                                                        <span>
+                                                                            <i class="la la-check"></i>&nbsp;&nbsp;
+                                                                            <span>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageAssign"))</span>
+                                                                        </span>
+                                                                    </a>
+                                                                    <a id="nextBtn" href="#" class="btn m-btn--pill btn-danger btn-lg m-btn m-btn--custom" data-wizard-action="next" style="width:100%; background: linear-gradient( 90deg, rgba(249,120,53,1) 0%, rgba(252,152,64,1) 50%, rgba(255,188,76,1) 100%);">
+                                                                        <span>
+                                                                            <span id="btnNextContent">Next</span>
+                                                                        </span>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-1 col-12"></div>
+                                                </div>
+
+                                            </div>
+                                            <!--end: Form Actions -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- /.container -->
+
+</section>
+<button id="showVidModal" hidden data-toggle="modal" data-target="#m_modal_videoRec"></button>
+<button id="showAudModal" hidden data-toggle="modal" data-target="#m_modal_audioRec"></button>
+<div class="modal fade" id="m_modal_videoRec" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top:55px;">
+    <div id="Rec" class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Recording</h5>
+            </div>
+            <div class="modal-body">
+                <div class="m-scrollable" data-scrollbar-shown="true" data-scrollable="true" data-height="">
+                    <h5 class="modal-title" id="exampleModalLabel">Recording...</h5>
+                    <div id="record-body">
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="stopBtnVid" class="btn btn-danger" type="button" data-dismiss="modal">Stop Recording</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="m_modal_audioRec" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top:55px;">
+    <div id="audioRec" class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Recording Audio...</h5>
+            </div>
+            <div class="modal-footer">
+                <button id="stopBtnAud" class="btn btn-danger" type="button" data-dismiss="modal">Stop Recording</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="m_modal_1_2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top:55px">
+    <div id="files" class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="m-scrollable" data-scrollbar-shown="true" data-scrollable="true" data-height="200">
+                    <div>
+                        <label class="m-checkbox m-checkbox--air">
+                            <input type="checkbox" class="allFiles">All
+                            <span></span>
+                        </label>
+                    </div>
+                    <div data-display="hide">
+                        <label class="m-checkbox m-checkbox--air">
+                            Archive<input type="checkbox" class="fileType parent_archive" data-child="archive" />
+                            <span></span>
+                        </label>
+                        <ul style="display:none">
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".7z"> .7z
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".bdoc"> .bdoc
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".cdoc"> .cdoc
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".ddoc"> .ddoc
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".gtar"> .gtar
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".tgz"> .tgz
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".gz"> .gz
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".gzip"> .gzip
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".hqx"> .hqx
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".rar"> .rar
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".sit"> .sit
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".tar"> .tar
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="archive" type="checkbox" name="archive" value=".zip"> .zip
+                                    <span></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                    <div data-display="hide">
+                        <label class="m-checkbox m-checkbox--air">
+                            Audio<input type="checkbox" class="fileType parent_audio" data-child="audio" />
+                            <span></span>
+                        </label>
+                        <ul style="display:none">
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".aac"> .aac
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".aif"> .aif
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".aiff"> .aiff
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".aifc"> .aifc
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".au"> .au
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".flac"> .flac
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".m3u"> .m3u
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".mp3"> .mp3
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".m4a"> .m4a
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".oga"> .oga
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".ogg"> .ogg
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".ra"> .ra
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".ram"> .ram
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".rm"> .rm
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".wav"> .wav
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="audio" type="checkbox" name="image" value=".wma"> .wma
+                                    <span></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                    <div data-display="hide">
+                        <label class="m-checkbox m-checkbox--air">
+                            <input type="checkbox" class="fileType parent_document" data-child="document">Document
+                            <span></span>
+                        </label>
+                        <ul style="display:none">
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".doc"> .doc
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".docx"> .docx
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".epub"> .epub
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".gdoc"> .gdoc
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".odt"> .odt
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".ott"> .ott
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".oth"> .oth
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".pdf"> .pdf
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="document" type="checkbox" name="document" value=".rtf"> .rtf
+                                    <span></span>
+                                </label>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                    <div data-display="hide">
+                        <label class="m-checkbox m-checkbox--air">
+                            <input type="checkbox" class="fileType parent_image" data-child="image">Image
+                            <span></span>
+                        </label>
+                        <ul style="display:none">
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".ai"> .ai
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".bmp"> .bmp
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".gdraw"> .gdraw
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".gif"> .gif
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".ico"> .ico
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".jpe"> .jpe
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".jpeg"> .jpeg
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".jpg"> .jpg
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".pct"> .pct
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".pic"> .pic
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".pict"> .pict
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".png"> .png
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".svg"> .svg
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".svgz"> .svgz
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".tif"> .tif
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="image" type="checkbox" name="image" value=".tiff"> .tiff
+                                    <span></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                    <div data-display="hide">
+                        <label class="m-checkbox m-checkbox--air">
+                            Presentation<input type="checkbox" class="fileType parent_presentation" data-child="presentation" />
+                            <span></span>
+                        </label>
+                        <ul style="display:none">
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".gslides"> .gslides
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".odp"> .odp
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".otp"> .otp
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".pps"> .pps
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".ppt"> .ppt
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".pptx"> .pptx
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".pptm"> .pptm
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".potx"> .potx
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".potm"> .potm
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".ppam"> .ppam
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".ppsx"> .ppsx
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".ppsm"> .ppsm
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".pub"> .pub
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".sxi"> .sxi
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="presentation" type="checkbox" name="presentation" value=".sti"> .sti
+                                    <span></span>
+                                </label>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                    <div data-display="hide">
+                        <label class="m-checkbox m-checkbox--air">
+                            <input type="checkbox" class="fileType parent_spreadsheet" data-child="spreadsheet">Spreadsheet
+                            <span></span>
+                        </label>
+                        <ul style="display:none">
+                            <li>
+                                <label class="m-radio">
+                                    <input class="spreadsheet" type="checkbox" name="spreadsheet" value=".gsheet"> .gsheet
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="spreadsheet" type="checkbox" name="spreadsheet" value=".csv"> .csv
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="spreadsheet" type="checkbox" name="spreadsheet" value=".xlsm"> .xlsm
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="spreadsheet" type="checkbox" name="spreadsheet" value=".xlsx"> .xlsx
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="spreadsheet" type="checkbox" name="spreadsheet" value=".xls"> .xls
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="spreadsheet" type="checkbox" name="spreadsheet" value=".ods"> .ods
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="spreadsheet" type="checkbox" name="spreadsheet" value=".ots"> .ots
+                                    <span></span>
+                                </label>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div data-display="hide">
+                        <label class="m-checkbox m-checkbox--air">
+                            <input type="checkbox" class="fileType parent_video" data-child="video">Video
+                            <span></span>
+                        </label>
+                        <ul style="display:none">
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".3gp"> .3gp
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".avi"> .avi
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".dv"> .dv
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".dif"> .dif
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".flv"> .flv
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".f4v"> .f4v
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".fmp4"> .fmp4
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".mov"> .mov
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".movie"> .movie
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".mp4"> .mp4
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".m4v"> .m4v
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".mpeg"> .mpeg
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".mpe"> .mpe
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".mpg"> .mpg
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".ogv"> .ogv
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".qt"> .qt
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".rmvb"> .rmvb
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".rv"> .rv
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".swf"> .swf
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".swfl"> .swfl
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".ts"> .ts
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".webm"> .webm
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".wmv"> .wmv
+                                    <span></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="m-radio">
+                                    <input class="video" type="checkbox" name="video" value=".asf"> .asf
+                                    <span></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="closeExtension" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="saveExtensions" type="button" data-dismiss="modal" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm("SubmitAssignment", "AssignmentsTest2", FormMethod.Post, new { id = "SubmitAssignment" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("AssigData", "")
+}
+
+@using (Html.BeginForm("EditAssignment", "AssignmentsTest2", FormMethod.Post, new { id = "EditAssignmentHidden" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("EditAssigData", "")
+    @Html.Hidden("assKey", "")
+
+}
+@using (Html.BeginForm("DeleteFile", "AssignmentsTest2", FormMethod.Post, new { id = "DeleteFile" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("fileName", "")
+    @Html.Hidden("attachmentId", "")
+}
+@using (Html.BeginForm("UploadRecordingFile", "AssignmentsTest2", FormMethod.Post, new { id = "UploadRecordingFileHidden" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("fileBase64", "")
+    @Html.Hidden("attachmentDescId", "")
+}
+@using (Html.BeginForm("GetGrades", "AssignmentsTest2", FormMethod.Post, new { id = "GetGradesHidden" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("schoolId", "")
+}
+@using (Html.BeginForm("GetSubjects", "AssignmentsTest2", FormMethod.Post, new { id = "GetSubjectsHidden" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("SchoolId", "")
+    @Html.Hidden("gradeId", "")
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    @Scripts.Render("~/assets/files/wizard/create-assignments-wizard.js")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+    @Scripts.Render("~/assets/vendors/intl-tel-input/build/js/intlTelInput.min.js")
+    @Scripts.Render("~/assets/vendors/jquery.repeater/jquery.repeater.min.js")
+    @Scripts.Render("~/assets/vendors/summernote/dist/summernote.js")
+    @Scripts.Render("~/assets/vendors/dropzone/dist/min/dropzone.min.js")
+
+
+<script>
+    var isReassign = 'False';
+    //document.getElementById('vid').play();
+         if ('@Model.HideFromStudents' == 'True')
+         {
+
+            $('#hideFromStudentsCheckBox').prop("checked", true);
+
+         }
+        @if (ViewBag.assigId != null)
+         {
+            <text>
+                $('#passGrade').prop("disabled", true);
+            </text>
+         }
+
+        var isCreate = '@Model.IsCreatePage';
+        var filesUploadedNumber = '@Model.IntroAttachments.Count';
+        var extensions = [];
+
+        function setAllExtensionsChildChecked() {
+            $('.m-radio').each(function () {
+                var radioElement = $(this).find('input');
+                radioElement.prop('checked', true);
+            });
+        }
+
+        function setAllExtensionsChildUnchecked() {
+            $('.m-radio').each(function () {
+                var radioElement = $(this).find('input');
+                radioElement.prop('checked', false);
+            });
+        }
+        function setChildrensOfParentChecked(parentExtension) {
+            var ulElement = $('.' + parentExtension).parent().parent().find('ul');
+            ulElement.show();
+            var radioElement = ulElement.find('.m-radio').find('input');
+            radioElement.prop('checked', true);
+        }
+
+        function ArrayContains(arrayExtensions, element) {
+            var result = "";
+
+                $.each(arrayExtensions, function (index, value) {
+                    if (element.includes(value)) {
+                        result = value;
+                    }
+                });
+
+            return result;
+        }
+        function setParentExtensionChecked(extensionClass) {
+            $('.' + extensionClass).prop("checked", true);
+            var ulElement = $('.' + extensionClass).parent().parent().find('ul');
+            ulElement.show();
+        }
+        function checkChildExtensionChecked(childValue) {
+            $('.m-radio').each(function () {
+                var currentChild = $(this).find('input');
+                var currentChildValue = currentChild.val();
+                if (currentChildValue == childValue) {
+                    currentChild.prop('checked', true);
+                    var parentExtension = $('.parent_' + currentChild.attr('class'));
+                    var ulElement = parentExtension.parent().parent().find('ul');
+                    ulElement.show();
+                    parentExtension.prop('checked', true);
+                }
+
+            });
+        }
+        function DeleteFileAttachment(attachmentsId, fileName) {
+            mApp.block($('#m_wizard'));
+            mApp.progress($('#nextBtn'));
+            $("#fileName").val(fileName);
+            $("#attachmentId").val(attachmentsId);
+            $("#DeleteFile").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == "success") {
+
+                        mApp.unblock($('#m_wizard'));
+                        mApp.unprogress($('#nextBtn'));
+
+                    } else if (data == "error") {
+                        mApp.unblock($('#m_wizard'));
+                        mApp.unprogress($('#nextBtn'));
+
+                    }
+                },
+                error: function (xhr, status, error) {
+                    swal('Error', 'error in deleting the file', 'error');
+                }
+            });
+        }
+        function UploadFileDescription(attachmentId, fileBase64, type) {
+
+            mApp.block($('#m_wizard'));
+            mApp.progress($('#nextBtn'));
+            $("#fileBase64").val(fileBase64);
+            $("#attachmentDescId").val(attachmentId);
+            $("#UploadRecordingFileHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+
+                    if (data == 500) {
+                        swal('Error', 'error in uploading the file', 'error');
+                    } else {
+                        var html = '';
+                        if (type == 'audio') {
+                            /*html = '<p id="' + data.id + ' contenteditable=false"><audio contenteditable=false controls src="' + data.url + '" controlsList="nodownload"></audio><span class="removeStream btn text-danger" contenteditable=false data-id="' + data.id + '" data-fileName="' + data.file +'">remove</span></p><p></br></p>';*/
+                            html = '<p></br></p><p><audio controls src="' + data.url + '" controlsList="nodownload"></audio></p><p></br></p>';
+                           
+                        } else if (type == "video") {
+                            /*html = '<p id="' + data.id + ' contenteditable=false"><video contenteditable=false controls src="' + data.url + '" controlsList="nodownload"></video><span class="removeStream btn text-danger" contenteditable=false data-id="' + data.id + '" data-fileName="' + data.file +'">remove</span></p><p></br></p>';*/
+                            html = '<p></br></p><p><video controls src="' + data.url + '" controlsList="nodownload"></video></p><p></br></p>';
+                            
+                        }
+                        var htmlbefore = $('.note-editable').html();
+                        $('#record-body').empty();
+                        $('.note-editable').empty();
+                        $('.note-editable').append(htmlbefore);
+                        $('.note-editable').append(html);
+                        
+                    }
+                    mApp.unblock($('#m_wizard'));
+                    mApp.unprogress($('#nextBtn'));
+                },
+                error: function (xhr, status, error) {
+                    swal('Error', 'error in uploading the file', 'error');
+                    mApp.unblock($('#m_wizard'));
+                    mApp.unprogress($('#nextBtn'));
+                }
+            });
+        }
+        async function recordingScreenWithVoice() {
+
+            const mimeType = 'video/mp4';
+            shouldStop = false;
+            const constraints = {
+                video: {
+                    cursor: 'motion'
+                }
+            };
+            if (!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia)) {
+                return window.alert('Screen Record not supported!')
+            }
+            let stream = null;
+            const displayStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: "motion" }, audio: { 'echoCancellation': true } });
+            const voiceStream = await navigator.mediaDevices.getUserMedia({ audio: { 'echoCancellation': true }, video: false });
+            let tracks = [...displayStream.getTracks(), ...voiceStream.getAudioTracks()]
+            stream = new MediaStream(tracks);
+            handleRecord({ stream, mimeType });
+            $('#record-body').append('<p><video autoplay muted></video><p/>');
+            $('#showVidModal').click();
+            var videoElement = document.getElementsByTagName("video")[0];
+            videoElement.srcObject = stream;
+
+        }
+        async function recordingScreenWithoutVoice() {
+
+            const mimeType = 'video/mp4';
+            shouldStop = false;
+            const constraints = {
+                video: {
+                    cursor: 'motion'
+                }
+            };
+            if (!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia)) {
+                return window.alert('Screen Record not supported!')
+            }
+            let stream = null;
+            const displayStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: "motion" }, audio: { 'echoCancellation': true } });
+            const voiceStream = await navigator.mediaDevices.getUserMedia({ audio: { 'echoCancellation': true }, video: false });
+
+            stream = displayStream;
+            handleRecord({ stream, mimeType });
+            $('#record-body').append('<p><video autoplay muted></video></p>');
+            $('#showVidModal').click();
+            var videoElement = document.getElementsByTagName("video")[0];
+            videoElement.srcObject = stream;
+        }
+        async function recordingVideo() {
+
+            const mimeType = 'video/mp4';
+            shouldStop = false;
+            const constraints = {
+                audio: {
+                    "echoCancellation": true
+                },
+                video: {
+                    "width": {
+                        "min": 640,
+                        "max": 1024
+                    },
+                    "height": {
+                        "min": 480,
+                        "max": 768
+                    }
+                }
+            };
+
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
+            $('#record-body').append('<p><video autoplay muted></video></p>');
+            $('#showVidModal').click();
+            var videoElement = document.getElementsByTagName("video")[0];
+            videoElement.srcObject = stream;
+            handleRecord({ stream, mimeType });
+        }
+        async function recordingAudio() {
+
+            audio = true;
+            $('#showAudModal').click();
+            const mimeType = 'audio/mp3';
+            shouldStop = false;
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: audioRecordConstraints });
+            handleRecord({ stream, mimeType })
+        }
+
+        $('#description').summernote({
+            height: 300,
+            tabsize: 2,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['fontname', ['fontname']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'hr']],
+                ['help', ['help']]
+            ],
+            callbacks: {
+                onKeyup: function (e) {
+                    setTimeout(function () {
+                        console.log('keyup');
+                    }, 200);
+                }
+            }
+
+        });
+
+        //start the recording part
+        var screenRecorderBtn = '<button type="button" onclick="recordScreen()" class="note-btn btn btn-default btn-sm btn-info tool" data-target="#m_modal_videoRec" role="button" tabindex="-1" ><span class="tooltiptext">screen recorder</span><i class="fas fa-tv"></i></button>';
+        var videoRecorderBtn = '<button type="button" onclick="recordVideo()" class="note-btn btn btn-default btn-sm btn-info tool" data-target="#m_modal_videoRec" role="button" tabindex="-1" title="video recorder"><span class="tooltiptext">video recorder</span><i class="fas fa-video"></i></button>';
+        var audioRecorderBtn = '<button type="button" onclick="recordAudio()" class="note-btn btn btn-default btn-sm btn-info tool" data-target="#m_modal_videoRec" role="button" tabindex="-1" title="audio recorder"><span class="tooltiptext">audio recorder</span><i class="fas fa-microphone-alt"></i></button>';
+        var fileGroup = '<div class="note-file btn-group">' + screenRecorderBtn + videoRecorderBtn + audioRecorderBtn + '</div>';
+        $(fileGroup).appendTo($('.note-toolbar'));
+        var stopRecordingBtn = '<button type="button" class="note-btn btn btn-sm btn-default tool" id="stop" title="stop recording" style="display:none"><span class="tooltiptext">stop recording</span><i style="color:red" class="fas fa-stop"></i></button>';
+        var stopGroup = '<div class="note-file btn-group ">' + stopRecordingBtn + '</div>';
+        $(stopGroup).appendTo($('.note-toolbar'));
+        
+        let shouldStop = false;
+        let stopped = false;
+        let audio = false;
+        //const downloadLink = document.getElementById('download');
+        const stopButtonVid = document.getElementById('stopBtnVid');
+        const stopButtonAud = document.getElementById('stopBtnAud');
+        const stopButton = document.getElementById('stop');
+
+        function startRecord() {
+            $('.btn-info').prop('disabled', true);
+            $('#stop').show();
+            $('#download').css('display', 'none');
+        }
+        function stopRecord() {
+            $('.btn-info').prop('disabled', false);
+            $('#stop').hide();
+            $('#download').css('display', 'block');
+        }
+        const audioRecordConstraints = {
+            echoCancellation: true
+        }
+
+        stopButtonVid.addEventListener('click', function () {
+            shouldStop = true;
+        });
+        stopButtonAud.addEventListener('click', function () {
+            shouldStop = true;
+        });
+        stopButton.addEventListener('click', function () {
+            shouldStop = true;
+        });
+
+
+
+        const handleRecord = function ({ stream, mimeType }) {
+            startRecord();
+            let recordedChunks = [];
+            stopped = false;
+            const mediaRecorder = new MediaRecorder(stream);
+            window.streamReference = stream;
+            mediaRecorder.ondataavailable = function (e) {
+                if (e.data.size > 0) {
+                    recordedChunks.push(e.data);
+                }
+
+                if (shouldStop === true && stopped === false) {
+                    mediaRecorder.stop();
+                    stopped = true;
+                }
+            };
+
+            mediaRecorder.onstop = function () {
+
+                const blob = new Blob(recordedChunks, {
+                    type: mimeType
+                });
+                recordedChunks = []
+                //const filename = window.prompt('Enter file name');
+                const recordedMediaURL = URL.createObjectURL(blob);
+                //downloadLink.href = recordedMediaURL;
+                if (audio == true) {
+                    var reader = new FileReader();
+                    reader.readAsDataURL(blob);
+                    reader.onloadend = function () {
+                        var base64 = reader.result;
+                        UploadFileDescription('@Model.DescAttachementsId', base64, 'audio');
+                    }
+                    //downloadLink.download = `${filename || 'recording'}.mp3`;
+                } else {
+                    //downloadLink.download = `${filename || 'recording'}.mp4`;
+
+                    var reader = new FileReader();
+                    reader.readAsDataURL(blob);
+                    reader.onloadend = function () {
+                        var base64 = reader.result;
+                        UploadFileDescription('@Model.DescAttachementsId', base64, 'video');
+                    }
+                }
+                audio = false;
+
+                if (window.streamReference) {
+                    window.streamReference.getAudioTracks().forEach(function (track) {
+                        track.stop();
+                    });
+
+                    window.streamReference.getVideoTracks().forEach(function (track) {
+                        track.stop();
+                    });
+
+                    window.streamReference = null;
+                }
+
+                stopRecord();
+            };
+
+            mediaRecorder.start(200);
+
+        }
+
+        async function recordAudio() {
+            recordingAudio();
+        }
+
+        async function recordVideo() {
+            recordingVideo();
+
+        }
+
+        async function recordScreen() {
+
+
+                swal({
+                    title: "Record audio with screen?",
+                    text: "",
+                    type: "warning",
+                    showCancelButton: true,
+                    cancelButtonText: "No",
+                    confirmButtonClass: "btn btn-brand m-btn",
+                    confirmButtonText: "Yes"
+                }).then(function (e) {
+
+                    if (e.dismiss !== "cancel") {
+                        recordingScreenWithVoice();
+                    } else {
+                        recordingScreenWithoutVoice();
+                    }
+                });
+        }
+        //End the recording part.
+        //window.open('http://dev.cleverowl.com/Home/MoodleLoginRedirect/?redirectTo=https://moodle.win.solutions/', '_blank');
+        //start the dropzone part
+        Dropzone.autoDiscover = false;
+        var filesGeted = undefined;
+        $(document).ready(function () {
+
+
+
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setSeconds(0, 0);
+            const tmrw = tomorrow.toISOString();
+            const tmrwDateTimeArr = tmrw.split('.');
+            document.getElementById("submissionDate").min = tmrwDateTimeArr[0];
+            document.getElementById("dueDate").min = tmrwDateTimeArr[0];
+            document.getElementById("reminderDate").min = tmrwDateTimeArr[0];
+
+            var uploadUrl = '@Url.Action("UploadFile")';
+            var UploadDropZone = new Dropzone('#pageImageDropZone', {
+                url: uploadUrl,
+                file: "file",
+                maxFiles: 5,
+                maxfilesexceeded: function (file) {
+                filesGeted = undefined;
+                this.removeFile(file);
+                },
+                maxFilesize: "@System.Configuration.ConfigurationManager.AppSettings["CROWDCONTENTUPLOADFILESIZE"]", // MB
+                addRemoveLinks: true,
+                acceptedFiles:".xls,.xlsx,.ods,.png,.jpeg,.jfif,.gif,.mp4,.pdf,.doc,.txt,.docs,.docx,.odt,.mpg, .mpeg, .m2v,.m4v,.wmv,.webm,.pptx,.pptm,.ppt,.zip,.rar",
+                timeout: 180000,
+                sending: function () {
+                    mApp.block($('#m_wizard'));
+                    mApp.progress($('#nextBtn'));
+                },
+                removedfile: function (file) {
+                    var fileName = file['name'] + "";
+                    var attachmentId = '@Model.Attachements'
+                    DeleteFileAttachment(attachmentId, fileName);
+                    filesGeted = file;
+                    var _ref;
+                    return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+                },
+                success: function (file, response) {
+                    var extension = file.name.split('.').pop();
+                    filesGeted = file;
+                    //$(".dz-success-mark").attr('style', 'display: none !important');
+                    //$(".dz-error-mark").attr('style', 'display: none !important');
+                    mApp.unblock($('#m_wizard'));
+                    mApp.unprogress($('#nextBtn'));
+                },
+                error: function (file, error) {
+                    mApp.unblock($('#m_wizard'));
+                    mApp.unprogress($('#nextBtn'));
+                    //$(".dz-success-mark").attr('style', 'display: none !important');
+                    //$(".dz-error-mark").attr('style', 'display: none !important');
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageError"))", error, "Info");
+                },
+                params: { __RequestVerificationToken: $('@Html.AntiForgeryToken()').val(), attachmentId: '@Model.Attachements'}
+            });
+
+            //end the dropzone part
+
+            $('#GradesDropDown').select2({
+                placeholder: 'select grade',
+            });
+            $('#SubjectsDropDown').select2({
+                placeholder: 'select subject',
+            });
+            $('#SchoolsDropDown').select2({
+                placeholder: 'select school',
+            });
+            $('#UserCourseDropDown').select2({
+                placeholder: 'select course',
+            });
+
+            $('#wordLimit').keyup(function () {
+                var value = $(this).val();
+                if (value < 10) {
+                    $(this).val(10);
+                }
+            });
+            $('#filesNumber').keyup(function () {
+                var value = $(this).val();
+                if (value < 0) {
+                    $(this).val(0);
+                }
+            });
+            $('#passGrade').keyup(function () {
+                var value = $(this).val();
+                if (value < 0) {
+                    $(this).val(0);
+                }
+            });
+
+            $('#onlineTextCheckBox').change(function () {
+                if ($(this).is(":checked")) {
+                    $('.onlineText').show();
+                } else {
+                    $('.onlineText').hide();
+                    $('#wordLimit').val('');
+
+                }
+            });
+
+            $('#fileCheckBox').change(function () {
+                if ($(this).is(":checked")) {
+                    $('.fileSubmission').show();
+                } else {
+                    $('.fileSubmission').hide();
+                    $('#filesNumber').val('20');
+                    extensions = [];
+                    $('.allFiles').prop('checked', false);
+                    $('.fileType').prop('checked', false);
+                    $('#files').find('ul').hide();
+                    $('.displayFiles').empty();
+                }
+            });
+
+            $('#enableCheckBox').change(function () {
+                if ($(this).is(':checked')){
+                    $('#wordLimit').prop("disabled", false);
+                } else {
+                    $('#wordLimit').val('');
+                    $('#wordLimit').prop("disabled", true);
+                }
+            });
+
+            $("#submissionDate").keydown(function (event) {
+                return false;
+            });
+            $("#dueDate").keydown(function (event) {
+                return false;
+            });
+            $("#reminderDate").keydown(function (event) {
+                return false;
+            });
+            $("#dueDate").prop("disabled", true);
+            $("#reminderDate").prop("disabled", true);
+            $('#submissionDate').change(function () {
+                $("#dueDate").prop("disabled", false);
+                $("#dueDate").val('');
+                var subDate = $(this).val();
+                var dayAfter = new Date(subDate);
+                dayAfter.setDate(dayAfter.getDate() + 1);
+                dayAfter.setSeconds(0, 0);
+                var tmrwdate = dayAfter.toISOString();
+                const tmrwDateTimeArray = tmrwdate.split('.');
+                document.getElementById("dueDate").min = tmrwDateTimeArray[0];
+            });
+            $('#dueDate').change(function () {
+                $("#reminderDate").prop("disabled", false);
+                $("#reminderDate").val('');
+                var dueDate = $(this).val();
+                var dayAfter = new Date(dueDate);
+                dayAfter.setDate(dayAfter.getDate());
+                dayAfter.setMinutes(dayAfter.getMinutes() + 30);
+                var tmrwdate = dayAfter.toISOString();
+                const tmrwDateTimeArray = tmrwdate.split('.');
+                document.getElementById("reminderDate").min = tmrwDateTimeArray[0];
+            });
+
+            var countCheckBox = 0;
+            $('.fileType').change(function () {
+                var parent = $(this).parent().parent();
+                if ($(this).is(":checked")) {
+                    parent.find('ul').show();
+                    parent.find('input').prop('checked', true);
+                    countCheckBox++;
+                    if (countCheckBox == 6) {
+                        $('.allFiles').prop('checked', true);
+                    }
+                } else {
+                    var ul = parent.find('ul');
+                    ul.find('input').prop('checked', false);
+                    ul.hide();
+                    countCheckBox--;
+                    $('.allFiles').prop('checked', false);
+                }
+            });
+
+            $('.allFiles').change(function () {
+                if ($(this).is(":checked")) {
+                    $('.fileType').prop('checked', true);
+                    setAllExtensionsChildChecked();
+                    $('#files').find('ul').show();
+                } else {
+                    $('.fileType').prop('checked', false);
+                    setAllExtensionsChildUnchecked();
+                    $('#files').find('ul').hide();
+                }
+            });
+            var countForExtension;
+            if (isCreate == 'False') {
+                countForExtension = 0;
+            } else {
+                countForExtension = 1;
+            }
+
+
+            $('#saveExtensions').click(function () {
+                $('.displayFiles').empty();
+                $('.fileType').each(function () {
+                    var html = '<p style= "">';
+                    if ($(this).is(":checked")) {
+                        var className = $(this).attr('data-child');
+                        html += '<span style="font-weight: bold; ">' + className + ': </span>';
+                        $('.' + className).each(function () {
+                            if ($(this).is(":checked")) {
+                                html += $(this).val() +', ';
+                            }
+                        });
+                        html += '</p>'
+                    }
+                    $('.displayFiles').append(html);
+                });
+                extensions = [];
+
+                $('.fileType').each(function () {
+                    if ($(this).is(":checked")) {
+                        var className = $(this).attr('data-child');
+                        extensions.push(className);
+                        $('.' + className).each(function () {
+                            if ($(this).is(":checked")) {
+                                extensions.push($(this).val());
+                            }
+                        });
+                    }
+                });
+                if (extensions.length == 0 && countForExtension > 0) {
+
+                    swal('Warning', 'you didn\'t select any extensions!', 'warning');
+                }
+                countForExtension++;
+            });
+
+            if (isCreate == 'False') {
+                //get file extensions
+                var filesTypesStr = '@Model.FileTypesStr';
+                var parentsExtensions = ['archive', 'audio', 'document', 'image', 'presentation', 'spreadsheet', 'video'];
+                var assigExtensions = filesTypesStr.split(',');
+                var assigExtensionLength = assigExtensions.length;
+                $.each(assigExtensions, function (index, value) {
+                    var existedParent = ArrayContains(parentsExtensions, value);
+                    if (existedParent != "") {
+                        setParentExtensionChecked('parent_' + existedParent);
+                        if (index < assigExtensionLength - 1) {
+                            if (!assigExtensions[index + 1].includes(".")) {
+                                setChildrensOfParentChecked('parent_' + existedParent);
+                            }
+                        } else if (index == assigExtensionLength - 1){
+                            setChildrensOfParentChecked('parent_' + existedParent);
+                        }
+
+                    } else {
+                        checkChildExtensionChecked(value);
+                    }
+                });
+                $('#saveExtensions').click();
+
+                //disable all the dropdowns
+                $('#GradesDropDown').prop('disabled', true);
+                $('#SubjectsDropDown').prop('disabled', true);
+                $('#SchoolsDropDown').prop('disabled', true);
+                //set the size selected to the max submission size dropdown
+                $('#maxSize').val('@Model.MaxSubSize');
+                //check if word limit is enable
+                if ('@Model.EnableWordLimit' == 'True') {
+                    $('#wordLimit').prop("disabled", false);
+                } else {
+                    $('#wordLimit').prop("disabled", true);
+                }
+                //check if submission file is enable
+                if ('@Model.FilesSubmission' == 'False') {
+                    $('.fileSubmission').hide();
+                    $('#filesNumber').val('20');
+                    extensions = [];
+                    $('.allFiles').prop('checked', false);
+                    $('.fileType').prop('checked', false);
+                    $('#files').find('ul').hide();
+                    $('.displayFiles').empty();
+                } else {
+                    $('.fileSubmission').show();
+                }
+                //check if online text submission is enable
+                if ('@Model.OnlineText' == 'False') {
+                    $('.onlineText').hide();
+                    $('#wordLimit').val('');
+                } else {
+                    $('.onlineText').show();
+                }
+
+
+
+            }
+
+            $('#submitId').click(function () {
+                var item = {};
+                item['AssignmetName'] = $('#assignmentName').val();
+                item['GradeKey'] = $('#GradesDropDown').val();
+                item['SubjectKey'] = $('#SubjectsDropDown').val();
+                item['SchoolKey'] = $('#SchoolsDropDown').val();
+                item['UserCourseKey'] = $('#UserCourseDropDown').val();
+                item['Description'] = btoa($('#description').summernote('code'));
+                item['AllowSubmissionFrom'] = $('#submissionDate').val();
+                item['DueDate'] = $('#dueDate').val();
+                item['RemindMeToGradeBy'] = $('#reminderDate').val();
+
+
+
+                var gradeToPass = $('#passGrade').val();
+                if (gradeToPass == '') {
+                    item['GradeToPass'] = 50;
+
+                } else {
+                    item['GradeToPass'] = $('#passGrade').val();
+                }
+                item['Attachements'] = '@Model.Attachements';
+                item['DescAttachementsId'] = '@Model.DescAttachementsId';
+                if ($('#hideFromStudentsCheckBox').is(":checked")) {
+                    item['HideFromStudents'] = true;
+                } else {
+                    item['HideFromStudents'] = false;
+                }
+                if ($('#fileCheckBox').is(":checked")) {
+                    item['FilesSubmission'] = true;
+                    item['MaxFilesNumber'] = $('#filesNumber').val();
+                    item['MaxSubSize'] = $('#maxSize').val();
+                    item['FileTypes'] = extensions;
+                } else {
+                    item['MaxFilesNumber'] = 0;
+                    item['MaxSubSize'] = 0;
+                    item['FileTypes'] = [];
+                    item['FilesSubmission'] = false;
+                }
+                if ($('#onlineTextCheckBox').is(":checked")) {
+                    item['OnlineText'] = true;
+                    if ($('#enableCheckBox').is(':checked')) {
+                        item['EnableWordLimit'] = true;
+                        item['WordLimit'] = $('#wordLimit').val();
+                    } else {
+                        item['EnableWordLimit'] = false;
+                    }
+                } else {
+                    item['OnlineText'] = false;
+                    item['EnableWordLimit'] = false;
+                    item['WordLimit'] = 0;
+
+                }
+
+                @if (ViewBag.assigId != null)
+                 {
+                    <text>
+                        EditAssignment(item);
+                    </text>
+                 }
+                 else
+                 {
+                    <text>
+                        CreateAssignment(item);
+                    </text>
+
+                 }
+            });
+
+            function EditAssignment(item) {
+                $("#EditAssigData").val(JSON.stringify(item));
+                $("#assKey").val('@ViewBag.assigId');
+
+                mApp.block($('#m_wizard'));
+                $("#EditAssignmentHidden").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        mApp.unblock($('#m_wizard'));
+                        if (data == 200) {
+                            swal({
+                                title: "Success",
+                                text: "assignment updated successfuly",
+                                type: "success",
+                                showCancelButton: false,
+                                confirmButtonClass: "btn btn-brand m-btn",
+                                confirmButtonText: "Ok"
+                            }).then(function (e) {
+                                if (e.dismiss !== "cancel") {
+                                    window.location.href = '@Url.Action("Index", "Dashboard")';
+                                } else {
+                                    return;
+                                }
+                            });
+                        } else {
+                            swal('Error', 'error occur please try agian', 'error');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        mApp.unblock($('#m_wizard'));
+                        swal('Error', 'error occur pleas try agian', 'error');
+                    }
+                });
+            }
+
+            function CreateAssignment(item) {
+                $("#AssigData").val(JSON.stringify(item));
+
+                mApp.block($('#m_wizard'));
+                $("#SubmitAssignment").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+
+                        if (data == 200) {
+                            swal({
+                                title: "Success",
+                                text: "assignment created successfuly",
+                                type: "success",
+                                showCancelButton: false,
+                                confirmButtonClass: "btn btn-brand m-btn",
+                                confirmButtonText: "Ok"
+                            }).then(function (e) {
+                                if (e.dismiss !== "cancel") {
+                                    window.location.href = '@Url.Action("Index", "Dashboard")';
+                                } else {
+                                    return;
+                                }
+                            });
+                        } else {
+                            swal('Error', 'error occur please try agian', 'error');
+                            mApp.unblock($('#m_wizard'));
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        mApp.unblock($('#m_wizard'));
+                        swal('Error', 'error occur pleas try agian', 'error');
+                    }
+                });
+            }
+
+
+            $('.removeFile').click(function () {
+                var index = $(this).attr('data-index');
+                mApp.block($('#m_wizard'));
+                mApp.progress($('#nextBtn'));
+                var fileName = $(this).attr("data-file-name");
+                var attachmentId = '@Model.Attachements';
+                $("#fileName").val(fileName);
+                $("#attachmentId").val('@Model.Attachements');
+                $("#DeleteFile").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        if (data == "success") {
+                            mApp.unblock($('#m_wizard'));
+                            mApp.unprogress($('#nextBtn'));
+                            $('#index_' +index).remove();
+                            filesUploadedNumber--;
+
+                        } else if (data == "error") {
+                            mApp.unblock($('#m_wizard'));
+                            mApp.unprogress($('#nextBtn'));
+                            swal('Error', 'error in deleting the file', 'error');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        swal('Error', 'error in deleting the file', 'error');
+                    }
+                });
+            });
+
+
+            $('#GradesDropDown').prop('disabled', true);
+            $('#SubjectsDropDown').prop('disabled', true);
+
+            $("#SchoolsDropDown").change(function () {
+                mApp.block($('#m_wizard'));
+
+                $('#schoolId').val($(this).val());
+                $("#GetGradesHidden").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        $("#GradesDropDown").empty();
+                        var html = '<option></option>';
+                        $.each(data, function (index, value) {
+                            html += '<option value=' + value.id + '>' + value.text + '</option>'
+                        });
+                        $("#GradesDropDown").append(html);
+                        $('#GradesDropDown').prop('disabled', false);
+                        mApp.unblock($('#m_wizard'));
+                    },
+                    error: function (xhr, status, error) {
+                        mApp.unblock($('#m_wizard'));
+                    }
+                });
+
+            });
+            $('#GradesDropDown').change(function () {
+                mApp.block($('#m_wizard'));
+
+                $('#SchoolId').val($('#SchoolsDropDown').val());
+                $('#gradeId').val($(this).val());
+                $("#GetSubjectsHidden").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        $("#SubjectsDropDown").empty();
+                        var html = '<option></option>';
+                        $.each(data, function (index, value) {
+                            html += '<option value=' + value.id + '>' + value.text + '</option>'
+                        });
+                        $("#SubjectsDropDown").append(html);
+                        $('#SubjectsDropDown').prop('disabled', false);
+                        mApp.unblock($('#m_wizard'));
+                    },
+                    error: function (xhr, status, error) {
+                        mApp.unblock($('#m_wizard'));
+                    }
+                });
+            });
+        });
+
+</script>
+}
+

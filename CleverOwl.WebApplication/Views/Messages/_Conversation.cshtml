@@ -1,0 +1,28 @@
+﻿@model RLI.Common.DataObjects.ConversationMessagesModel
+
+<div class="m-portlet__body" id="m_section_">
+    <div id="m_quick_sidebar_tabs_messenger">
+        <div class="m-messenger m-messenger--message-arrow m-messenger--skin-light">
+            <div id="loader"></div>
+            <div id="messenger_messages_container" class="m-messenger__messages messenger_messages_container" style="max-height:500px;overflow-y:scroll;">
+                @Html.Partial("_Messages", Model)
+            </div>
+            <div class="m-messenger__seperator"></div>
+            <div class="m-messenger__form">
+                <div class="m-messenger__form-controls">
+                    <input id="messenger_text_input" type="text" name="" placeholder="Type here..." class="m-messenger__form-input messenger_text_input" data-user_id="">
+                </div>
+                <div class="m-messenger__form-tools">
+
+                    <a id="messenger_send_message" class="m-messenger__form-attachment messenger_send_message btn-primary" data-user_id="@ViewBag.to_userId" data-conv_id="@Model.id" style="margin-bottom:30px">
+                        <i class="la la-send"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

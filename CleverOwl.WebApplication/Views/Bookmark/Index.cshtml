@@ -1,0 +1,831 @@
+﻿@model RLI.WebApplication.Models.BookmarkViewModel
+@using RLI.Common.Managers
+
+@{
+
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageBookmarks"));
+    int numberOfTabs = 0;
+}
+<style>
+    .learning_content_inner .tab-content .tab-pane {
+        padding-top: 20px;
+    }
+
+    .page-banner {
+        margin-top: 100px;
+        height: fit-content;
+        margin-bottom: 30px;
+        background-color: #ffffff;
+    }
+
+    .page-body {
+        padding: 0;
+        margin-bottom: 50px;
+    }
+
+    .grid-card {
+        box-shadow: rgb(99 99 99 / 20%) 0px 2px 8px 0px;
+        border-radius: 25px;
+        padding: 40px;
+        background: linear-gradient( to left, rgb(115 110 197 / 80%) 0%, rgb(68 60 182) 100% ) left bottom #ffffff no-repeat;
+        background-size: 100% 18px;
+    }
+
+    .grid-card-head-title {
+        margin-top: 20px;
+    }
+
+    .grid-card-head-datetime {
+        margin-top: 20px;
+    }
+
+    .grid-card-body {
+        margin-top: 25px;
+        font-weight: 100;
+    }
+
+    .grid-card-footer {
+        margin-top: 50px;
+        margin-bottom: -10px;
+    }
+
+    h3 {
+        word-break: break-all;
+    }
+
+    .fa-bookmark {
+        cursor: pointer
+    }
+
+    .nav-item.m-auto {
+        max-width: 100% !important;
+    }
+
+    @@media(max-width: 560px) {
+        .learning_content_inner .nav.nav-tabs li {
+            padding: 0px;
+            margin-bottom: 15px !important;
+        }
+    }
+
+    @@media(max-width:991px) and (min-width:769px) {
+        svg {
+            max-width: 10%;
+        }
+    }
+
+    @@media(max-width:991px) {
+        .BodyParent #m_aside_left {
+            display: none !important;
+        }
+
+        .bookmarkIcon {
+            display: none;
+        }
+    }
+
+    svg {
+        height: 50px;
+    }
+</style>
+
+
+<!--==========================-->
+<!--=         Banner         =-->
+<!--==========================-->
+<section class="page-banner">
+    <div class="container">
+        <div class="page-title-wrapper">
+            <div>
+                <ul class="bradcurmed">
+                    <li><a href="@Url.Action("Index", "Dashboard")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageWall"))</a></li>
+                    <li><a href="@Url.Action("Index", "Bookmark")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageBookmarks"))</a></li>
+                </ul>
+            </div>
+            <div class="row m--margin-top-20-desktop">
+                <div class="col-lg-1 m-auto bookmarkIcon">
+                    <i class="fa fa-bookmark fa-3x" style="color:#2b2350;"></i>
+                    @*@Html.Partial("~/Views/SharedSvgs/_SynchronousLearningIcon.cshtml")*@
+                </div>
+                <div class="col-lg-5 col-12 m-auto">
+                    <h1 class="page-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageBookmarks"))</h1>
+                </div>
+                <div class="col-lg-3  m-auto">
+                </div>
+                <div class="col-lg-3 col-12 m-auto">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</section>
+<!-- /.page-banner -->
+<!--=============================-->
+<!--=         Page Body         =-->
+<!--=============================-->
+
+<section class="learning_content_area" id="WaysOfLearning">
+    <div class="container">
+        <div class="main_title">
+
+        </div>
+        <div class="learning_content_inner">
+            <div class="row">
+                <div class="col-12">
+                    <ul class="nav nav-tabs" id="variousWaysOfLearning" style="position:relative;max-width:100%; text-align:center" role="tablist">
+                        @{
+                            if (Model.AssignmentsList.Count() > 0)
+                            {
+                                numberOfTabs++;
+                            }
+                            if (Model.LessonsList.Count() > 0)
+                            {
+                                numberOfTabs++;
+                            }
+                            if (Model.SessionsList.Count() > 0)
+                            {
+                                numberOfTabs++;
+                            }
+                            if (Model.EventsList.Count() > 0)
+                            {
+                                numberOfTabs++;
+                            }
+                            if (numberOfTabs > 1)
+                            {
+                                if (Model.AssignmentsList.Count() > 0)
+                                {
+                                    <li class="nav-item m-auto mb-3">
+                                        <a class="nav-link" id="assignments-tab" data-toggle="tab" href="#assignments" role="tab" aria-controls="assignments" aria-selected="false">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageAssignments"))</a>
+                                    </li>
+                                }
+                                if (Model.LessonsList.Count() > 0)
+                                {
+                                    <li class="nav-item m-auto mb-3">
+                                        <a class="nav-link" id="lessons-tab" data-toggle="tab" href="#lessons" role="tab" aria-controls="lessons" aria-selected="false">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageLessons"))</a>
+                                    </li>
+                                }
+                                if (Model.SessionsList.Count() > 0)
+                                {
+                                    <li class="nav-item m-auto">
+                                        <a class="nav-link" id="sessions-tab" data-toggle="tab" href="#sessions" role="tab" aria-controls="sessions" aria-selected="false">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageSessions"))</a>
+                                    </li>
+                                }
+                                if (Model.EventsList.Count() > 0)
+                                {
+                                    <li class="nav-item m-auto">
+                                        <a class="nav-link" id="events-tab" data-toggle="tab" href="#events" role="tab" aria-controls="events" aria-selected="false">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageEvents"))</a>
+                                    </li>
+                                }
+                            }
+
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="variousWaysOfLearningContent">
+                @if (Model.AssignmentsList.Count() > 0)
+                {
+                    <div class="tab-pane fade" id="assignments" role="tabpanel" aria-labelledby="assignments-tab">
+                        <div id="Assignments_container" class="row">
+                            @{
+                                List<CleverOwl.WebApplication.Models.AssignmentCardViewModel> assignmentCardViewModel = new List<CleverOwl.WebApplication.Models.AssignmentCardViewModel>();
+                                foreach (RLI.EntityFramework.EDM.Assignment a in Model.AssignmentsList)
+                                {
+                                    CleverOwl.WebApplication.Models.AssignmentCardViewModel currentAssignmentCardViewModel = new CleverOwl.WebApplication.Models.AssignmentCardViewModel();
+
+                                    currentAssignmentCardViewModel.AssignmentId = a.AssignmentId;
+                                    currentAssignmentCardViewModel.AssignmentKey = a.AssignmentKey;
+                                    currentAssignmentCardViewModel.AssignmentTitle = a.AssignmentTitle;
+                                    currentAssignmentCardViewModel.CourseId = a.CourseId;
+                                    currentAssignmentCardViewModel.CourseLongName = a.CourseLongName;
+                                    currentAssignmentCardViewModel.CourseModuleID = a.CourseModuleID;
+                                    currentAssignmentCardViewModel.CourseTitle = a.CourseTitle;
+                                    currentAssignmentCardViewModel.CreatedAt = a.CreatedAt;
+                                    currentAssignmentCardViewModel.Description = a.Description;
+                                    currentAssignmentCardViewModel.DueDate = a.DueDate;
+                                    currentAssignmentCardViewModel.SchoolSubjectTeacherGrade = a.SchoolSubjectTeacherGrade;
+                                    currentAssignmentCardViewModel.SchoolSubjectTeacherGradeKey = a.SchoolSubjectTeacherGradeKey;
+                                    currentAssignmentCardViewModel.TimeModifed = a.TimeModifed;
+                                    currentAssignmentCardViewModel.Grade = "";
+                                    currentAssignmentCardViewModel.Status ="";
+
+
+                                    assignmentCardViewModel.Add(currentAssignmentCardViewModel);
+                                }
+                            }
+                            @Html.Partial("~/Views/Shared/_AssignmentCard.cshtml", assignmentCardViewModel)
+                        </div>
+                        <div class="mt-10" id="AssignmentLastContent"></div>
+                    </div>
+                }
+                @if (Model.LessonsList.Count > 0)
+                {
+                    <div class="tab-pane fade" id="lessons" role="tabpanel" aria-labelledby="lessons-tab">
+                        <div id="Lessons_container" class="row">
+                            @Html.Partial("~/Views/Shared/_LessonsListingCard.cshtml", Model.LessonsList)
+                        </div>
+                        <div class="mt-10" id="LessonLastContent"></div>
+                    </div>
+                }
+                @if (Model.SessionsList.Count() > 0)
+                {
+                    <div class="tab-pane fade" id="sessions" role="tabpanel" aria-labelledby="sessions-tab">
+                        <div id="Sessions_container" class="row">
+                            @Html.Partial("~/Views/Shared/_SessionsCard.cshtml", Model.SessionsList)
+                        </div>
+                        <div class="mt-10" id="SessionLastContent"></div>
+                    </div>
+                }
+                @if (Model.EventsList.Count() > 0)
+                {
+                    <div class="tab-pane fade" id="events" role="tabpanel" aria-labelledby="events-tab">
+                        <div id="Events_container" class="row">
+                            @Html.Partial("~/Views/Shared/_CalendarEventsCard.cshtml", Model.EventsList)
+                        </div>
+                        <div class="mt-10" id="EventLastContent"></div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+<div class="emptybookmarks">
+
+</div>
+@if (Model.AssignmentsList.Count == 0 && Model.EventsList.Count == 0 && Model.LessonsList.Count == 0 && Model.SessionsList.Count == 0)
+{
+    @Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
+                       { "title", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_EmptySlateTitle")).ToString() },
+                       { "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageYoudontseemtohaveanybookmarks")).ToString() }
+                       , { "description", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPPageGotoyourWallandbookmarkanyitemyouwant")).ToString() }
+                       , { "action", true },
+                       { "actionBtnId", "GoToWall" },
+                       { "actionBtnText", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_GoToWall")).ToString() } })
+    @*<div class="blankslate m-auto col-12">
+            <div class="mb-3">
+                @Html.Partial("~/Views/SharedSvgs/_EmptySlateIcon.cshtml")
+            </div>
+            <h3 class="mb-1">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageYoudontseemtohaveanybookmarks"))</h3>
+            <p class="mb-4">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPPageGotoyourWallandbookmarkanyitemyouwant"))</p>
+
+        </div>*@
+}
+
+<div id="emptySlateHiddenContainer" hidden>
+    @Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
+                        { "title", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_EmptySlateTitle")).ToString() },
+                        { "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageYoudontseemtohaveanybookmarks")).ToString() }
+                        , { "description", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPPageGotoyourWallandbookmarkanyitemyouwant")).ToString() }
+                        , { "action", true },
+                        { "actionBtnId", "GoToWall" },
+                        { "actionBtnText", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_GoToWall")).ToString() } })
+</div>
+
+@using (Html.BeginForm("GetNextAssignments", "Bookmark", FormMethod.Post, new { id = "GetNextAssignmentsHidden" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("skipAssignments", "")
+}
+@using (Html.BeginForm("GetNextLessons", "Bookmark", FormMethod.Post, new { id = "GetNextLessonsHidden" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("skipLessons", "")
+}
+@using (Html.BeginForm("GetNextSessions", "Bookmark", FormMethod.Post, new { id = "GetNextSessionsHidden" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("skipSessions", "")
+}
+@using (Html.BeginForm("GetNextEvents", "Bookmark", FormMethod.Post, new { id = "GetNextEventsHidden" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("skipEvents", "")
+}
+@using (Html.BeginForm("RemoveBookmark", "Bookmark", FormMethod.Post, new { id = "RemoveBookmarkHidden" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("assignment_Key", "")
+}
+@using (Html.BeginForm("RemoveLessonBookmark", "Bookmark", FormMethod.Post, new { id = "RemoveLessonBookmarkHidden" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("lesson_Key", "")
+}
+@using (Html.BeginForm("RemoveSessionBookmark", "Bookmark", FormMethod.Post, new { id = "RemoveSessionBookmarkHidden" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("session_key", "")
+}
+
+@using (Html.BeginForm("RemoveEventBookmark", "Bookmark", FormMethod.Post, new { id = "RemoveEventBookmarkHidden" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("event_key", "")
+}
+
+
+@using (Html.BeginForm("DeleteAssignment", "Assignments", FormMethod.Post, new { id = "DeleteAssignmentHidden", @class = "", @style = "display:none;" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("assignmentId", "")
+    @Html.Hidden("courseId", "")
+    @Html.Hidden("courseModule", "")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+    <script>
+    $('.RenderBody').removeClass('col-md-9');
+        $(".nav-link").eq(0).addClass("active");
+    $(".tab-pane").eq(0).addClass("show active");
+    $(".submissionContainer").hide();
+
+        var skipAssignments = 1;
+        var allowGetNextAssignments = true;
+
+        var skipLessons = 1;
+        var allowGetNextLessons = true;
+
+        var skipSessions = 1;
+        var allowGetNextSessions = true;
+
+        var skipEvents = 1;
+        var allowGetNextEvents = true;
+
+        var assignmentsNb = '@Model.AssignmentsList.Count()';
+        var lessonsNb = '@Model.LessonsList.Count()';
+        var sessionsNb = '@Model.SessionsList.Count()';
+        var eventsNb = '@Model.EventsList.Count()';
+
+        var numberOfTabs = '@numberOfTabs';
+
+
+        function getNextAssignments() {
+            allowGetNextAssignments = false;
+            mApp.block($('#AssignmentLastContent'));
+            $("#skipAssignments").val(skipAssignments);
+            $("#GetNextAssignmentsHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == "404") {
+                        mApp.unblock($('#AssignmentLastContent'));
+                        allowGetNextAssignments = false;
+                    } else if (data == "500") {
+                        allowGetNextAssignments = true;
+                        mApp.unblock($('#AssignmentLastContent'));
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageErrorOccurPleaseTryAgainLater"))", 'error');
+                    } else {
+                        $('#Assignments_container').append(data);
+                        mApp.unblock($('#AssignmentLastContent'));
+                        skipAssignments++;
+                        allowGetNextAssignments = true;
+                    }
+
+                },
+                error: function (xhr, status, error) {
+                    allowGetNextAssignments = true;
+                    mApp.unblock($('#AssignmentLastContent'));
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageErrorOccurPleaseTryAgainLater"))", 'error');
+                }
+            });
+
+        }
+        function getNextLessons() {
+            allowGetNextLessons = false;
+            mApp.block($('#LessonLastContent'));
+            $("#skipLessons").val(skipLessons);
+            $("#GetNextLessonsHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == "404") {
+                        mApp.unblock($('#LessonLastContent'));
+                        allowGetNextLessons = false;
+                    } else if (data == "500") {
+                        allowGetNextLessons = true;
+                        mApp.unblock($('#LessonLastContent'));
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageErrorOccurPleaseTryAgainLater"))", 'error');
+                    } else {
+                        $('#Lessons_container').append(data);
+                        mApp.unblock($('#LessonLastContent'));
+                        skipLessons++;
+                        allowGetNextLessons = true;
+                    }
+
+                },
+                error: function (xhr, status, error) {
+                    allowGetNextLessons = true;
+                    mApp.unblock($('#LessonLastContent'));
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageErrorOccurPleaseTryAgainLater"))", 'error');
+                }
+            });
+        }
+        function getNextSessions() {
+            allowGetNextSessions = false;
+            mApp.block($('#SessionLastContent'));
+            $("#skipSessions").val(skipSessions);
+            $("#GetNextSessionsHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == "404") {
+                        mApp.unblock($('#SessionLastContent'));
+                        allowGetNextSessions = false;
+                    } else if (data == "500") {
+                        allowGetNextSessions = true;
+                        mApp.unblock($('#SessionLastContent'));
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageErrorOccurPleaseTryAgainLater"))", 'error');
+                    } else {
+                        $('#Sessions_container').append(data);
+                        mApp.unblock($('#SessionLastContent'));
+                        skipSessions++;
+                        allowGetNextSessions = true;
+                    }
+
+                },
+                error: function (xhr, status, error) {
+                    allowGetNextLessons = true;
+                    mApp.unblock($('#SessionLastContent'));
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageErrorOccurPleaseTryAgainLater"))", 'error');
+                }
+            });
+        }
+        function GetNextEvents() {
+            allowGetNextEvents = false;
+            mApp.block($('#EventLastContent'));
+            $("#skipEvents").val(skipEvents);
+            $("#GetNextEventsHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == "404") {
+                        mApp.unblock($('#EventLastContent'));
+                        allowGetNextEvents = false;
+                    } else if (data == "500") {
+                        allowGetNextEvents = true;
+                        mApp.unblock($('#EventLastContent'));
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageErrorOccurPleaseTryAgainLater"))", 'error');
+                    } else {
+                        $('#Events_container').append(data);
+                        mApp.unblock($('#EventLastContent'));
+                        skipEvents++;
+                        allowGetNextEvents = true;
+                    }
+
+                },
+                error: function (xhr, status, error) {
+                    allowGetNextLessons = true;
+                    mApp.unblock($('#SessionLastContent'));
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageErrorOccurPleaseTryAgainLater"))", 'error');
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            var position = 'assignments';
+            $('#assignments-tab').click(function () {
+                position = 'assignments';
+            });
+            $('#lessons-tab').click(function () {
+                position = 'lessons';
+            });
+            $('#sessions-tab').click(function () {
+                position = 'sessions';
+            });
+            $('#events-tab').click(function () {
+                position = 'events';
+            });
+            $(window).scroll(function () {
+                if (position == 'assignments') {
+                    var lastContentOffsetTop = $('#AssignmentLastContent').offset().top;
+                    var currentPosition = $(document).scrollTop() + 300;
+                    if (currentPosition > lastContentOffsetTop && allowGetNextAssignments === true) {
+                        getNextAssignments();
+                    }
+                } else if (position == 'lessons') {
+                    var lastLessonContentOffsetTop = $('#LessonLastContent').offset().top;
+                    var currentLessonPosition = $(document).scrollTop() + 300;
+                    if (currentLessonPosition > lastLessonContentOffsetTop && allowGetNextLessons === true) {
+                        getNextLessons();
+                    }
+                } else if (position == 'sessions') {
+                    var lastSessionContentOffsetTop = $('#SessionLastContent').offset().top;
+                    var currentSessionPosition = $(document).scrollTop() + 300;
+                    if (currentSessionPosition > lastSessionContentOffsetTop && allowGetNextSessions === true) {
+                        getNextSessions();
+                    }
+                } else if (position == 'events') {
+                    var lastEventContentOffsetTop = $('#EventLastContent').offset().top;
+                    var currentEventPosition = $(document).scrollTop() + 300;
+                    if (currentEventPosition > lastEventContentOffsetTop && allowGetNextEvents === true) {
+                        GetNextEvents();
+                    }
+                }
+            });
+            $(".deleteSessionButton").click(function () {
+                var sessionKey = $(this).data("session-id");
+                swal.fire({
+                    "title": "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_SynchronousSessionsPageAreYouSure"))",
+                    "text": "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_SynchronousSessionsPageOncedeletedthesessioncantberestored"))",
+                    "type": 'warning',
+                    "confirmButtonClass": "btn m-btn--pill btn-danger",
+                    "confirmButtonText": "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_SynchronousSessionsPageYesdeleteit"))",
+                    "cancelButtonText": "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_SynchronousSessionsWizardSessionDeleteCancelButtonSwal"))",
+                    showCancelButton: true,
+                    "cancelButtonClass": "btn m-btn--pill btn-metal"
+                }).then((result) => {
+                    if (result.value) {
+                        deleteConfirmed(sessionKey);
+                    }
+                });
+            });
+            function deleteConfirmed(session) {
+                mApp.block($('#WaysOfLearning'));
+                var card = $(`#card-${session}`);
+                mApp.block(card);
+
+                $.ajax({
+                    url: '@Url.Action("Delete", "SynchronousSessions")',
+                    type: 'POST',
+                    data: {
+                        __RequestVerificationToken: $('@Html.AntiForgeryToken()').val(),
+                        id: session
+                    },
+                    success: function (data) {
+                        card.fadeOut('fast', function () {
+                            card.remove();
+                            var gridCardsCount = $(".container .grid-card").length;
+                            if (gridCardsCount == 0) {
+                                $("#topCreateButton").addClass("d-none");
+                                $(".blankslate").removeClass("d-none");
+                            }
+
+                            mApp.unblock(card);
+                        });
+                        mApp.unblock($('#WaysOfLearning'));
+                        sessionsNb--;
+                        if (sessionsNb <= 0) {
+                            $('#sessions-tab').parent().remove();
+                            numberOfTabs--;
+                            selectFirstTabAvailable();
+                            if (numberOfTabs <= 1) {
+                                $('.nav-item').remove();
+                            }
+                        }
+                    },
+                    error: function (error) {
+                        mApp.unblock(card);
+                        swal.fire({
+                            "title": "Error",
+                            "text": "We couldn't delete your session! Please try again later.",
+                            "type": 'error',
+                            "confirmButtonClass": "btn m-btn--pill btn-brand",
+                            "confirmButtonText": "Ok",
+                        });
+                    }
+                });
+            }
+            $('.assigmentRemoveBookmarkBtn').click(function () {
+                mApp.block($('#WaysOfLearning'));
+                var currentElement = $(this);
+                var assignment_Key = currentElement.attr('data-assignid');
+                $("#assignment_Key").val(assignment_Key);
+                $("#RemoveBookmarkHidden").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        if (data == '200') {
+                            currentElement.parent().parent().parent().parent().parent().fadeOut(500);
+                            assignmentsNb--;
+                            if (assignmentsNb <= 0) {
+                                $('#assignments-tab').parent().remove();
+                                numberOfTabs--;
+                                selectFirstTabAvailable();
+                                if (numberOfTabs <= 1) {
+                                    $('.nav-item').remove();
+                                }
+
+                            }
+                            mApp.unblock($('#WaysOfLearning'));
+
+                        } else {
+                            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageErrorOccurPleaseTryAgainLater"))", 'error');
+                            mApp.unblock($('#WaysOfLearning'));
+                        }
+
+                    },
+                    error: function (xhr, status, error) {
+                        mApp.unblock($('#WaysOfLearning'));
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageErrorOccurPleaseTryAgainLater"))", 'error');
+                    }
+                });
+            });
+
+            $('.lessonBookmarkBtn').click(function () {
+                mApp.block($('#WaysOfLearning'));
+                var currentElement = $(this);
+                var lesson_Key = currentElement.attr('data-timeLineComponentModeKey');
+                $("#lesson_Key").val(lesson_Key);
+                $("#RemoveLessonBookmarkHidden").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        if (data == '200') {
+                            currentElement.parent().parent().parent().parent().fadeOut(500);
+                            lessonsNb--;
+                            if (lessonsNb <= 0) {
+                                $('#lessons-tab').parent().remove();
+                                numberOfTabs--;
+                                selectFirstTabAvailable();
+                                if (numberOfTabs <= 1) {
+                                    $('.nav-item').remove();
+                                }
+                            }
+                            mApp.unblock($('#WaysOfLearning'));
+                        } else {
+                            swal('Error', 'error occur please try agian later', 'error');
+                            mApp.unblock($('#WaysOfLearning'));
+                        }
+
+                    },
+                    error: function (xhr, status, error) {
+                        mApp.unblock($('#WaysOfLearning'));
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageErrorOccurPleaseTryAgainLater"))", 'error');
+                    }
+                });
+            });
+
+            $('.sessionBookmarkBtn').click(function () {
+                mApp.block($('#WaysOfLearning'));
+                var currentElement = $(this);
+                var session_key = currentElement.attr('data-timeLineComponentModeKey');
+                $("#session_key").val(session_key);
+                $("#RemoveSessionBookmarkHidden").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        if (data == '200') {
+                            currentElement.parent().parent().parent().parent().fadeOut(500);
+                            sessionsNb--;
+                            if (sessionsNb <= 0) {
+                                $('#sessions-tab').parent().remove();
+                                numberOfTabs--;
+                                selectFirstTabAvailable();
+                                if (numberOfTabs <= 1) {
+                                    $('.nav-item').remove();
+                                }
+                            }
+                            mApp.unblock($('#WaysOfLearning'));
+
+                        } else {
+                            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageErrorOccurPleaseTryAgainLater"))", 'error');
+                            mApp.unblock($('#WaysOfLearning'));
+                        }
+
+                    },
+                    error: function (xhr, status, error) {
+                        mApp.unblock($('#WaysOfLearning'));
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageErrorOccurPleaseTryAgainLater"))", 'error');
+                    }
+                });
+            });
+
+            $('.eventBookmarkBtn').click(function () {
+                mApp.block($('#WaysOfLearning'));
+                var currentElement = $(this);
+                var event_key = currentElement.attr('data-timeLineComponentModeKey');
+                $("#event_key").val(event_key);
+                $("#RemoveEventBookmarkHidden").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        if (data == '200') {
+                            currentElement.parent().parent().parent().parent().fadeOut(500);
+                            eventsNb--;
+                            if (eventsNb <= 0) {
+                                $('#events-tab').parent().remove();
+                                numberOfTabs--;
+                                selectFirstTabAvailable();
+                                if (numberOfTabs <= 1) {
+                                    $('.nav-item').remove();
+                                }
+                            }
+                            mApp.unblock($('#WaysOfLearning'));
+
+                        } else {
+                            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageErrorOccurPleaseTryAgainLater"))", 'error');
+                            mApp.unblock($('#WaysOfLearning'));
+                        }
+
+                    },
+                    error: function (xhr, status, error) {
+                        mApp.unblock($('#WaysOfLearning'));
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageOpps"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageErrorOccurPleaseTryAgainLater"))", 'error');
+                    }
+                });
+            });
+        });
+
+       function Delete(assId, courseId, moduleId) {
+           var cardToDelete = $(this);
+             @*swal({
+                title: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageDeleteAssignment"))",
+                text: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageDeleteAssignmentPromptMsg"))",
+                type: "warning",
+                showCancelButton: true,
+                cancelButtonText: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageNo"))",
+                confirmButtonClass: "btn btn-brand m-btn",
+                confirmButtonText: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageYes"))"
+                }).then(function (e) {
+                    if (e.dismiss !== "cancel") {
+                        mApp.block($("#assignmentDiv"));
+                        DeleteAssignmentById(assId, courseId, moduleId);
+                } else {
+                return;
+                }
+                });*@
+
+        swal.fire({
+                  "title": "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageDeleteAssignment001"))",
+                  "text": "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageDeleteAssignmentPromptMsg001"))",
+                  "type": 'warning',
+                  "confirmButtonClass": "btn m-btn--pill btn-danger",
+                  "confirmButtonText":"@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageYes001"))",
+                  showCancelButton: true,
+                  "cancelButtonClass": "btn m-btn--pill btn-metal",
+            confirmButtonText: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentsPageYes001"))",
+            cancelButtonText:"@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_SynchronousSessionsWizardSessionDeleteCancelButtonSwal"))"
+        }).then((result) => {
+
+            console.log(result);
+
+                  if (result.value) {
+                        mApp.block($("#assignmentDiv"));
+                      DeleteAssignmentById(assId, courseId, moduleId, cardToDelete);
+                  }
+                });
+
+        }
+
+    function DeleteAssignmentById(assId, courseId, moduleId, cardToDelete) {
+        console.log('yes delete it: ' + cardToDelete);
+        $("#assignmentId").val(assId);
+        $("#courseId").val(courseId);
+        $("#courseModule").val(moduleId);
+
+            $("#DeleteAssignmentHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data == 200) {
+                        cardToDelete.hide();
+                        assignmentsNb--;
+                        selectFirstTabAvailable();
+                        if (assignmentsNb <= 0) {
+                            $('#assignments-tab').parent().remove();
+                        }
+                    }
+                    },
+                error: function (xhr, status, error) {
+                    console.log("Error In DeleteAssignmentHidden !!!!!!!");
+                }
+            });
+    }
+
+    function selectFirstTabAvailable() {
+        let tabClasses = ["assignments-tab", "lessons-tab", "sessions-tab", "events-tab"];
+        let itemsNbOfEachTab = [assignmentsNb, lessonsNb, sessionsNb, eventsNb];
+        var tabToSelect = "";
+        for (let i = 0; i < itemsNbOfEachTab.length; i++) {
+            if (itemsNbOfEachTab[i] > 0) {
+                tabToSelect = tabClasses[i];
+                break;
+            }
+        }
+        if (tabToSelect != "") {
+            $('#' + tabToSelect).click();
+        } else {
+            var html = $("#emptySlateHiddenContainer").html();
+            @*html += ' <div class="blankslate m-auto col-12">';
+            html += '<div class="mb-3">';
+            html += '@Html.Partial("~/Views/SharedSvgs/_EmptySlateIcon.cshtml")';
+            html += '</div>';
+            html += '<h3 class="mb-1">' + "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPageYoudontseemtohaveanybookmarks"))" + '</h3>';
+            html += '<p class="mb-4">' + "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "BookmarkPPageGotoyourWallandbookmarkanyitemyouwant"))" + '</p>';
+            html += '</div>';*@
+            console.log(html);
+            $(".learning_content_inner").hide();
+            $('.emptybookmarks').append(html);
+        }
+    }
+    </script>
+}

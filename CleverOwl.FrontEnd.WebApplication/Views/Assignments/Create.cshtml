@@ -1,0 +1,1187 @@
+﻿@using RLI.Common.Managers
+@using Everest.OpenCurate.EntityFramework.EDM
+@using Everest.OpenCurate.WebApplication.Controllers
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    Language currentLanguage = ViewBag.CurrentLanguage;
+    ViewBag.Title = "Assignments - Create";
+}
+@Styles.Render("~/assets/vendors/summernote/dist/summernote.css")
+
+@if (currentLanguage == null || !currentLanguage.IsRTL)
+{
+    @Styles.Render("~/assets/vendors/dropzone/dist/min/dropzone.min.css")
+}
+else
+{
+    <!--RTL CSS-->
+    @Styles.Render("~/assets/vendors/dropzone/dist/min/dropzone.min.rtl.css")
+}
+
+<style>
+    .page-banner {
+        height: 400px;
+    }
+
+    .modal-dialog {
+        margin-top: 95px;
+    }
+
+    input {
+        margin-bottom: 0px
+    }
+    
+</style>
+
+<!--==========================-->
+<!--=         Banner         =-->
+<!--==========================-->
+<section class="page-banner">
+    <div class="container">
+        <div class="page-title-wrapper">
+            <h1 class="page-title">
+                <input type="text" value="" placeholder="Search..." />
+            </h1>
+            <ul class="bradcurmed">
+                <li><a href="@Url.Action("Teacher","Dashboard")" rel="noopener noreferrer">Home</a></li>
+                <li><a href="@Url.Action("Index","Assignments")" rel="noopener noreferrer">Assignments</a></li>
+                <li>Create</li>
+            </ul>
+        </div>
+        <!-- /.page-title-wrapper -->
+
+    </div>
+    <!-- /.container -->
+
+    <svg class="circle" data-parallax='{"x" : -200}' xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="950px" height="950px">
+        <path fill-rule="evenodd" stroke="rgb(250, 112, 112)" stroke-width="100px" stroke-linecap="butt" stroke-linejoin="miter" opacity="0.051" fill="none" d="M450.000,50.000 C670.914,50.000 850.000,229.086 850.000,450.000 C850.000,670.914 670.914,850.000 450.000,850.000 C229.086,850.000 50.000,670.914 50.000,450.000 C50.000,229.086 229.086,50.000 450.000,50.000 Z" />
+    </svg>
+
+    <ul class="animate-ball">
+        <li class="ball"></li>
+        <li class="ball"></li>
+        <li class="ball"></li>
+        <li class="ball"></li>
+        <li class="ball"></li>
+    </ul>
+</section>
+<!-- /.page-banner -->
+<!--========================-->
+<!--=       Dashboard      =-->
+<!--========================-->
+<div class="blog-post-archive">
+    <div class="container">
+
+        <!--Begin::Main Portlet-->
+        <div class="m-portlet m-portlet--full-height" style="overflow:hidden;">
+            <!--begin: Portlet Body-->
+            <div class="m-portlet__body m-portlet__body--no-padding">
+
+                <!--begin: Form Wizard-->
+                <div class="m-wizard m-wizard--3 m-wizard--primary" id="m_wizard">
+
+                    <!--begin: Message container -->
+                    <div class="m-portlet__padding-x">
+
+                        <!-- Here you can put a message or alert -->
+                    </div>
+
+                    <!--end: Message container -->
+                    <div class="row m-row--no-padding">
+                        <div class="col-xl-1 col-lg-12"></div>
+                        <div class="col-xl-4 col-lg-12">
+
+                            <!--begin: Form Wizard Head -->
+                            <div class="m-wizard__head">
+
+                                <!--begin: Form Wizard Progress -->
+                                <div class="m-wizard__progress">
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+
+                                <!--end: Form Wizard Progress -->
+                                <!--begin: Form Wizard Nav -->
+                                <div class="m-wizard__nav">
+                                    <div class="m-wizard__steps">
+                                        <div class="m-wizard__step m-wizard__step--current" id="m-wizard__step_1" m-wizard-target="m_wizard_form_step_1">
+                                            <div class="m-wizard__step-info">
+                                                <a href="#" class="m-wizard__step-number">
+                                                    <span><span>1</span></span>
+                                                </a>
+                                                <div class="m-wizard__step-label">
+                                                    <h3 class="m-auto m--padding-left-15 font-weight-bold wizard-step-title-custom">General</h3>
+                                                    @*<div class="m-auto m--padding-left-15">General</div>*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="m-wizard__step" id="m-wizard__step_2" m-wizard-target="m_wizard_form_step_2">
+                                            <div class="m-wizard__step-info">
+                                                <a href="#" class="m-wizard__step-number">
+                                                    <span><span>2</span></span>
+                                                </a>
+                                                <div class="m-wizard__step-label">
+                                                    <h3 class="m-auto m--padding-left-15 font-weight-bold wizard-step-title-custom">Availability</h3>
+                                                    @*<div class="m-auto m--padding-left-15">Availability</div>*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="m-wizard__step" id="m-wizard__step_3" m-wizard-target="m_wizard_form_step_3">
+                                            <div class="m-wizard__step-info">
+                                                <a href="#" class="m-wizard__step-number">
+                                                    <span><span>3</span></span>
+                                                </a>
+                                                <div class="m-wizard__step-label">
+                                                    <h3 class="m-auto m--padding-left-15 font-weight-bold wizard-step-title-custom">Submission Types</h3>
+                                                    @*<div class="m-auto m--padding-left-15">Submission Types</div>*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="m-wizard__step" id="m-wizard__step_4" m-wizard-target="m_wizard_form_step_4">
+                                            <div class="m-wizard__step-info">
+                                                <a href="#" class="m-wizard__step-number">
+                                                    <span><span>4</span></span>
+                                                </a>
+                                                <div class="m-wizard__step-label">
+                                                    <h3 class="m-auto m--padding-left-15 font-weight-bold wizard-step-title-custom">Additional</h3>
+                                                    @*<div class="m-auto m--padding-left-15">Additional</div>*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            @Html.Partial("_AssigImage")
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!--end: Form Wizard Nav -->
+                            </div>
+
+                            <!--end: Form Wizard Head -->
+                        </div>
+                        <div id="head" class="col-xl-7 col-lg-12" style="background-color: rgb(253,248,248);">
+
+                            <!--begin: Form Wizard Form-->
+                            <div class="m-wizard__form m--padding-5-tablet-and-mobile">
+
+                                <!--
+        1) Use m-form--label-align-left class to alight the form input lables to the right
+        2) Use m-form--state class to highlight input control borders on form validation
+    -->
+                                <div class="m-portlet__body m-portlet__body--no-padding">
+
+                                    <!--begin: Form Wizard Step 1-->
+                                    <div class="m-wizard__form-step m-wizard__form-step--current" id="m_wizard_form_step_1" data-form-id="generalForm">
+                                        <form id="generalForm">
+                                            <!-- to move to partial -->
+                                            <div class="m-form__heading">
+                                                <h3 class="font-weight-bold">
+                                                    <i class="fas fa-angle-double-down" style="padding-right: 20px;font-size:3rem;"></i>
+                                                    General
+                                                </h3>
+                                            </div>
+                                            <div class="m-portlet__body" style="margin-top:40px">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p></p>
+                                                        <lable>Assignment name</lable>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <span>
+                                                            <input type="text" id="assignmentName" name="assignmentName" style="width:100%" placeholder="assignment name" />
+                                                        </span>
+                                                        <span id="assignmentNameHelp" class="m-form__help" style="display:none; color:red">field required!</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-12" style="margin-top:35px">
+                                                        <lable>Description</lable>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div id="description" class="summernote"></div>
+                                                        <span id="descriptionHelp" class="m-form__help" style="display:none; color:red">field required!</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-top:35px">
+                                                    <div class="col-12">
+                                                        <p></p>
+                                                        <p>Additional files</p>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="m-dropzone dropzone m-dropzone--metal" id="pageImageDropZone">
+                                                            <div class="m-dropzone__msg dz-message needsclick">
+                                                                @*<h3 class="m-dropzone__msg-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageUploadFile"))</h3>*@
+                                                                <div>
+                                                                    <i class="fa fa-file-upload fa-8x" style="margin-bottom:20px;"></i>
+                                                                </div>
+                                                                <span class="m-dropzone__msg-desc">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageDrag/drop"))</span>
+                                                            </div>
+                                                        </div>
+                                                        <span class="field-validation-valid m-form__help text-danger fileUpload" data-valmsg-for="LessonName" data-valmsg-replace="false">*</span>
+                                                        <span id="pageImageDropZoneHelp" class="m-form__help" style="display:none; color:red">field required!</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <!--end: Form Wizard Step 1-->
+                                    <!--begin: Form Wizard Step 2-->
+                                    <div class="m-wizard__form-step" id="m_wizard_form_step_2" data-form-id="availabilityForm">
+                                        <form id="availabilityForm">
+                                            <!-- to move to partial -->
+                                            <div class="m-form__heading">
+                                                <h3 class="font-weight-bold">
+                                                    <i class="fas fa-clock" style="padding-right: 20px;font-size:3rem;"></i>
+                                                    Availability
+                                                </h3>
+                                            </div>
+                                            <div class="m-portlet__body" style="margin-top:40px">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <lable>Allow submission from</lable>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <input id="submissionDate" type="datetime-local" style="width:100%; cursor:pointer">
+                                                        <span id="submissionDateHelp" class="m-form__help" style="display:none; color:red">field required!</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-top:35px">
+                                                    <div class="col-12">
+                                                        <lable>Due Date</lable>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <input type="datetime-local" id="dueDate" style="width:100%; cursor:pointer">
+                                                        <span id="dueDateHelp" class="m-form__help" style="display:none; color:red">field required!</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-top:35px">
+                                                    <div class="col-12">
+                                                        <lable>Remind me to grade by</lable>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <input type="datetime-local" id="reminderDate" style="width:100%; cursor:pointer">
+                                                        <span id="reminderDateHelp" class="m-form__help" style="display:none; color:red">field required!</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <!--end: Form Wizard Step 2-->
+                                    <!--begin: Form Wizard Step 3-->
+                                    <div class="m-wizard__form-step" id="m_wizard_form_step_3" data-form-id="phoneVerificationForm">
+                                        <form id="infoForm">
+                                            <!-- to move to partial -->
+                                            <div class="m-form__heading">
+                                                <h3 class="font-weight-bold">
+                                                    <i class="fas fa-book" style="padding-right: 20px;font-size:3rem;"></i>
+                                                    Submission Types
+                                                </h3>
+                                            </div>
+                                            <div class="m-portlet__body" style="margin-top:40px">
+                                                <div class="row">
+                                                    <div class="col-md-5">
+                                                        <p></p>
+                                                        <lable>Submission types</lable>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <p></p>
+                                                        <label class="m-checkbox m-checkbox--air">
+                                                            <input id="onlineTextCheckBox" type="checkbox" name="submissionType" value="onlineText" checked="checked">Online text
+                                                            <span></span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <p></p>
+                                                        <label class="m-checkbox m-checkbox--air">
+                                                            <input id="fileCheckBox" type="checkbox" name="submissionType" value="fileSubmission" checked="checked">File submissions
+                                                            <span></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="row onlineText" data-display="show" style="margin-top:35px">
+                                                    <div class="col-12">
+                                                        <lable>Word limit</lable>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <input id="wordLimit" type="number" placeholder="enter word limit" />
+                                                    </div>
+                                                </div>
+                                                <div class="row fileSubmission" data-display="show" style="margin-top:35px">
+                                                    <div class="col-12">
+                                                        <lable>Maximum number of uploaded files</lable>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <input id="filesNumber" type="number" placeholder="enter number of files" />
+                                                    </div>
+                                                </div>
+                                                <div class="row fileSubmission" data-display="show" style="margin-top:35px">
+                                                    <div class="col-12">
+                                                        <lable>Maximum submission size</lable>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <input id="maxSize" type="number" placeholder="enter maximum size" />
+                                                    </div>
+                                                </div>
+                                                <div class="row fileSubmission" data-display="show" style="margin-top:35px">
+                                                    <div class="col-12">
+                                                        <lable>Accepted file types</lable>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <button type="button" class="btn btn-outline-secondary form-control m-input" data-toggle="modal" data-target="#m_modal_1_2">Choose File</button>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-top:10px">
+                                                    <div class="col-12 displayFiles">
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <!--end: Form Wizard Step 3-->
+                                    <!--begin: Form Wizard Step 4-->
+                                    <div class="m-wizard__form-step" id="m_wizard_form_step_4" data-form-id="">
+                                        <form id="infoForm">
+                                            <!-- to move to partial -->
+                                            <div class="m-form__heading">
+                                                <h3 class="font-weight-bold">
+                                                    <i class="fas fa-plus-circle" style="padding-right: 20px;font-size:3rem;"></i>
+                                                    Additional
+                                                </h3>
+                                            </div>
+                                            <div class="m-portlet__body" style="margin-top:40px">
+                                                <div class="row" style="margin-top:35px">
+                                                    <div class="col-12">
+                                                        <lable>Grade to pass</lable>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <input id="passGrade" type="number" name="gradeToPass" style="width:100%" placeholder="grade to pass" value="50" />
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-top:35px">
+                                                    <div class="col-12">
+                                                        <lable>Tags</lable>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <select id="tagsDropDown" style="width:100%">
+                                                            <option></option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-top:35px">
+                                                    <div class="col-12">
+                                                        <lable>Hide from students</lable>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label class="m-checkbox m-checkbox--air">
+                                                            <input id="hideFromStudentsCheckBox" type="checkbox" name="submissionType" value="onlineText">hide from students
+                                                            <span></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!--end: Form Wizard Step 4-->
+
+
+                                <div class="m-form m-form--label-align-left- m-form--state-">
+                                    <!--begin: Form Actions -->
+                                    <div class="m-portlet__foot m-portlet__foot--fit m--margin-top-40">
+                                        <div class="m-form__actions">
+                                            <div class="row">
+                                                <div class="col-6 m--align-left">
+                                                    <a href="#" class="btn m-btn--pill btn-secondary btn-lg m-btn m-btn--custom m-btn--icon" data-wizard-action="prev" style="margin:50px">
+                                                        <span>
+                                                            <i class="la la-arrow-left"></i>&nbsp;&nbsp;
+                                                            <span>Back</span>
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                                <div class="col-6 m--align-right mt-2">
+                                                    <a href="#" class="btn btn-brand m-btn m-btn--custom m-btn--icon" data-wizard-action="submit" style="margin:50px">
+                                                        <span>
+                                                            <i class="la la-check"></i>&nbsp;&nbsp;
+                                                            <span>Assign</span>
+                                                        </span>
+                                                    </a>
+                                                    <a id="nextBtn" href="#" class="btn m-btn--pill btn-primary btn-lg m-btn m-btn--custom m-btn--icon" data-wizard-action="next" style="margin:50px">
+                                                        <span>
+                                                            <span id="btnNextContent">Next</span>&nbsp;&nbsp;
+                                                            <i class="la la-arrow-right flip"></i>
+                                                        </span>
+                                                    </a>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--end: Form Actions -->
+                                </div>
+                            </div>
+                            <div class="modal fade" id="m_modal_1_2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top:55px">
+                                <div id="files" class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div  class="modal-body">
+                                            <div class="m-scrollable" data-scrollbar-shown="true" data-scrollable="true" data-height="200">
+                                                <div>
+                                                    <label class="m-checkbox m-checkbox--air">
+                                                        <input type="checkbox" class="allFiles">All
+                                                        <span></span>
+                                                    </label>
+                                                </div>
+                                                <div data-display="hide">
+                                                    <label class="m-checkbox m-checkbox--air">
+                                                        Power Point<input type="checkbox" class="fileType" data-child="powerPt" />
+                                                        <span></span>
+                                                    </label>
+                                                    <ul style="display:none">
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="powerPt" type="checkbox" name="powerPt" value=".pps" checked="checked"> .pps
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="powerPt" type="checkbox" name="powerPt" value=".ppt" checked="checked"> .ppt
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="powerPt" type="checkbox" name="powerPt" value=".pptx" checked="checked"> .pptx
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="powerPt" type="checkbox" name="powerPt" value=".pptm" checked="checked"> .pptm
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="powerPt" type="checkbox" name="powerPt" value=".potx" checked="checked"> .potx
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="powerPt" type="checkbox" name="powerPt" value=".potm" checked="checked"> .potm
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="powerPt" type="checkbox" name="powerPt" value=".ppam" checked="checked"> .ppam
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="powerPt" type="checkbox" name="powerPt" value=".ppsx" checked="checked"> .ppsx
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="powerPt" type="checkbox" name="powerPt" value=".ppsm" checked="checked"> .ppsm
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="powerPt" type="checkbox" name="powerPt" value=".pub" checked="checked"> .pub
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+
+                                                    </ul>
+                                                </div>
+                                                <div data-display="hide">
+                                                    <label class="m-checkbox m-checkbox--air">
+                                                        <input type="checkbox" class="fileType" data-child="document">Document
+                                                        <span></span>
+                                                    </label>
+                                                    <ul style="display:none">
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="document" type="checkbox" name="document" value=".doc" checked="checked"> .doc
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="document" type="checkbox" name="document" value=".docx" checked="checked"> .docx
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="document" type="checkbox" name="document" value=".epub" checked="checked"> .epub
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="document" type="checkbox" name="document" value=".gdoc" checked="checked"> .gdoc
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="document" type="checkbox" name="document" value=".odt" checked="checked"> .odt
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="document" type="checkbox" name="document" value=".ott" checked="checked"> .ott
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="document" type="checkbox" name="document" value=".oth" checked="checked"> .oth
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="document" type="checkbox" name="document" value=".pdf" checked="checked"> .pdf
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="document" type="checkbox" name="document" value=".rtf" checked="checked"> .rtf
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+
+                                                    </ul>
+                                                </div>
+                                                <div data-display="hide">
+                                                    <label class="m-checkbox m-checkbox--air">
+                                                        <input type="checkbox" class="fileType" data-child="excel">Excel
+                                                        <span></span>
+                                                    </label>
+                                                    <ul style="display:none">
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="excel" type="checkbox" name="excel" value=".xlsx" checked="checked"> .xlsx
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="excel" type="checkbox" name="excel" value=".xlsm" checked="checked"> .xlsm
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="excel" type="checkbox" name="excel" value=".xlsb" checked="checked"> .xlsb
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="excel" type="checkbox" name="excel" value=".xltx" checked="checked"> .xltx
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="excel" type="checkbox" name="excel" value=".xltm" checked="checked"> .xltm
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="excel" type="checkbox" name="excel" value=".xls" checked="checked"> .xls
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="excel" type="checkbox" name="excel" value=".xlt" checked="checked"> .xlt
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="excel" type="checkbox" name="excel" value=".xml" checked="checked"> .xml
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="excel" type="checkbox" name="excel" value=".xml" checked="checked"> .xml
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input type="checkbox" name="excel" value=".xlam" checked="checked"> .xlam
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="excel" type="checkbox" name="excel" value=".xlw" checked="checked"> .xlw
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="excel" type="checkbox" name="excel" value=".xla" checked="checked"> .xla
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="excel" type="checkbox" name="excel" value=".xlr" checked="checked"> .xlr
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div data-display="hide">
+                                                    <label class="m-checkbox m-checkbox--air">
+                                                        <input type="checkbox" class="fileType" data-child="video">Video
+                                                        <span></span>
+                                                    </label>
+                                                    <ul style="display:none">
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".3gp" checked="checked"> .3gp
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".avi" checked="checked"> .avi
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".dv" checked="checked"> .dv
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".dif" checked="checked"> .dif
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".flv" checked="checked"> .flv
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".f4v" checked="checked"> .f4v
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".fmp4" checked="checked"> .fmp4
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".mov" checked="checked"> .mov
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".movie" checked="checked"> .movie
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".mp4" checked="checked"> .mp4
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".m4v" checked="checked"> .m4v
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".mpeg" checked="checked"> .mpeg
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".mpe" checked="checked"> .mpe
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".mpg" checked="checked"> .mpg
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".ogv" checked="checked"> .ogv
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".qt" checked="checked"> .qt
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".rmvb" checked="checked"> .rmvb
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".rv" checked="checked"> .rv
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".swf" checked="checked"> .swf
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".swfl" checked="checked"> .swfl
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input type="checkbox" name="powerPt" value=".ts" checked="checked"> .ts
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="video" type="checkbox" name="powerPt" value=".webm" checked="checked"> .webm
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input type="checkbox" name="powerPt" value=".wmv" checked="checked"> .wmv
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input type="checkbox" name="powerPt" value=".asf" checked="checked"> .asf
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div data-display="hide">
+                                                    <label class="m-checkbox m-checkbox--air">
+                                                        Audio<input type="checkbox" class="fileType" data-child="audio" />
+                                                        <span></span>
+                                                    </label>
+                                                    <ul style="display:none">
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="audio" type="checkbox" name="image" value=".aac" checked="checked"> .aac
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="audio" type="checkbox" name="image" value=".aif" checked="checked"> .aif
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="audio" type="checkbox" name="image" value=".aiff" checked="checked"> .aiff
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="audio" type="checkbox" name="image" value=".aifc" checked="checked"> .aifc
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="audio" type="checkbox" name="image" value=".au" checked="checked"> .au
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="audio" type="checkbox" name="image" value=".flac" checked="checked"> .flac
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="audio" type="checkbox" name="image" value=".m3u" checked="checked"> .m3u
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="audio" type="checkbox" name="image" value=".mp3" checked="checked"> .mp3
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="audio" type="checkbox" name="image" value=".m4a" checked="checked"> .m4a
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="audio" type="checkbox" name="image" value=".oga" checked="checked"> .oga
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="audio" type="checkbox" name="image" value=".ogg" checked="checked"> .ogg
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="audio" type="checkbox" name="image" value=".ra" checked="checked"> .ra
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="audio" type="checkbox" name="image" value=".ram" checked="checked"> .ram
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="audio" type="checkbox" name="image" value=".rm" checked="checked"> .rm
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="audio" type="checkbox" name="image" value=".wav" checked="checked"> .wav
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="audio" type="checkbox" name="image" value=".wma" checked="checked"> .wma
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div data-display="hide">
+                                                    <label class="m-checkbox m-checkbox--air">
+                                                        Image<input type="checkbox" class="fileType" data-child="image" />
+                                                        <span></span>
+                                                    </label>
+                                                    <ul style="display:none">
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="image" type="checkbox" name="image" value=".ai" checked="checked"> .ai
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="image" type="checkbox" name="image" value=".bmp" checked="checked"> .bmp
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="image" type="checkbox" name="image" value=".gdraw" checked="checked"> .gdraw
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="image" type="checkbox" name="image" value=".gif" checked="checked"> .gif
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="image" type="checkbox" name="image" value=".ico" checked="checked"> .ico
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="image" type="checkbox" name="image" value=".jpe" checked="checked"> .jpe
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="image" type="checkbox" name="image" value=".jpeg" checked="checked"> .jpeg
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="image" type="checkbox" name="image" value=".jpg" checked="checked"> .jpg
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="image" type="checkbox" name="image" value=".pct" checked="checked"> .pct
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="image" type="checkbox" name="image" value=".pic" checked="checked"> .pic
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="image" type="checkbox" name="image" value=".pict" checked="checked"> .pict
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="image" type="checkbox" name="image" value=".png" checked="checked"> .png
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="image" type="checkbox" name="image" value=".svg" checked="checked"> .svg
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="image" type="checkbox" name="image" value=".svgz" checked="checked"> .svgz
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="image" type="checkbox" name="image" value=".tif" checked="checked"> .tif
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                        <li>
+                                                            <label class="m-radio">
+                                                                <input class="image" type="checkbox" name="image" value=".tiff" checked="checked"> .tiff
+                                                                <span></span>
+                                                            </label>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button id="saveExtensions" type="button" data-dismiss="modal" class="btn btn-primary">Save changes</button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--end: Form Wizard Form-->
+                    </div>
+
+                </div>
+            </div>
+
+            <!--end: Form Wizard-->
+        </div>
+
+        <!--end: Portlet Body-->
+    </div>
+
+    <!--End::Main Portlet-->
+
+</div><!-- /.dashboard -->
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    @Scripts.Render("~/assets/files/wizard/assignments-create-wizard.js")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+    @Scripts.Render("~/assets/vendors/intl-tel-input/build/js/intlTelInput.min.js")
+    @Scripts.Render("~/assets/vendors/jquery.repeater/jquery.repeater.min.js")
+    @Scripts.Render("~/assets/vendors/summernote/dist/summernote.js")
+    @Scripts.Render("~/assets/vendors/dropzone/dist/min/dropzone.min.js")
+
+
+
+    <script>
+
+
+    Dropzone.autoDiscover = false;
+    var fileGeted;
+    $(document).ready(function () {
+
+
+            var uploadUrl = '@Url.Action("UploadFile")';
+            var UploadDropZone = new Dropzone('#pageImageDropZone', {
+                url: uploadUrl,
+                file: "file",
+                maxFiles: 1,
+                maxfilesexceeded: function (file) {
+                fileGeted = undefined;
+                this.removeFile(file);
+                },
+                maxFilesize: "@System.Configuration.ConfigurationManager.AppSettings["CROWDCONTENTUPLOADFILESIZE"]", // MB
+                addRemoveLinks: true,
+                acceptedFiles:".xls,.xlsx,.ods,.png,.jpeg,.jfif,.gif,.mp4,.pdf,.doc,.txt,.docs,.docx,.odt,.mpg, .mpeg, .m2v,.m4v,.wmv,.webm,.pptx,.pptm,.ppt,.zip,.rar",
+                timeout: 180000,
+                sending: function () {
+                    mApp.block($('#m_wizard'));
+                    mApp.progress($('#nextBtn'));
+                },
+                removedfile: function (file) {
+                    //mApp.block($('#m_wizard'));
+                    //var returnDeleteValue = DeleteFileFromServer();
+                    fileGeted = undefined;
+                    var _ref;
+                    return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+                },
+                success: function (file, response) {
+                    var extension = file.name.split('.').pop();
+                    fileGeted = file;
+                    //$(".dz-success-mark").attr('style', 'display: none !important');
+                    //$(".dz-error-mark").attr('style', 'display: none !important');
+                    mApp.unblock($('#m_wizard'));
+                    mApp.unprogress($('#nextBtn'));
+                },
+                error: function (file, error) {
+                    mApp.unblock($('#m_wizard'));
+                    mApp.unprogress($('#nextBtn'));
+                    //$(".dz-success-mark").attr('style', 'display: none !important');
+                    //$(".dz-error-mark").attr('style', 'display: none !important');
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageError"))", error, "Info");
+                },
+                params: { __RequestVerificationToken : $('@Html.AntiForgeryToken()').val()}
+            });
+
+
+        $('#tagsDropDown').select2({
+            placeholder: 'select tags'
+        });
+
+        $('#description').summernote({
+            height: 200,
+            tabsize: 2,
+        });
+            var countCheckBox = 0;
+            $('.fileType').change(function () {
+                var parent = $(this).parent().parent();
+                if ($(this).is(":checked")) {
+                    parent.find('ul').show();
+                    parent.find('input').prop('checked', true);
+                    countCheckBox++;
+                    if (countCheckBox == 6) {
+                        $('.allFiles').prop('checked', true);
+                    }
+                } else {
+                    parent.find('ul').hide();
+                    countCheckBox--;
+                    $('.allFiles').prop('checked', false);
+                }
+            });
+            $('#onlineTextCheckBox').change(function () {
+                if ($(this).is(":checked")) {
+                    $('.onlineText').show();
+                } else {
+                    $('.onlineText').hide();
+                }
+            });
+
+            $('#fileCheckBox').change(function () {
+                if ($(this).is(":checked")) {
+                    $('.fileSubmission').show();
+                } else {
+                    $('.fileSubmission').hide();
+                }
+            });
+            $('.allFiles').change(function () {
+                if ($(this).is(":checked")) {
+                    $('.fileType').prop('checked', true);
+                    $('#files').find('ul').show();
+                } else {
+                    $('.fileType').prop('checked', false);
+                    $('#files').find('ul').hide();
+                }
+            });
+        var extensionTypes = [];
+        var extensions = [];
+        $('#saveExtensions').click(function () {
+            $('.displayFiles').empty();
+                $('.fileType').each(function () {
+                    var html = '<p style= "">';
+                    if ($(this).is(":checked")) {
+                        var className = $(this).attr('data-child');
+                        html += '<span style="font-weight: bold; ">' + className + ': </span>';
+                        $('.' + className).each(function () {
+                            if ($(this).is(":checked")) {
+                                html += $(this).val() +', ';
+                            }
+                        });
+                        html += '</p>'
+                    }
+                    $('.displayFiles').append(html);
+                });
+            });
+
+        });
+
+    </script>
+
+
+}

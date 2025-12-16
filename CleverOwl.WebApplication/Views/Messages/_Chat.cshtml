@@ -1,0 +1,84 @@
+﻿@model IEnumerable<RLI.Common.DataObjects.ContactModel>
+@using RLI.Common.Managers
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+<style>
+    .newestMessage p {
+        overflow: hidden;
+    }
+
+    .txt {
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        display: block !important;
+    }
+
+    .profilePhoto {
+        width: auto;
+        height: auto;
+    }
+</style>
+@{
+    if (Model.Count() == 0)
+    {
+        <a href="@Url.Action("Index","Messages")" target="_blank">@*No Messages Found.*@@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_MessagesPageNoMessagesFound"))</a>
+    }
+    else
+    {
+        for (int i = 0; i < Model.Count(); i++)
+        {
+            <li id="conversationTab_@i" class="m-nav__item activateItem" data-conversation_id=@Model.ElementAt(i).coversationID data-member_id="@Model.ElementAt(i).memberID" data-index="@i">
+                <a id="conversationItem_@i" class="m-nav__link m-tabs__item conversationItem" href="#">
+                    <div class="comment-list">
+                        <div class="icon">
+                            @*<img class="profilePhoto" src="@(Model.ElementAt(i).profileimageurlsmall)" />*@
+                            <i class="profilePhoto fa fa-user fa-2x" style="display:block !important;height: fit-content; margin-top: auto; margin-bottom: auto;"></i>
+                        </div>
+
+                        <div class="comment-content">
+                            <h3 class="txt">@Model.ElementAt(i).fullname</h3>
+                            @Html.Raw(Model.ElementAt(i).lastMessage)
+                        </div>
+                        <div style="position: absolute; right: 5%; top: 15%;">
+                            @if (Model.ElementAt(i).isread == false)
+                            {
+                                <span class="m--font-success" style="font-size:0.7em; text-align:end">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_New"))</span>
+                            }
+                        </div>
+                    </div>
+                    @*<div class="row">
+                            <div class="mt-3">
+                                <img class="profilePhoto" src="@(Model.ElementAt(i).profileimageurlsmall)" />
+                            </div>
+                            <div class="ml-1">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="m-nav__link-text txt" style="font-size:1.1em;white-space: nowrap;overflow: hidden;">@Model.ElementAt(i).fullname</div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-8">
+                                        <span class="newestMessage" style="font-size:0.7em;white-space: nowrap;overflow: hidden;">@Html.Raw(Model.ElementAt(i).lastMessage)</span>
+                                    </div>
+                                    <div class="col-3">
+                                        @if (Model.ElementAt(i).isread == false)
+                                        {
+                                            <span class="m--font-success" style="font-size:0.7em; text-align:end">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_New"))</span>
+
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+                </a>
+            </li>
+        }
+    }
+
+}
+
+
+

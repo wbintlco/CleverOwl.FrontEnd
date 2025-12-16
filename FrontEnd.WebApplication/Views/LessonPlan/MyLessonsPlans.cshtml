@@ -1,0 +1,159 @@
+﻿@model List<RLI.EntityFramework.EDM.LessonPlan>
+@{
+    ViewBag.Title = "MyLessonsPlans";
+}
+@Styles.Render("~/assets/vendors/masonry/css/default.css")
+@Styles.Render("~/assets/vendors/masonry/css/component.css")
+
+<div class="m-portlet m-portlet--mobile">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text" style="color:#0E8BF2 !important;">
+                    Lesson Plans
+                </h3>
+            </div>
+        </div>
+        <div class="m-portlet__head-tools">
+            <ul class="m-portlet__nav">
+
+                <li class="m-portlet__nav-item">
+                    <a href="@Url.Action("Index", "LessonPlan")" class="m-portlet__nav-link m-portlet__nav-link--icon"><i class="la la-plus-square"><span>Create</span></i></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="m-portlet__body" style="padding:20px;" id="pagePortlet">
+        @if (Model.Count == 0)
+        {
+            <div class="row w-100" style="margin:0;">
+                <div class="alert alert-danger col-lg-12" role="alert">
+                    <strong>No Lesson Plans yet ....</strong>
+                </div>
+            </div>
+        }
+        else
+        {
+
+        <div class="row" id="LessonPlansContainer">
+            @Html.Partial("_LessonPlansGrid", Model)
+        </div>
+    
+        }
+    </div>
+</div>
+
+@section Scripts {
+
+    @Scripts.Render("~/assets/vendors/masonry/js/modernizr.custom.js")
+    @Scripts.Render("~/assets/vendors/masonry/js/masonry.pkgd.min.js")
+    @Scripts.Render("~/assets/vendors/masonry/js/imagesloaded.pkgd.js")
+    @Scripts.Render("~/assets/vendors/masonry/js/classie.js")
+    @Scripts.Render("~/assets/vendors/masonry/js/AnimOnScroll.js")
+
+
+<script>
+
+    function loadContent(teacher) {
+        
+            @*$.ajax({
+                type: 'POST',
+                url: "@Url.Action("LookupLessonPlanCards", "LessonPlan")",
+                data: { __RequestVerificationToken : $('@Html.AntiForgeryToken()').val() },
+                beforeSend: function (data) {
+                    //invokeLoadingMode();
+                },
+                success: function (data) {
+
+                    $('#LessonPlansContainer').html(data);
+
+                    loadMasonryAll();
+
+                    //revokeLoadingMode();
+                },
+                error: function () {
+
+                    //revokeLoadingMode();
+
+                    swal("Error", "We couldn't lookup requested teachers, please try again.", "error");
+
+                }
+            });*@
+        }
+
+    //    TeachersDropDown.on('select2:select', function (e) {
+
+    //    reloadGrid();
+
+    //});
+    reloadGrid();
+
+    function reloadGrid() {
+
+        loadContent();
+    }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        function loadMasonryRecent() {
+            new AnimOnScroll(document.getElementById('gridALL'), {
+                minDuration: 0.4,
+                maxDuration: 0.7,
+                viewportFactor: 0.2
+            });
+
+            masonryFitContentRecent();
+        }
+
+    loadMasonryRecent();
+
+        function masonryFitContentRecent() {
+
+            var currentWindowWidth = $(window).width();
+            var numberOfCards = parseInt((currentWindowWidth * 0.85) / 620);
+            numberOfCards = currentWindowWidth < 700 ? 1 : numberOfCards;
+            numberOfCards = currentWindowWidth > 1200 ? 2 : numberOfCards;
+
+            var gridthWidth = numberOfCards * 620;
+
+            $("#gridALL").width(gridthWidth);
+        }
+
+        $(window).resize(function () {
+            masonryFitContentRecent();
+
+        });
+
+    /////////////////////////////////////////////////////////////////
+
+    function loadMasonryAll() {
+        new AnimOnScroll(document.getElementById('gridALL'), {
+            minDuration: 0.4,
+            maxDuration: 0.7,
+            viewportFactor: 0.2
+        });
+
+        masonryFitContentAll();
+    }
+
+    loadMasonryAll();
+
+    function masonryFitContentAll() {
+
+        var currentWindowWidth = $(window).width();
+        var numberOfCards = parseInt((currentWindowWidth * 0.85) / 620);
+        numberOfCards = currentWindowWidth < 700 ? 1 : numberOfCards;
+        numberOfCards = currentWindowWidth > 1200 ? 2 : numberOfCards;
+
+        var gridthWidth = numberOfCards * 620;
+
+        $("#gridAll").width(gridthWidth);
+    }
+
+    $(window).resize(function () {
+        masonryFitContentAll();
+
+    });
+    </script>
+}
+

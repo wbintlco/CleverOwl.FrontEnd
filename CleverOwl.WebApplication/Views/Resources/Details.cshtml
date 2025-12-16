@@ -1,0 +1,723 @@
+﻿
+@using RLI.Common.Managers
+@using Everest.OpenCurate.EntityFramework.EDM
+@model Everest.OpenCurate.EntityFramework.EDM.Candidate
+
+@{
+    TempData["DisplayLeftAssistant"] = true;
+
+    var candidate = Model;
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ResourcesPageDetailsResourceDetails"));
+    List<CuratedLessonType> curatedLessonTypes = new List<CuratedLessonType>();
+    if (candidate.StatusKey == 3)
+    {
+        curatedLessonTypes.AddRange(candidate.Lessons.SelectMany(l => l.CuratedLessonTypes).ToList());
+    }
+}
+
+<style>
+    @@media (min-width: 1200px) {
+        .container {
+            max-width: 90%;
+        }
+    }
+
+    .page-banner {
+        margin-top: 95px !important;
+        height: fit-content;
+        margin-bottom: 30px;
+        background-color: #ffffff;
+    }
+
+    .page-body {
+        padding: 0;
+        margin-bottom: 50px;
+    }
+
+    @@media (max-width: 575px) {
+        .col-xm-12 {
+            text-align: center;
+        }
+
+        .m-portlet__body {
+            padding-right: 0px !important;
+            padding-left: 0px !important;
+        }
+
+        .open_book {
+            margin-left: 0px !important;
+        }
+    }
+
+    .image-portlet {
+        width: 100%;
+        height: auto;
+        text-align: center;
+    }
+
+    .m-portlet img {
+        width: auto;
+        max-height: 650px;
+        box-shadow: 10px 10px 10px #ccc;
+        -moz-box-shadow: 10px 10px 10px #ccc;
+        -webkit-box-shadow: 10px 10px 10px #ccc;
+        cursor: pointer;
+    }
+
+    .cadre {
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        transition: 0.3s;
+    }
+
+    .m-portlet.m-portlet--sticky .m-portlet__head {
+        width: 100% !important;
+    }
+
+    svg {
+        height: 50px
+    }
+
+    .blog-post-archive {
+        padding: 80px 0;
+    }
+</style>
+@Styles.Render("~/assets/vendors/chartist/dist/chartist.css")
+
+<section class="page-banner">
+    <div class="container">
+        <div class="page-title-wrapper">
+            <div>
+                <ul class="bradcurmed">
+                    <li><a href="@Url.Action("Index","Dashboard")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Wall"))</a></li>
+                    <li><a href="@Url.Action("Index","Resources")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_OER"))</a></li>
+                    <li><a rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ResourcesPageDetails"))</a></li>
+                </ul>
+            </div>
+            <div class="row m--margin-top-20-desktop">
+                <div class="col-lg-1 m-auto m--hidden-mobile">
+                    @Html.Partial("~/Views/SharedSvgs/_DigitalLibraryIcon.cshtml")
+                </div>
+                <div class="col-lg-5 col-12 m-auto">
+                    <h1 class="page-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ResourcesPageDetailsResourceDetails"))</h1>
+                </div>
+                <div class="col-lg-3  m-auto">
+                </div>
+                <div class="col-lg-3 col-12 m-auto">
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- /.container -->
+</section>
+
+
+<div class="container">
+    <div>
+
+        <div class="m-portlet__body">
+            <div style="display:flex; align-items:center; justify-content:center" class="m-4">
+                <h1 style="color:#f98e47 !important">@candidate.Title</h1>
+            </div>
+            <div class="cadre">
+                <div style="padding:20px">
+                    <div id="image" class="image-portlet">
+                        <img src="@(Url.Action("Screenshot", "Files").ToString() + "/" + candidate.CandidateKey)" class="" alt="...">
+                    </div>
+                    <div class="row" style="padding:15px">
+                        <div class="col-12 mt-1">
+                            <span style="display:flex; align-items:center; justify-content:center">
+                                <span>
+                                    <i class="fa fa-link m-1"></i>
+                                </span>
+                                <a href="@candidate.URL" target="_blank" style="word-break:break-all">@candidate.URL</a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row" style="margin-top:35px;">
+                <div class="col-lg-2 col-12">
+                    <div class="m-widget1 cadre" style="margin-top:10px; height:90%;">
+                        <div class="m-widget4__item">
+                            <div class="row">
+                                <div class="col-12" style="text-align: center;">
+                                    <i class="fab fa-sistrix fa-7x"> </i>
+                                </div>
+                                <div class="col-12" style="text-align: center;">
+                                    <span class="m-widget4__info">
+                                        <span class="m-widget4__title">
+                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CurateDetailsPageSubject"))
+                                        </span><br>
+
+                                    </span>
+                                    <div class="m-widget4__ext">
+                                        <span class="m-widget4__number m--font-brand">
+                                            @candidate.Subject.Subject1
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8 col-12">
+                    <div class="m-widget1 cadre" style="margin-top:10px; height:90%;">
+                        <div class="m-widget4__item">
+                            <div class="row">
+                                <div class="col-12" style="text-align: center;">
+                                    <i class="fa fa-heading fa-7x"> </i>
+                                </div>
+                                <div class="col-12" style="text-align: center;">
+                                    <span class="m-widget4__info">
+                                        <span class="m-widget4__title">
+                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CurateDetailsPageTopic"))
+                                        </span>@*<br>
+                                            <span style="word-break:break-word;" class="m-widget4__sub">
+                                                @candidate.LearningOutcome.LearningOutcome1
+                                            </span>*@
+                                    </span>
+                                    <div class="m-widget4__ext">
+                                        <span class="m-widget4__number m--font-brand">
+                                            @candidate.LearningOutcome.LearningOutcome1
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-lg-2 col-12">
+                    <div class="m-widget1 cadre" style="margin-top:10px; height:90%;">
+                        <div class="m-widget4__item">
+                            <div class="row">
+                                <div class="col-12" style="text-align: center;">
+                                    <i class="fa fa-graduation-cap fa-7x"> </i>
+                                </div>
+                                <div class="col-12" style="text-align: center;">
+                                    <span class="m-widget4__info">
+                                        <span class="m-widget4__title">
+                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CurateDetailsPageGrade"))
+                                        </span><br>
+
+                                    </span>
+                                    <div class="m-widget4__ext">
+                                        <span class="m-widget4__number m--font-brand">
+                                            @candidate.Grade.Grade1
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+            <div class="row">
+                <div class="col-lg-3 col-12">
+                    <div class="m-widget1 cadre" style="margin-top:10px; height:90%;">
+                        <div class="m-widget4__item">
+                            <div class="row">
+                                <div class="col-12" style="text-align: center;">
+                                    <i class="fa fa-language fa-7x"> </i>
+                                </div>
+                                <div class="col-12" style="text-align: center;">
+                                    <span class="m-widget4__info">
+                                        <span class="m-widget4__title">
+                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CurateDetailsPageLanguage"))
+                                        </span><br>
+
+                                    </span>
+                                    <div class="m-widget4__ext">
+                                        <span class="m-widget4__number m--font-brand">
+                                            @candidate.Language.Language1
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-lg-3 col-12">
+                    <div class="m-widget1 cadre" style="margin-top:10px; height:90%;">
+                        <div class="m-widget4__item">
+                            <div class="row">
+                                <div class="col-12" style="text-align: center;">
+                                    <i class="fa fa-money-bill-alt fa-7x"> </i>
+                                </div>
+                                <div class="col-12" style="text-align: center;">
+                                    <span class="m-widget4__info">
+                                        <span class="m-widget4__title">
+                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CurateDetailsPageAccessLevel"))
+                                        </span><br>
+
+                                    </span>
+                                    <div class="m-widget4__ext">
+                                        <span class="m-widget4__number m--font-brand">
+                                            @candidate.AccessLevel
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-lg-3 col-12">
+                    <div class="m-widget14 cadre" style="margin-top:10px; height:90%;">
+                        <div class="row open_book" style="margin-left:6px">
+                            <div class="col-12" style="text-align: center;">
+                                <i class="fa fa-book-open fa-7x"> </i>
+                            </div>
+                            <div class="col-12" style="text-align: center;">
+                                <div class="col">
+                                    <div>
+                                        <div id="m_chart_profit_share" class="m-widget14__chart" style="height: 100px">
+                                            <div class="m-widget14__stat" style="font-size:1.7em !important"><span style="color:#575962;font-size:0.7em !important;">@(Math.Round((double)candidate.ReadabilityScore, 2))/5</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="m-widget14__legends">
+                                        <div class="m-widget14__legend">
+                                            <span class="m-widget14__legend-bullet m--bg-brand"></span>
+                                            <span class="m-widget4__title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CurateDetailsPageReadabilityScore"))</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-12">
+                    <div class="m-widget1 cadre" style="margin-top:10px; height:90%;">
+                        <div class="m-widget4__item">
+                            <div class="row">
+                                <div class="col-12" style="text-align: center;">
+                                    <i class="fa fa-globe fa-7x"> </i>
+                                </div>
+                                <div class="col-12" style="text-align: center;">
+                                    <span class="m-widget4__info">
+                                        <span class="m-widget4__title">
+                                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CurateDetailsPagePublisher"))
+                                        </span><br>
+
+                                    </span>
+                                    <div class="m-widget4__ext">
+                                        <span class="m-widget4__number m--font-brand">
+                                            @candidate.Publisher.Publisher1
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            @if (candidate.StatusKey == 3 && curatedLessonTypes.Count > 0)
+            {
+                var tags = candidate.CandidateTags.Where(ct => !ct.Tag.TagsSource.TagSource.Equals("Internal"));
+                int tagsCount = tags.Count();
+
+                <div class="m-login__form-divider m--margin-top-10 m--margin-bottom-10">
+                    <div class="m-divider">
+                        <span></span>
+                        <span>Curator's Feedback</span>
+                        <span></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 col-12">
+                        <div class="m-widget1 cadre" style="margin-top:10px; height:90%;">
+                            <div class="m-widget4__item">
+                                <div class="row">
+                                    <div class="col-12" style="text-align: center;">
+                                        <i class="fa fa-puzzle-piece fa-7x"> </i>
+                                    </div>
+                                    <div class="col-12" style="text-align: center;">
+                                        <span class="m-widget4__info">
+                                            <span class="m-widget4__title">
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CurateDetailsPageResourceUsability"))
+                                            </span><br>
+
+                                        </span>
+                                        <div class="m-widget4__ext">
+                                            <span class="m-widget4__number m--font-brand">
+                                                @{
+                                                    var resourceUsabilities = curatedLessonTypes.Where(l => l.LessonType.ParentLessonType.Equals("ResourceUsability"));
+
+                                                    foreach (var item in resourceUsabilities)
+                                                    {
+                                                        <span class="m-badge m-badge--brand m-badge--wide">@item.LessonType.LessonType1</span>
+                                                    }
+                                                }
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-lg-4 col-12">
+                        <div class="m-widget1 cadre" style="margin-top:10px; height:90%;">
+                            <div class="m-widget4__item">
+                                <div class="row">
+                                    <div class="col-12" style="text-align: center;">
+                                        <i class="fa fa-filter fa-7x"> </i>
+                                    </div>
+                                    <div class="col-12" style="text-align: center;">
+                                        <span class="m-widget4__info">
+                                            <span class="m-widget4__title">
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CurateDetailsPageResourceType"))
+                                            </span><br>
+
+                                        </span>
+                                        <div class="m-widget4__ext">
+                                            <span class="m-widget4__number m--font-brand">
+                                                @{
+                                                    var resourceTypes = curatedLessonTypes.Where(l => l.LessonType.ParentLessonType.Equals("ResourceType"));
+                                                    foreach (var item in resourceTypes)
+                                                    {
+                                                        <span class="m-badge m-badge--brand m-badge--wide">@item.LessonType.LessonType1</span>
+                                                    }
+                                                }
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-lg-4 col-12">
+                        <div class="m-widget1 cadre" style="margin-top:10px; height:90%;">
+                            <div class="m-widget4__item">
+                                <div class="row">
+                                    <div class="col-12" style="text-align: center;">
+                                        <i class="fa fa-ruler-combined fa-7x"> </i>
+                                    </div>
+                                    <div class="col-12" style="text-align: center;">
+                                        <span class="m-widget4__info">
+                                            <span class="m-widget4__title">
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CurateDetailsPageMasteryScale"))
+                                            </span><br>
+
+                                        </span>
+                                        <div class="m-widget4__ext">
+                                            <span class="m-widget4__number m--font-brand">
+                                                @{
+                                                    var masteryScale = curatedLessonTypes.Where(l => l.LessonType.ParentLessonType.Equals("MasteryScale"));
+                                                    foreach (var item in masteryScale)
+                                                    {
+                                                        <span class="m-badge m-badge--brand m-badge--wide">@item.LessonType.LessonType1</span>
+                                                    }
+                                                }
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+                <div class="row">
+                    <div class="@(tagsCount == 0 ? "col-lg-6" : "col-lg-4") col-12">
+                        <div class="m-widget1 cadre" style="margin-top:10px; height:90%;">
+                            <div class="m-widget4__item">
+                                <div class="row">
+                                    <div class="col-12" style="text-align: center;">
+                                        <i class="fa fa-key fa-7x"> </i>
+                                    </div>
+                                    <div class="col-12" style="text-align: center;">
+                                        <span class="m-widget4__info">
+                                            <span class="m-widget4__title">
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CurateDetailsPageResourceResourceAccessibility"))
+                                            </span><br>
+
+                                        </span>
+                                        <div class="m-widget4__ext">
+                                            <span class="m-widget4__number m--font-brand">
+                                                @{
+                                                    var resourceAccessibilities = curatedLessonTypes.Where(l => l.LessonType.ParentLessonType.Equals("Resource Accessibility"));
+                                                    foreach (var item in resourceAccessibilities)
+                                                    {
+                                                        <span class="m-badge m-badge--brand m-badge--wide">@item.LessonType.LessonType1</span>
+                                                    }
+                                                }
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="@(tagsCount == 0 ? "col-lg-6" : "col-lg-4") col-12">
+                        <div class="m-widget1 cadre" style="margin-top:10px; height:90%;">
+                            <div class="m-widget4__item">
+                                <div class="row">
+                                    <div class="col-12" style="text-align: center;">
+                                        <i class="fa fa-book-open fa-7x"> </i>
+                                    </div>
+                                    <div class="col-12" style="text-align: center;">
+                                        <span class="m-widget4__info">
+                                            <span class="m-widget4__title">
+                                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CurateDetailsPageAssignedReadability"))
+                                            </span><br>
+
+                                        </span>
+                                        <div class="m-widget4__ext">
+                                            <span class="m-widget4__number m--font-brand" style="font-size:1.7em !important">
+                                                <span style="color:#575962;font-size:0.7em !important;">@Math.Round(candidate.Lessons.Select(l => l.ReadabilityRate).FirstOrDefault().Value, 0)/5</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    @*@if (tags.Count() > 0)
+                    {
+                        <div class="col-lg-4 col-12">
+                            <div class="m-widget1 cadre" style="margin-top:10px; height:90%;">
+                                <div class="m-widget4__item">
+                                    <div class="row">
+                                        <div class="col-12" style="text-align: center;">
+                                            <i class="fa fa-tags fa-7x"> </i>
+                                        </div>
+                                        <div class="col-12" style="text-align: center;">
+                                            <span class="m-widget4__info">
+                                                <span class="m-widget4__title">
+                                                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CurateDetailsPageTags"))
+                                                </span><br>
+
+                                            </span>
+                                            <div class="m-widget4__ext">
+                                                <span class="m-widget4__number m--font-brand">
+                                                    @{
+                                                        foreach (var item in tags.Take(5))
+                                                        {
+                                                            <span class="m-badge m-badge--brand m-badge--wide">@item.Tag.Tag1</span>
+                                                        }
+                                                    }
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    }*@
+                </div>
+
+            }
+        </div>
+    </div>
+
+</div>
+
+
+<div class="modal fade" id="m_modal_5" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="z-index:9999;">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CurateDetailsPageRejection"))</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    @*<div class="form-group">
+                            <label for="recipient-name" class="form-control-label">Recipient:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>*@
+                    <div class="form-group">
+                        <label for="message-text" class="form-control-label">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CurateDetailsPageRejectionReason")):</label>
+                        <textarea class="form-control" id="rejectionReason"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="saveRejectionBtn">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CurateDetailsPageSaveBtn"))</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CurateDetailsPageCancelBtn"))</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm("RejectCandidate", "Curate", FormMethod.Post, new { id = "RejectCandidateHidden", @class = "", @style = "display:none;" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("candidateKey", "")
+    @Html.Hidden("reasonOfRejection", "")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/chartist/dist/chartist.js")
+
+<script>
+        $("#footer").remove();
+        $(".BodyParent").removeClass('m--padding-top-90');
+        $('.RenderBody').removeClass('col-lg-9 col-md-9');
+        $('.RenderBody').prev().remove();
+
+    $('meta[name="keywords"]').remove();
+    $('head').append('<meta name="keywords" content="@Model.Title" />');
+        //** Based on Chartist plugin - https://gionkunz.github.io/chartist-js/index.html
+        function profitShare() {
+            if ($('#m_chart_profit_share').length == 0) {
+                return;
+            }
+            var chart = new Chartist.Pie('#m_chart_profit_share', {
+                series: [{
+                    value: 1.9,
+                    className: 'custom',
+                    meta: {
+                        color: '#f98e47'
+                    }
+                },
+                {
+                    value: 5,
+                    className: 'custom',
+                    meta: {
+                        color: '#d0ced9'
+                    }
+                },
+                ],
+                labels: [1, 2, 3]
+            }, {
+                donut: true,
+                donutWidth: 10,
+                showLabel: false
+            });
+
+            chart.on('draw', function (data) {
+                if (data.type === 'slice') {
+                    // Get the total path length in order to use for dash array animation
+                    var pathLength = data.element._node.getTotalLength();
+
+                    // Set a dasharray that matches the path length as prerequisite to animate dashoffset
+                    data.element.attr({
+                        'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
+                    });
+
+                    // Create animation definition while also assigning an ID to the animation for later sync usage
+                    var animationDefinition = {
+                        'stroke-dashoffset': {
+                            id: 'anim' + data.index,
+                            dur: 1000,
+                            from: -pathLength + 'px',
+                            to: '0px',
+                            easing: Chartist.Svg.Easing.easeOutQuint,
+                            // We need to use `fill: 'freeze'` otherwise our animation will fall back to initial (not visible)
+                            fill: 'freeze',
+                            'stroke': data.meta.color
+                        }
+                    };
+
+                    // If this was not the first slice, we need to time the animation so that it uses the end sync event of the previous animation
+                    if (data.index !== 0) {
+                        animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
+                    }
+
+                    // We need to set an initial value before the animation starts as we are not in guided mode which would do that for us
+
+                    data.element.attr({
+                        'stroke-dashoffset': -pathLength + 'px',
+                        'stroke': data.meta.color
+                    });
+
+                    // We can't use guided mode as the animations need to rely on setting begin manually
+                    // See http://gionkunz.github.io/chartist-js/api-documentation.html#chartistsvg-function-animate
+                    data.element.animate(animationDefinition, false);
+                }
+            });
+
+            // For the sake of the example we update the chart every time it's created with a delay of 8 seconds
+            return;
+
+            /*
+            chart.on('created', function() {
+                if (window.__anim21278907124) {
+                    clearTimeout(window.__anim21278907124);
+                    window.__anim21278907124 = null;
+                }
+                window.__anim21278907124 = setTimeout(chart.update.bind(chart), 15000);
+            });
+            */
+        }
+        $('document').ready(function () {
+            //profitShare();
+            //$('#image').click(function () {
+            //    window.open('http://tofoula-mourahaka.blogspot.com/2013/11/blog-post_4153.html', '_blank');
+            //});
+        });
+
+        $("#curateBtn").click(function () {
+             mApp.block($("#WholePageDiv"));
+              window.location = '@Url.Action("ResourceUsability","Curate")/' + '@ViewBag.candidateId';
+        })
+
+        $("#backBtn").click(function () {
+            mApp.block($("#WholePageDiv"));
+              //window.location = '@Url.Action("Index","Curate")';
+            history.back();
+        })
+
+        $("#saveRejectionBtn").click(function () {
+            var reason = $("#rejectionReason").val();
+            if (reason != '') {
+                mApp.block($("#WholePageDiv"));
+                mApp.block($(".modal-content"));
+
+                $("#candidateKey").val('@ViewBag.candidateId');
+                $("#reasonOfRejection").val(reason);
+
+                $("#RejectCandidateHidden").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                        if (data == 2) {
+                            mApp.unblock($("#WholePageDiv"));
+                            window.location = '@Url.Action("Index","Curate")';
+                        } else {
+                            mApp.unblock($("#WholePageDiv"));
+                            mApp.unblock($(".modal-content"));
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("Error In RejectCandidateHidden !!!!!!!");
+                        mApp.unblock($("#WholePageDiv"));
+                        mApp.unblock($(".modal-content"));
+                    }
+                });
+            } else {
+                               @*swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageErrorTitle"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "DetailsPageErrorMsg"))", "error");*@
+                $("#rejectionReason").css("border-color", "red");
+                mApp.unblock($(".modal-content"));
+            }
+
+         })
+</script>
+
+
+}

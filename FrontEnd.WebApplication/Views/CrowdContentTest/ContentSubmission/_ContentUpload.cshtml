@@ -1,0 +1,70 @@
+﻿
+
+
+@using RLI.Common.Managers
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+
+<div class="m-form__section m-form__section--first">
+    <div class="m-form__heading">
+        <h3 class="font-weight-bold">
+            <i class="fa fa-pen-fancy" style="padding-right: 20px;font-size:3rem;"></i>
+            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageUploadYourContent"))
+        </h3>
+    </div>
+    <div class="form-group m-form__group row">
+        <div class="col-xl-12 col-lg-12">
+            <div class="tab-pane " id="logo_tab">
+                <form class="m-form m-form--fit m-form--label-align-right">
+                    <div id="logoUploadPortlet" class="m-portlet__body">
+                        <div class="form-group m-form__group m--margin-top-10">
+                            
+                            <div class="alert m-alert m-alert--default" role="alert">
+                                @*@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageUploadingTheFile"))*@
+                            </div>
+                                <div>@Html.DropDownList("FileType", (SelectList)ViewBag.FileType, "", new { @class = "form-control", style = "width:100%", id = "FileTypeDropDown" })</div>
+                            
+                        </div>
+
+                        <div class="form-group m-form__group row">
+                            <div class="col-10 ml-lg-auto">
+                                <h3 class="m-form__section">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageUpload")) </h3>
+                            </div>
+                        </div>
+
+                        <div class="form-group m-form__group row">
+                            <label class="col-lg-2 col-sm-12 col-form-label">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageUpload"))</label>
+                            <div class="col-xl-7 col-md-12">
+                                <div class="m-dropzone dropzone m-dropzone--metal" id="pageImageDropZone">
+                                    <div class="m-dropzone__msg dz-message needsclick">
+                                        <h3 class="m-dropzone__msg-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageUploadFile"))</h3>
+                                        <div>
+                                            <i class="fas fa-image fa-10x"></i>
+                                        </div>
+                                        <span class="m-dropzone__msg-desc">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageDrag/drop"))</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    @*<div class="m-portlet__foot m-portlet__foot--fit">
+                            <div class="m-form__actions">
+                                <div class="row">
+                                    <div class="col-2">
+                                    </div>
+                                    <div class="col-lg-7 col-sm-10">
+                                        <button id="saveChanges" type="button" class="btn btn-accent m-btn m-btn--air m-btn--custom" disabled="disabled">Save Changes</button>&nbsp;&nbsp;
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

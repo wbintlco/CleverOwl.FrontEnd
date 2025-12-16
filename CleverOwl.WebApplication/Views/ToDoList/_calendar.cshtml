@@ -1,0 +1,359 @@
+﻿<style>
+  
+  
+
+
+
+
+
+    .calendar {
+        height: max-content;
+        width: max-content;
+        background-color: #f9f5f7;
+        border-radius: 30px;
+        padding: 20px;
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        display:none;
+    }
+
+
+
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 25px;
+        font-weight: 600;
+        color: #2b2350;
+        padding: 10px;
+    }
+
+    .calendar-body {
+        padding: 10px;
+    }
+
+    .calendar-week-day {
+        height: 50px;
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        font-weight: 600;
+    }
+
+        .calendar-week-day div {
+            display: grid;
+            place-items: center;
+            color: #2b2350;
+        }
+
+    .calendar-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
+    }
+
+    .day-work {
+        color: #f98e47;
+    }
+
+        .calendar-days div {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            position: relative;
+            cursor: pointer;
+            animation: to-top 1s forwards;
+          
+        }
+
+            .calendar-days div span {
+                position: absolute;
+            }
+
+            .calendar-days div:hover span {
+                transition: width 0.2s ease-in-out, height 0.2s ease-in-out;
+            }
+
+            .calendar-days div span:nth-child(1),
+            .calendar-days div span:nth-child(3) {
+                width: 2px;
+                height: 0;
+                background-color: #2b2350;
+            }
+
+            .calendar-days div:hover span:nth-child(1),
+            .calendar-days div:hover span:nth-child(3) {
+                height: 100%;
+            }
+
+            .calendar-days div span:nth-child(1) {
+                bottom: 0;
+                left: 0;
+            }
+
+            .calendar-days div span:nth-child(3) {
+                top: 0;
+                right: 0;
+            }
+
+            .calendar-days div span:nth-child(2),
+            .calendar-days div span:nth-child(4) {
+                width: 0;
+                height: 2px;
+                background-color: #2b2350;
+            }
+
+            .calendar-days div:hover span:nth-child(2),
+            .calendar-days div:hover span:nth-child(4) {
+                width: 100%;
+            }
+
+            .calendar-days div span:nth-child(2) {
+                top: 0;
+                left: 0;
+            }
+
+            .calendar-days div span:nth-child(4) {
+                bottom: 0;
+                right: 0;
+            }
+
+            .calendar-days div:hover span:nth-child(2) {
+                transition-delay: 0.2s;
+            }
+
+            .calendar-days div:hover span:nth-child(3) {
+                transition-delay: 0.4s;
+            }
+
+            .calendar-days div:hover span:nth-child(4) {
+                transition-delay: 0.6s;
+            }
+
+            .calendar-days div.curr-date,
+            .calendar-days div.curr-date:hover {
+                background-color: #f98e47;
+                color: #fff;
+                border-radius: 50%;
+            }
+
+                .calendar-days div.curr-date span {
+                    display: none;
+                }
+
+    .month-picker {
+        padding: 5px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+
+    .year-picker {
+        display: flex;
+        align-items: center;
+    }
+
+    .year-change {
+        height: 40px;
+        width: 40px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        margin: 0 10px;
+        cursor: pointer;
+    }
+
+   
+
+    #go-mobile {
+        display: block;
+        border: 0px;
+        padding: 14px;
+        border-radius: 50%;
+        background: #f98e47;
+        color: white;
+    }
+
+  
+
+    .month-list {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background-color: #f9f5f7;
+        padding: 20px;
+        grid-template-columns: repeat(3, auto);
+        gap: 5px;
+        display: grid;
+        transform: scale(1.5);
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+        .month-list.show {
+            transform: scale(1);
+            visibility: visible;
+            pointer-events: visible;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .month-list > div {
+            display: grid;
+            place-items: center;
+        }
+
+            .month-list > div > div {
+                width: 100%;
+                padding: 5px 20px;
+                border-radius: 10px;
+                text-align: center;
+                cursor: pointer;
+                color: #2b2350;
+            }
+
+     .calendar-desktop{
+         display:block;
+     }
+     .calendar-mobile{
+         display:none;
+     }
+    .go-container{
+        display:none;
+    }
+
+    @@keyframes to-top {
+        0% {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    @@media(max-width:580px){
+        
+        .calendar-mobile{
+            display:block;
+        }
+        .calendar-desktop{
+            display:none;
+        }
+        .go-container{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+    }
+
+  
+
+  
+</style>
+
+
+<div class="calendar" id="cal">
+
+    <div class="calendar-desktop">
+        <div class="calendar-header">
+            <span class="month-picker" id="month-picker">February</span>
+            <div class="year-picker">
+                <span class="year-change" id="prev-year">
+                    <span class="arrows"><</span>
+                </span>
+                <span id="year">2021</span>
+                <span class="year-change" id="next-year">
+                    <span class="arrows">></span>
+                </span>
+            </div>
+        </div>
+
+        <div class="calendar-body">
+            <div class="calendar-week-day">
+                <div>Sun</div>
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div>Sat</div>
+            </div>
+            <div class="calendar-days"></div>
+        </div>
+
+        <div class="month-list">
+            <div class="month" data-month="0">January</div>
+            <div class="month" data-month="1">February</div>
+            <div class="month" data-month="2">March</div>
+            <div class="month" data-month="3">April</div>
+            <div class="month" data-month="4">May</div>
+            <div class="month" data-month="5">June</div>
+            <div class="month" data-month="6">July</div>
+            <div class="month" data-month="7">August</div>
+            <div class="month" data-month="8">September</div>
+            <div class="month" data-month="9">October</div>
+            <div class="month" data-month="10">November</div>
+            <div class="month" data-month="11">December</div>
+        </div>
+    </div>
+
+    <div class="calendar-mobile">
+        <div class="calendar-header">
+            <span class="month-picker">Year</span>
+            <div class="year-picker">
+                <span class="year-change" id="prev-year-mobile">
+                    <span class="arrows"><</span>
+                </span>
+                <span id="year-mobile">2022</span>
+                <span class="year-change" id="next-year-mobile">
+                    <span class="arrows">></span>
+                </span>
+            </div>
+
+        </div>
+        <div class="calendar-header">
+            <span class="month-picker" id="month-picker">Month</span>
+            <select id="month-select2">
+                <option>January</option>
+                <option>February</option>
+                <option>March</option>
+                <option>April</option>
+                <option>May</option>
+                <option>June</option>
+                <option>July</option>
+                <option>August</option>
+                <option>September</option>
+                <option>October</option>
+                <option>November</option>
+                <option>December</option>
+            </select>
+
+        </div>
+        <div class="calendar-header">
+            <span class="month-picker" id="month-picker">Day</span>
+            <div class="year-picker">
+                <span class="year-change" id="prev-day-mobile">
+                    <span class="arrows"><</span>
+                </span>
+                <span id="day-mobile">1</span>
+                <span class="year-change" id="next-day-mobile">
+                    <span class="arrows">></span>
+                </span>
+            </div>
+
+        </div>
+
+      
+    </div>
+    <div class="go-container">
+        <button id="go-mobile">Go</button>
+    </div>
+</div>
+
+
+

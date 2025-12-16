@@ -1,0 +1,15 @@
+﻿@using RLI.Common.Managers
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+<div class="m-portlet__body @*m-tabs-content__item {0}*@" id="m_section_">
+    <div id="m_quick_sidebar_tabs_messenger">
+        <div class="m-messenger m-messenger--message-arrow m-messenger--skin-light">
+            <div id="messenger_messages_container_" class="m-messenger__messages m-scrollable messenger_messages_container" style="min-height:500px;overflow-y:scroll;">
+                <h1 style="text-align:center; margin-top:200px">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_MessagesPageSayHiToStartAConversation"))</h1>
+            </div>
+        </div>
+    </div>
+</div>
+

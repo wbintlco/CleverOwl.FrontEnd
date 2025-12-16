@@ -1,0 +1,847 @@
+﻿@using RLI.Common.Managers
+@using Everest.OpenCurate.EntityFramework.EDM
+@model IEnumerable<Everest.OpenCurate.EntityFramework.EDM.Candidate>
+
+@{
+    TempData["DisplayLeftAssistant"] = true;
+
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ResourcesPageContentBrowser"));
+    int content_index = 0;
+    int CurrentLanguageIdentifier = (int)ViewBag.CurrentLanguageIdentifier;
+    string screenShotBaseUrl = Url.Action("Screenshot", "Files");//"https://cambridge.cleverowl.com/Files/Screenshot/";
+}
+
+<style>
+    @@media (min-width: 1200px) {
+        .container {
+            max-width: 90%;
+        }
+    }
+    .page-banner {
+        margin-top: 95px !important;
+        height: fit-content;
+        margin-bottom: 30px;
+        background-color: #ffffff;
+    }
+
+    .page-body {
+        padding: 0;
+        margin-bottom: 50px;
+    }
+     .search-form-widget .select2-search__field {
+        background: transparent !important;
+        border: 0 !important;
+        padding: 19px 70px 19px 30px !important;
+        font-size: 16px !important;
+        font-weight: 400 !important;
+        margin: 0 !important;
+        border-radius: 45px !important;
+        -webkit-transition: all 0.3s ease-in-out;
+        -o-transition: all 0.3s ease-in-out !important;
+        transition: all 0.3s ease-in-out !important;
+    }
+    @@media (max-width: 991px){
+        .search-form-widget {
+            margin-top: 10px !important;
+        }
+        .blog-post-archive {
+            padding: unset !important;
+        }
+        .sidebar {
+            margin-top: unset !important;
+        }
+    }
+        
+    .search-form-widget .select2.select2-container.select2-container--default {
+        padding: 0;
+        border-radius: 30px 30px 30px 30px !important;
+    }
+
+    .search-form-widget .select2-container--default .select2-selection--multiple {
+        background: transparent !important;
+        border: 0 !important;
+    }
+
+    .search-form-widget .select2-container--default.select2-container--focus .select2-selection--multiple {
+        background: transparent !important;
+        border: 0 !important;
+    }
+
+    .search-form-widget .select2-dropdown {
+        margin-top: 10px;
+        background-color: #ffffff !important;
+        border-radius: 45px !important;
+    }
+
+    .search-form-widget .select2-results {
+        padding: 20px !important;
+    }
+
+    .search-form-widget .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #fdf1f1 !important;
+    }
+
+    .search-form-widget .select2-selection__choice {
+        padding: 18px !important;
+        width: inherit !important;
+    }
+
+    .search-form-widget .select2-selection__choice__remove {
+        float: right;
+        display: block;
+        height: 100%;
+        margin-top: 6px;
+        margin-left: 6px;
+    }
+
+    .search-form-widget .select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
+        border: 0 !important;
+        background-color: transparent !important;
+    }
+
+    .records-control-widget .select2.select2-container.select2-container--default {
+        border-radius: 0px 30px 30px 0px !important;
+    }
+
+    .select2.select2-container.select2-container--default {
+        width: 100% !important;
+    }
+
+    .select2-selection__clear {
+        padding-top: 8px !important;
+    }
+
+    svg {
+        height: 50px
+    }
+
+  .feature-image {
+        background: url("@Url.Content("~/assets/files/media/img/loader/loader2.gif")");
+        min-height: 315px;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+  .blog-post-archive
+  {
+      padding: 80px 0;
+  }
+
+  .blog-content .post-meta li a:hover {
+    color: #f98e47 !important;
+}
+
+  .blog-content .entry-title a:hover {
+    color: #f98e47 !important;
+}
+
+  .author a:hover {
+    color: #f98e47 !important;
+}
+    .m-menu__ver-arrow{
+        cursor:pointer;
+    }
+
+</style>
+
+<!--==========================-->
+<!--=         Banner         =-->
+<!--==========================-->
+<section class="page-banner">
+    <div class="container">
+        <div class="page-title-wrapper">
+            <div>
+                <ul class="bradcurmed">
+                    <li><a href="@Url.Action("Index","Dashboard")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Wall"))</a></li>
+                    <li><a href="@Url.Action("Index","Resources")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_OER"))</a></li>
+                </ul>
+            </div>
+            <div class="row m--margin-top-20-desktop">
+                <div class="col-lg-1 m-auto m--hidden-mobile">
+                    @Html.Partial("~/Views/SharedSvgs/_DigitalLibraryIcon.cshtml")
+                </div>
+                <div class="col-lg-5 col-12 m-auto">
+                    <h1 class="page-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "OpenEducationalResources"))</h1>
+                </div>
+                <div class="col-lg-3  m-auto">
+                </div>
+                <div class="col-lg-3 col-12 m-auto">
+                </div>
+            </div>
+
+        </div>
+        <div id="searchContainer" class="row m--margin-top-40-desktop">
+            <div class="col-12">
+                <div id="search" class="widget widget_search">
+                    <form role="search" class="search-form-widget">
+                        <label>
+                            <select id="quicksearch_input" class="search-field" multiple="multiple" name="param">
+                                <option></option>
+                            </select>
+                        </label>
+                        <button type="submit" class="search-submit">
+                            <i class="ei ei-icon_search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</section>
+<!-- /.page-banner -->
+<!--========================-->
+<!--=         Body         =-->
+<!--========================-->
+<div class="blog-post-archive">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <div id="grades_categories" class="widget widget_categories">
+                        @Html.Partial("~/Views/Resources/_Grades.cshtml", Model.Select(m => m.Grade))
+                    </div>
+
+                    <div id="subjects_categories" class="widget widget_categories">
+                        @Html.Partial("~/Views/Resources/_Subjects.cshtml", Model.Select(m => m.Subject))
+                    </div>
+                    <div id="widget_recent_comments" class="widget widget_recent_comments">
+                        <h2 class="widget-title">
+                            <i class="m-menu__link-icon fa fa-book-open mr-2" style="font-size:2.5rem;"><span class="ml-2" style="font-family:'poppins'; font-size:2rem">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ResourcesPageRecentlyCurated")) </span></i>
+                            <i class="show_curated m-menu__ver-arrow la m--pull-right mt-3" data-status="none" style="color: #2b2350"></i>
+                        </h2>
+                        <div class="recent-comments">
+
+                            @foreach (Candidate candidate in Model.OrderByDescending(c => c.PublishedDate).Take(5))
+                            {
+                                <div class="comment-list">
+                                    <div class="icon">
+                                        <i class="ei ei-icon_link"></i>
+                                    </div>
+
+                                    <div class="comment-content">
+                                        <h3>@candidate.LearningOutcome.LearningOutcome1</h3>
+                                        <p>
+                                            <a href="@candidate.URL" target="_blank">
+                                                @candidate.Title
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div><!-- /.comment-list -->
+                            }
+
+                        </div><!-- /.recent-comments -->
+                    </div>
+                    <aside id="tags" class="widget widget_tag">
+                        <h2 class="widget-title">
+                            <i class="m-menu__link-icon fa fa-book-open mr-2" style="font-size:2.5rem;"><span class="ml-2" style="font-family:'poppins'; font-size:2rem">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ResourcesPagePopularTopic"))</span></i>
+                            <i class="show_topic m-menu__ver-arrow la m--pull-right mt-3" data-status="none" style="color: #2b2350"></i>
+                        </h2>
+                        <div class="tagcloud">
+                            @foreach (LearningOutcome topic in Model.Select(c => c.LearningOutcome).Distinct().Take(10))
+                            {
+                                <a href="@Url.Action("Index", new { topic = topic.LearningOutcomeKey })">@topic.LearningOutcome1</a>
+                            }
+                        </div>
+                    </aside><!-- /.widget -->
+                </div><!-- /.sidebar -->
+            </div>
+
+            <div class="col-lg-9">
+
+                <div id="appendCandidates" class="row">
+                    @foreach (Candidate candidate in Model.Take(10))
+                    {
+                        //var fileKey =  CurateController.CheckCandidateScreenshot(candidate.CandidateKey).Result;
+
+                        <div id="content_@content_index" data-key="@candidate.CandidateKey" class="col-12 col-md-6 col-xl-4 contents">
+                            <article class="post-post-grid" id="lazyScrollLoading_ImageMode">
+                                <div class="feature-image">
+                                    <a href="@candidate.URL">
+                                        <img loading="lazy" class="resourceThumbnail" src="@(screenShotBaseUrl + "/"  + candidate.CandidateKey )" alt="">
+                                    </a>
+                                </div>
+                                <div class="blog-content">
+                                    <ul class="post-meta">
+                                        <li><a href="@Url.Action("DetailsR","Resources", new { id = candidate.CandidateKey })">@candidate.LearningOutcome.LearningOutcome1</a></li>
+                                    </ul>
+
+                                    <h3 class="entry-title"><a href="@candidate.URL" target="_blank">@candidate.Title</a></h3>
+                                    @{
+                                        string gradeValue = candidate.Grade.Grade1;
+                                        string subjectValue=candidate.Subject.Subject1;
+                                        try
+                                        {
+                                            gradeValue = CurrentLanguageIdentifier == 0 ? candidate.Grade.Grade1 : candidate.Grade.DataGUID.DataTranslations.Where(dt => dt.LanguageKey == CurrentLanguageIdentifier).FirstOrDefault().Value;
+                                            subjectValue = CurrentLanguageIdentifier == 0 ? candidate.Subject.Subject1 : candidate.Subject.DataGUID.DataTranslations.Where(dt => dt.LanguageKey == CurrentLanguageIdentifier).FirstOrDefault().Value;
+
+                                        }catch(Exception e)
+                {
+
+                }
+                                         }
+                                    <div class="author">
+                                        <img loading="lazy" src="@Url.Content("~/assets/files/media/img/icons/curriculum_mesh@2x.png")" alt="author">
+                                        <a href="@Url.Action("DetailsR","Resources", new { id = candidate.CandidateKey })" class="author-link">@gradeValue > @subjectValue</a>
+                                    </div>
+
+                                </div><!-- /.post-content -->
+                            </article><!-- /.post -->
+                        </div>
+                        <!-- /.col-lg-4 -->
+                        content_index++;
+                    }
+                    <div class="col-12" id="loader_0"></div>
+                    @*append here*@
+                </div>
+            </div>
+            <!-- /.row -->
+
+        </div><!-- /.container -->
+    </div>
+</div><!-- /.body -->
+<div id="emptySlateContainerHidden" hidden>
+    @Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
+                        { "title", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_EmptySlateTitle")).ToString() },
+                        { "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ResourcesPageYoudontseemtohaveanyresources")).ToString() }
+                        , { "description", "" }
+                        , { "action", false },
+                        { "actionBtnId", "" },
+                        { "actionBtnText", "" } })
+</div>
+
+@using (Html.BeginForm("GetNextCandidates", "Resources", FormMethod.Post, new { id = "GetNextCandidates" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("currentIndex", "")
+    @Html.Hidden("gradesStr", "")
+    @Html.Hidden("subjectsStr", "")
+}
+@using (Html.BeginForm("GetRelatedSubjects", "Resources", FormMethod.Post, new { id = "GetRelatedSubjects" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("gradesKeys", "")
+    @Html.Hidden("subjectsKey", "")
+}
+@using (Html.BeginForm("GetRelatedGrades", "Resources", FormMethod.Post, new { id = "GetRelatedGrades" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("subjectsKeys", "")
+    @Html.Hidden("gradesKey", "")
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+
+
+<script>
+    $("#footer").remove();
+    $(".BodyParent").removeClass('m--padding-top-90');
+    $('.RenderBody').removeClass('col-lg-9 col-md-9');
+    $('.RenderBody').prev().remove();
+    /* Golbal Variable */
+
+    var cur_index = 10;
+    var eventFired = false;
+    var i = 0;
+    if (@content_index > 0) {
+        i = @content_index - 1;
+    }
+    var gardeKeysArray = [];
+    var subjectKeysArray = [];
+    var loader_index = 0;
+    var FilterClicked = false;
+    var permission1 = false;
+    var permission2 = false;
+    var permission3 = false;
+    var permission4 = false;
+    var subjectDistance = $(".show_subject").offset().top;
+    var gradeDistance = $(".show_grade").offset().top;
+    var topicDistance = $(".show_topic").offset().top;
+    var curatedDistance = $(".show_curated").offset().top;
+    /* !End global variables! */
+
+    /* Start functions */
+
+    function getNextCandidates() {
+        if (FilterClicked) {
+            mApp.block('.blog-post-archive');
+        }
+        $("#currentIndex").val(cur_index);
+        var jsonGrade = "";
+        if (gardeKeysArray.length > 0) {
+            var jsonGrade = JSON.stringify(gardeKeysArray);
+        }
+        $("#gradesStr").val(jsonGrade);
+        var jsonSubject ="";
+        if (subjectKeysArray.length > 0) {
+            jsonSubject = JSON.stringify(subjectKeysArray);
+        }
+        $("#subjectsStr").val(jsonSubject);
+            mApp.block($('#loader_' + loader_index));
+        $("#GetNextCandidates").ajaxSubmit({
+            beforeSubmit: function () {
+            },
+            success: function (data) {
+                if (data == "404") {
+                    mApp.unblock($('#loader_' + loader_index));
+                    $('#loader_' + loader_index).remove();
+                    if (cur_index == 0) {
+                        var html = $("#emptySlateContainerHidden").html();
+                    @*var html = '<div class="blankslate m-auto col-12">';
+                    html += '<div class="mb-3">';
+                    html += '@Html.Partial("~/Views/SharedSvgs/_EmptySlateIcon.cshtml")';
+                    html += '</div>';
+                    html += '<h3 class="mb-1">';
+                    html += "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ResourcesPageYoudontseemtohaveanyresources"))";
+                    html += '</h3 >';
+
+                    html += '</div>';*@
+                    $('#appendCandidates').empty();
+                    $('#appendCandidates').append(html);
+                    }
+                    mApp.unblock('.blog-post-archive');
+                } else {
+                    cur_index += 10;
+                    var html = '';
+                    console.log("datatatatatatata");
+                    console.log(data);
+                    $.each(data, function (index, value) {
+
+                        console.log(value.candidateKey);
+                        $('[data-key="' + value.candidateKey + '"]');
+                        if ($('[data-key="' + value.candidateKey + '"]').length) {
+                            return;
+                        }
+                        var srcLink = '@screenShotBaseUrl' +'/' + value.candidateKey;
+                        i++;
+                        html += '<div id="content_' + i + '" data-key ="' + value.candidateKey + '" style="display:none" class="col-12 col-md-6 col-xl-4 contents">';
+                        html += '<article class="post-post-grid" id="lazyScrollLoading_ImageMode">';
+                        html += '<div class="feature-image">';
+                        html += '<a href="' + value.URL + '">';
+                        html += '<img loading="lazy" class="resourceThumbnail" src="' + srcLink+'" alt="">';
+                        html += '</a>';
+                        html += '</div>';
+                        html += '<div class="blog-content">';
+                        html += '<ul class="post-meta">';
+                        html += '<li><a href="@Url.Action("DetailsR","Resources")/' + value.candidateKey + '">' + value.topic + '</a></li>'
+                        html += '</ul>';
+                        html += '<h3 class="entry-title"><a href="' + value.URL + '" target="_blank">' + value.title + '</a></h3>';
+                        html += '<div class="author">';
+                        html += '<img loading="lazy" src="@Url.Content("~/assets/files/media/img/icons/curriculum_mesh@2x.png")" alt="author">';
+                        html += '<a href="@Url.Action("DetailsR","Resources")/' + value.candidateKey + '" class="author-link">' + value.grade + ' > ' + value.subject + '</a>';
+                        html += '</div>';
+                        html += '</div>';
+                        html += '</article>';
+                        html += '</div>';
+                    });
+                    html += '<div class="col-12" id="loader_' + (loader_index + 1) + '"></div>'
+                    $('#appendCandidates').append(html);
+                    $('.contents').show(2000);
+                    mApp.unblock($('#loader_' + loader_index));
+                    $('#loader_' + loader_index).remove();
+                    loader_index++;
+                    eventFired = false;
+                    mApp.unblock('.blog-post-archive');
+                }
+
+            },
+            error: function (xhr, status, error) {
+                eventFired = false;
+                mApp.unblock('.blog-post-archive');
+                console.log("error");
+                swal('Error', 'error occur please try agian later', 'error');
+            }
+        });
+    }
+    function getRelatedSubjects() {
+        var jsonGradesKey = "";
+        if (gardeKeysArray.length > 0) {
+            var jsonGradesKey = JSON.stringify(gardeKeysArray);
+        }
+        var jsonSubjectsKey = "";
+        if (subjectKeysArray.length > 0) {
+            var jsonSubjectsKey = JSON.stringify(subjectKeysArray);
+        }
+        $("#gradesKeys").val(jsonGradesKey);
+        $("#subjectsKey").val(jsonSubjectsKey);
+        mApp.block($('#subjects_list'));
+        $("#GetRelatedSubjects").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+            success: function (data) {
+                mApp.unblock($('#subjects_list'));
+                    if (data == "404") {
+
+                    } else {
+                        var tempSubjectArray = [];
+                        $('#subjects_categories').empty();
+                        $('#subjects_categories').append(data);
+                        $('.Subject_Filter').each(function () {
+                            var parent = $(this);
+                            var key = parent.attr('data-key');
+                            tempSubjectArray.push(key);
+                            if (jQuery.inArray(key, subjectKeysArray) !== -1) {
+                                var removeSpan = parent.find('.remove');
+                                removeSpan.attr('data-display', 'true');
+                                removeSpan.show();
+                            }
+                        });
+                        for (s in subjectKeysArray) {
+                            if (jQuery.inArray(subjectKeysArray[s], tempSubjectArray) == -1) {
+                                subjectKeysArray.splice(s, 1);
+                            }
+                        }
+                    }
+                },
+                error: function (xhr, status, error) {
+                    mApp.unblock($('#subjects_list'));
+                    console.log("error");
+                    swal('Error', 'error occur please try agian later', 'error');
+                }
+        });
+    }
+    function getRelatedGrades() {
+        var jsonSubjectsKey = "";
+        if (subjectKeysArray.length > 0) {
+            var jsonSubjectsKey = JSON.stringify(subjectKeysArray);
+        }
+        var jsonGradesKey = "";
+        if (gardeKeysArray.length > 0) {
+            var jsonGradesKey = JSON.stringify(gardeKeysArray);
+        }
+        $("#subjectsKeys").val(jsonSubjectsKey);
+        $("#gradesKey").val(jsonGradesKey);
+        mApp.block($('#grades_list'));
+        $("#GetRelatedGrades").ajaxSubmit({
+            beforeSubmit: function () {
+            },
+            success: function (data) {
+                mApp.unblock($('#grades_list'));
+                if (data == "404") {
+
+                } else {
+                    var tempGradeArray = [];
+                    $('#grades_categories').empty();
+                    $('#grades_categories').append(data);
+                    $('.Grade_Filter').each(function () {
+                        var parent = $(this);
+                        var key = parent.attr('data-key');
+                        tempGradeArray.push(key);
+                        if (jQuery.inArray(key, gardeKeysArray) !== -1) {
+                            var removeSpan = parent.find('.remove');
+                            removeSpan.attr('data-display', 'true');
+                            removeSpan.show();
+                        }
+                    });
+                    for (g in gardeKeysArray) {
+                        if (jQuery.inArray(gardeKeysArray[g], tempGradeArray) == -1) {
+                            gardeKeysArray.splice(g, 1);
+                        }
+                    }
+                }
+            },
+            error: function (xhr, status, error) {
+                mApp.unblock($('#grades_list'));
+                console.log("error");
+                swal('Error', 'error occur please try agian later', 'error');
+            }
+        });
+    }
+    function initQuickSearch() {
+
+        $('#quicksearch_input').select2({
+        ajax: {
+            url: '@Url.Action("Search", "Resources")',
+            dataType: 'json',
+            type: 'POST',
+            delay: 250,
+            cache: true,
+            allowClear: true,
+            multiple: true,
+            /* maximumSelectionLength: 1,*/
+            data: function (params) {
+                var query = {
+                    query: params.term,
+                        __RequestVerificationToken : $('@Html.AntiForgeryToken()').val()
+                }
+
+                return query;
+            },
+            processResults: function (data, params) {
+                return {
+                    results: data
+                };
+            }
+        },
+        placeholder: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "ResourcesPageSearch"))",
+        escapeMarkup: function (markup) { return markup; },
+        minimumInputLength: 3,
+        /*maximumSelectionLength: 1,*/
+        templateSelection: function (data) {
+
+            return data.text;
+        }
+        });
+    }
+    function showCategorieFromSidebar(categorieClass, blockToShow) {
+        blockToShow.css('display', 'block');
+        categorieClass.removeClass('la-angle-down');
+        categorieClass.addClass('la-angle-up');
+        categorieClass.attr('data-status', 'up');
+    }
+    function hideCategorieFromSidebar(categorieClass, blockToHide) {
+        blockToHide.css('display', 'none');
+        categorieClass.removeClass('la-angle-up');
+        categorieClass.addClass('la-angle-down');
+        categorieClass.attr('data-status', 'down');
+    }
+    function initShowAndHideCategories() {
+        var width = $(window).width();
+        if (width < 992) {
+            hideCategorieFromSidebar($('.show_grade'), $('.show_grade').parent().parent().find('ul'));
+            hideCategorieFromSidebar($('.show_subject'), $('.show_subject').parent().parent().find('ul'));
+            hideCategorieFromSidebar($('.show_curated'), $('.show_curated').parent().parent().find('div').first());
+            hideCategorieFromSidebar($('.show_topic'), $('.show_topic').parent().parent().find('div').first());
+        } else {
+            showCategorieFromSidebar($('.show_grade'), $('.show_grade').parent().parent().find('ul'));
+            showCategorieFromSidebar($('.show_subject'), $('.show_subject').parent().parent().find('ul'));
+            showCategorieFromSidebar($('.show_curated'), $('.show_curated').parent().parent().find('div').first());
+            showCategorieFromSidebar($('.show_topic'), $('.show_topic').parent().parent().find('div').first());
+        }
+    }
+    function checkScrollForSubject() {
+        $(window).scroll(function () {
+            if (($(window).scrollTop() <= subjectDistance - 200) && permission1 == true) {
+                hideCategorieFromSidebar($('.show_subject'), $('.show_subject').parent().parent().find('ul'));
+                permission1 = false;
+            }
+        });
+    }
+    function checkScrollForGrade() {
+        $(window).scroll(function () {
+            if (($(window).scrollTop() <= gradeDistance - 200) && permission2 == true) {
+                hideCategorieFromSidebar($('.show_grade'), $('.show_grade').parent().parent().find('ul'));
+                permission2 = false;
+            }
+        });
+    }
+    function checkScrollForTopic() {
+        $(window).scroll(function () {
+            if (($(window).scrollTop() <= topicDistance - 200) && permission3 == true) {
+                hideCategorieFromSidebar($('.show_topic'), $('.show_topic').parent().parent().find('div').first());
+                permission3 = false;
+                console.log("topic");
+            }
+        });
+    }
+    function checkScrollForCurated() {
+        $(window).scroll(function () {
+            if (($(window).scrollTop() <= curatedDistance - 200) && permission4 == true) {
+                hideCategorieFromSidebar($('.show_curated'), $('.show_curated').parent().parent().find('div').first());
+                permission4 = false;
+                console.log("curated");
+            }
+        });
+    }
+    function hideCategoriesOnMobileWhileScrolling() {
+        if ($(window).scrollTop() >= subjectDistance && $('.show_subject').attr('data-status') == 'up') {
+            permission1 = true;
+            checkScrollForSubject();
+        }
+        if ($(window).scrollTop() >= gradeDistance && $('.show_grade').attr('data-status') == 'up') {
+            permission2 = true;
+            checkScrollForGrade();
+        }
+        if ($(window).scrollTop() >= topicDistance && $('.show_topic').attr('data-status') == 'up') {
+            permission3 = true;
+            checkScrollForTopic();
+        }
+        if ($(window).scrollTop() >= curatedDistance && $('.show_curated').attr('data-status') == 'up') {
+            permission4 = true;
+            checkScrollForCurated();
+        }
+    }
+
+    /* !End functions! */
+
+    $('document').ready(function () {
+
+        initShowAndHideCategories();
+
+
+
+        $(document).on('click', '.show_grade', function () {
+            var status = $(this).attr('data-status');
+            if (status == 'down') {
+                var blockToShow = $(this).parent().parent().find('ul');
+                showCategorieFromSidebar($(this), blockToShow);
+            }
+            if (status == 'up') {
+                var blockToHide = $(this).parent().parent().find('ul');
+                hideCategorieFromSidebar($(this), blockToHide);
+            }
+            subjectDistance = $(".show_subject").offset().top;
+            gradeDistance = $(".show_grade").offset().top;
+            topicDistance = $(".show_topic").offset().top;
+            curatedDistance = $(".show_curated").offset().top;
+        });
+        $(document).on('click', '.show_subject', function () {
+            var status = $(this).attr('data-status');
+            if (status == 'down') {
+                var blockToShow = $(this).parent().parent().find('ul');
+                showCategorieFromSidebar($(this), blockToShow);
+            }
+            if (status == 'up') {
+                var blockToHide = $(this).parent().parent().find('ul');
+                hideCategorieFromSidebar($(this), blockToHide);
+            }
+            subjectDistance = $(".show_subject").offset().top;
+            gradeDistance = $(".show_grade").offset().top;
+            topicDistance = $(".show_topic").offset().top;
+            curatedDistance = $(".show_curated").offset().top;
+        });
+        $('.show_curated').click(function () {
+            var status = $(this).attr('data-status');
+            if (status == 'down') {
+                var blockToShow = $(this).parent().parent().find('div').first();
+                showCategorieFromSidebar($(this), blockToShow);
+            }
+            if (status == 'up') {
+                var blockToHide = $(this).parent().parent().find('div').first();
+                hideCategorieFromSidebar($(this), blockToHide);
+            }
+            subjectDistance = $(".show_subject").offset().top;
+            gradeDistance = $(".show_grade").offset().top;
+            topicDistance = $(".show_topic").offset().top;
+            curatedDistance = $(".show_curated").offset().top;
+        });
+        $('.show_topic').click(function () {
+            var status = $(this).attr('data-status');
+            if (status == 'down') {
+                var blockToShow = $(this).parent().parent().find('div').first();
+                showCategorieFromSidebar($(this), blockToShow);
+            }
+            if (status == 'up') {
+                var blockToHide = $(this).parent().parent().find('div').first();
+                hideCategorieFromSidebar($(this), blockToHide);
+            }
+            subjectDistance = $(".show_subject").offset().top;
+            gradeDistance = $(".show_grade").offset().top;
+            topicDistance = $(".show_topic").offset().top;
+            curatedDistance = $(".show_curated").offset().top;
+        });
+
+
+        $(window).scrollTop(0);
+        console.log($('#content_' + i + '').offset().top);
+        $(window).scroll(function () {
+            var lastContentOffsetTop = $('#content_' + i + '').offset().top - 600;
+            var currentPosition = $(document).scrollTop();
+            if (currentPosition > lastContentOffsetTop && eventFired === false) {
+                eventFired = true;
+                getNextCandidates();
+            }
+            if ($(window).width() < 992) {
+                hideCategoriesOnMobileWhileScrolling();
+            } else {
+                permission1 = false;
+                permission2 = false;
+                permission3 = false;
+                permission4 = false;
+            }
+
+        });
+
+        $(document).on('click', '.Grade_Filter', function () {
+            var remove_icon = $(this).find('.remove');
+            if (remove_icon.attr("data-display") == "false") {
+                remove_icon.show();
+                remove_icon.attr("data-display", "true");
+                gardeKeysArray.push($(this).attr('data-key'));
+            } else {
+                remove_icon.hide();
+                remove_icon.attr("data-display", "false");
+                var key = $(this).attr('data-key');
+                var i = 0;
+                for (var j in gardeKeysArray) {
+                    if (gardeKeysArray[j] == key) {
+                        i = j;
+                        break;
+                    }
+                }
+                gardeKeysArray.splice(i, 1);
+            }
+            console.log('check grades array:');
+            console.log(gardeKeysArray);
+
+            cur_index = 0;
+            $('#appendCandidates').empty();
+            FilterClicked = true;
+            getRelatedSubjects();
+            if (subjectKeysArray.length > 0 || gardeKeysArray.length == 0) {
+                getRelatedGrades();
+            }
+
+            getNextCandidates();
+        });
+        $(document).on('click', '.Subject_Filter', function () {
+            var remove_icon = $(this).find('.remove');
+            if (remove_icon.attr("data-display") == "false") {
+                remove_icon.show();
+                remove_icon.attr("data-display", "true");
+                subjectKeysArray.push($(this).attr('data-key'));
+            } else {
+                remove_icon.hide();
+                remove_icon.attr("data-display", "false");
+                var key = $(this).attr('data-key');
+                var i = 0;
+                for (var j in subjectKeysArray) {
+                    if (subjectKeysArray[j] == key) {
+                        i = j;
+                        break;
+                    }
+                }
+                subjectKeysArray.splice(i, 1);
+            }
+            cur_index = 0;
+            $('#appendCandidates').empty();
+            FilterClicked = true;
+            getRelatedGrades();
+            if (gardeKeysArray.length > 0 || subjectKeysArray.length == 0) {
+                getRelatedSubjects();
+            }
+            getNextCandidates();
+        });
+
+        $('.resourceThumbnail').on("error", function () {
+            this.src ="@Url.Content("~/assets/files/media/img/others/resource_image_placeholder.jpg")";
+        });
+
+
+
+        initQuickSearch();
+
+        $('#quicksearch_input').on('select2:select', function (e) {
+
+            $('#quicksearch_input').prop("disabled", true);
+
+            if (e.params.data.external) {
+                window.open(e.params.data.location, '_blank');
+                $('#quicksearch_input').val('').trigger("change");
+                $('#quicksearch_input').prop("disabled", false);
+               //  location.reload();
+            }
+            else {
+                window.location = e.params.data.location;
+            }
+        });
+
+    });
+
+</script>
+}

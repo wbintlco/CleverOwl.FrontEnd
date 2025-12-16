@@ -1,0 +1,1769 @@
+﻿
+@{
+    ViewBag.Title = "Frontend Manual";
+}
+<style>
+    textarea{
+        width:100%;
+        height:800px;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+
+            <!--begin::Portlet-->
+            <div class="m-portlet">
+                <div class="m-portlet__head">
+                    <div class="m-portlet__head-caption">
+                        <div class="m-portlet__head-title">
+                            <h3 class="m-portlet__head-text">
+                                Frontend Documentation
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-portlet__body m--padding-50">
+
+                    <!--begin::Section-->
+                    <div class="m-accordion m-accordion--default m-accordion--solid" id="m_accordion_3" role="tablist">
+
+                        <!--begin::Item-->
+                        <div id="ajax" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_1_head" data-toggle="collapse" href="#m_accordion_3_item_1_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa flaticon-user-ok"></i></span>*@
+                                <span class="m-accordion__item-title">Ajax Calls</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_1_body" role="tabpanel" aria-labelledby="m_accordion_3_item_1_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definition: An Ajax call is an asynchronous request initiated by the browser that does not directly result in a page transition.
+A servlet request is a Java-specifc term (servlets are a Java specification) for servicing an HTTP request that could get
+a simple GET or POST (etc) or an Ajax request.
+With AJAX We can:
+1-Update a web page without reloading the page.
+2-Request data from a server - after the page has loaded.
+3-Receive data from a server - after the page has loaded.
+4-Send data to a server - in the background.
+
+Initialization AJAX:
+1- without form:
+$.ajax({
+url: '//url function eg: @@Url.Action("Action_Name", "Controller_Name")',
+type: '//POST or GET',
+data: { //  JSON data passed as parameter in the url function eg:
+__RequestVerificationToken : $('@@Html.AntiForgeryToken()').val() // token if needed
+input_id: 123,
+name :"Name1"
+},
+success: function (data) {
+
+// when the url function return data this success function will be called
+
+},
+error: function (error) {
+// when an error occure this error function will be called
+});
+2- with form:
+init a form:
+HTML(Razor):
+@@using (Html.BeginForm("Action_Name", "Controller_Name", FormMethod.Post, new { id = "form_id" }))
+{
+    @@Html.AntiForgeryToken() // token if needed
+    @@Html.Hidden("name", "Name1")
+    @@Html.Hidden("input_id", 123)
+    OR we can simply write html inputs
+
+
+}
+JQuery:
+$("#form_id" ).ajaxSubmit({
+beforeSubmit: function () {
+},
+success: function (data) {
+// when the url function return data this success function will be called
+
+},
+error: function (xhr, status, error) {
+// when an error occure this error function will be called
+}
+});
+3- in C# controller:
+[HttpPost] // POST
+[ValidateAntiForgeryToken] // validation token if needed
+public async Task<ActionResult>
+    Action_Name(int input_id, string name)
+    {
+    // here goes the code
+    return Json(data);
+    }
+
+                                            
+                                    </textarea>
+                                    <p>For More Feature And Configuration Please Click On The Link: <a href="https://api.jquery.com/jquery.ajax" target="_blank">https://api.jquery.com/jquery.ajax/</a></p>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Item-->
+                        <!--begin::Item-->
+                        <div id="select2" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_2_head" data-toggle="collapse" href="#m_accordion_3_item_2_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-placeholder"></i></span>*@
+                                <span class="m-accordion__item-title">Select2</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_2_body" role="tabpanel" aria-labelledby="m_accordion_3_item_2_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+                                        
+Definition: Select2 gives you a customizable select box with support for searching, 
+tagging, remote data sets, infinite scrolling, and many other highly used options.
+
+library:@@Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+
+initialization Select2:
+	1- Basic Initialisation:
+		a-ViewBag.ViewBagName = new SelectList(IEnumerable_items, string_dataValueField, string_dataTextField, object_selectedValue);
+		b- in html(Razor):  
+        @@Html.DropDownList("DropDownName", (SelectList)ViewBag.ViewBagName , "placeholder", new { @@class = "form-control", style = "width:100%", id = "select2_id" })
+		c- in jquery : 
+        $("#select2_id").select2({
+	        placeholder: "Select a State"
+        )};
+	2- using AJAX:
+	$('#select2_id').select2({
+ 		ajax: {
+    		url: 'url goes here',
+    		data: function (params) {
+      		var query = { // JSON data passed as parameter in the url function eg:
+        		search: params.term,
+        		type: 'public'
+      		}
+
+      		// Query parameters will be ?search=[term]&type=public
+      		return query;
+    		}
+  		}
+	});
+	3- Set Language:
+	$("#select2_id").select2({
+  		language: "es"
+	});
+	4- Search query:
+	var searchInput = $('#select2_id').select2({
+        ajax: {
+            url: '@@Url.Action("action_name", "controller_name")',
+            dataType: 'json',
+            type: 'POST',
+            delay: 250,
+            cache: true,
+            allowClear: true,
+            multiple: true,
+            maximumSelectionLength: 1,
+            data: function (params) {
+                var query = { // JSON data passed as parameter in the url function eg:
+                    query: params.term,
+                        __RequestVerificationToken : $('@@Html.AntiForgeryToken()').val() // if needed
+                }
+
+                return query;
+            },
+            processResults: function (data, params) {
+                return {
+                    results: data
+                };
+            }
+        },
+        language: {
+            inputTooShort: function () {
+                return "input too short";
+            },
+            noResults: function () {
+                return "result not found";
+            },
+            searching: function () {
+                return "searching...";
+            }
+        },
+        placeholder: 'select an input',
+        escapeMarkup: function (markup) { return markup; },
+        minimumInputLength: 3,
+        maximumSelectionLength: 1,
+        templateSelection: function (data) {
+
+            return data.text;
+        }
+    });
+                                    </textarea>
+                                    <p>For More Feature And Configuration Please Click On The Link:<a href="https://select2.org/data-sources/ajax" target="_blank">https://select2.org/data-sources/ajax</a> </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--end::Item-->
+                        <!--begin::Item-->
+                        <div id="serialize" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_3_head" data-toggle="collapse" href="#m_accordion_3_item_3_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Serialize And Deserialize Object</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_3_body" role="tabpanel" aria-labelledby="m_accordion_3_item_3_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definition: Serialization is a mechanism of converting the state of an object into a byte stream. 
+Deserialization is the reverse process where the byte stream is used to recreate the actual object in memory. 
+This mechanism is used to persist the object.
+
+Example:
+	a- in html:
+	@using (Html.BeginForm("Action_name", "Controller_Name", FormMethod.Post, new { id = "form_id" }))
+	{
+   	 @Html.Hidden("AssigData", "")
+	}
+
+	b-in jquery:
+	var item = {};
+	item['AssignmetName'] = "assigname";
+        item['GradeKey'] = "1";
+        item['SubjectKey'] = "10";
+	item['isValid'] = true;
+	
+	var jsonData = JSON.stringify(item);
+
+	$("#AssigData").val(jsonData);
+	$("#form_id").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+                       
+                    },
+                    error: function (xhr, status, error) {
+                        
+                    }
+        });
+
+	c- in C#:
+	[HttpPost]
+        public async Task<ActionResult> Action_Name(string AssigData)
+        {
+                JavaScriptSerializer serializer = new JavaScriptSerializer();
+                AssigViewModel assig = (AssigViewModel)serializer.Deserialize(AssigData, typeof(AssigViewModel));
+		.....
+	}
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--end::Item-->
+                        <!--begin::Item-->
+                        <div id="summernote" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_4_head" data-toggle="collapse" href="#m_accordion_3_item_4_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Summernote</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_4_body" role="tabpanel" aria-labelledby="m_accordion_3_item_4_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definition: Summernote is a JavaScript library that helps you create WYSIWYG (What you see is what you get) editors online. Home page: https://summernote.org.
+
+libraries : 
+	@@Scripts.Render("~/assets/vendors/summernote/dist/summernote.js")
+	@@Styles.Render("~/assets/vendors/summernote/dist/summernote.css")	
+
+initialization summernote:
+	a- Html:&lt;div id="summernote_id" class="summernote">&lt;/div&gt;
+	b- JQuery:
+	var currentLanguageWYSIWYG = "en-US";
+           
+            $('#summernote_id').summernote({
+                height: 300,
+                tabsize: 2,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'italic', 'underline', 'clear']],
+                    ['fontname', ['fontname']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'picture', 'hr']],
+                    ['view', ['fullscreen', 'codeview', 'help']],
+                ],
+                callbacks: {
+                    onKeyup: function (e) {
+                        // on key up if needed
+                    },
+                    onImageUpload: function (image) {
+                        // on upload image if needed
+                    }
+                }
+                , lang: currentLanguageWYSIWYG
+		});
+                                    </textarea>
+                                    <p>
+                                        For More Feature And Configuration Please Click On The Link:
+                                        <a href="https://www.dropzone.dev/js/" target="_blank">https://www.dropzone.dev/js/</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--end::Item-->
+                        <!--begin::Item-->
+                        <div id="dropzone" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_5_head" data-toggle="collapse" href="#m_accordion_3_item_5_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Dropzone</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_5_body" role="tabpanel" aria-labelledby="m_accordion_3_item_5_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definition:Dropzone. js is 'a light weight JavaScript library that turns an HTML element into a "dropzone"'.
+Users can drag and drop a file onto an area of the page, uploading to a server. ... js code to our 
+project and create a 'drop area' for file uploading.
+
+libraries: 
+	@@Scripts.Render("~/assets/vendors/dropzone/dist/min/dropzone.min.js")
+	@@Styles.Render("~/assets/vendors/dropzone/dist/min/dropzone.min.css")
+
+initialization:
+	Dropzone.autoDiscover = false;
+
+	var uploadUrl = '@@Url.Action("Action_Name", "Controller_name")';
+        var UploadDropZone = new Dropzone('#pageImageDropZone', {
+            url: uploadUrl,
+            file: "file",
+            maxFiles: 5,
+            maxfilesexceeded: function (file) {
+                this.removeFile(file);
+            },
+            maxFilesize: "@@System.Configuration.ConfigurationManager.AppSettings["CROWDCONTENTUPLOADFILESIZE"]", // MB
+            addRemoveLinks: true,
+            acceptedFiles: ".xls,.xlsx,.ods,.png,.jpg,.jpeg,.jfif,.gif,.mp4,.pdf,.doc,.txt,.docs,.docx,.odt,.mpg, .mpeg, .m2v,.m4v,.wmv,.webm,.pptx,.pptm,.ppt,.zip,.rar",
+            timeout: 180000,
+            sending: function () {
+		//when the file is send
+            },
+            removedfile: function (file) {
+                //when you click on remove file
+            },
+            success: function (file, response) {
+                // when the file is successfuly saved
+            },
+            error: function (file, error) {
+                // when an error occure
+            },
+            params: { __RequestVerificationToken: $('@@Html.AntiForgeryToken()').val(), attachmentId: '@@Model.Attachements' } // parameters if needed
+        });
+                                    </textarea>
+                                    <p>
+                                        For More Feature And Configuration Please Click On The Link:
+                                        <a href="https://www.dropzone.dev/js/" target="_blank">https://www.dropzone.dev/js/</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--end::Item-->
+                        <!--begin::Item-->
+                        <div id="datePicker" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_6_head" data-toggle="collapse" href="#m_accordion_3_item_6_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Date Picker</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_6_body" role="tabpanel" aria-labelledby="m_accordion_3_item_6_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definition: A date-picker of jQuery UI is used to provide a calendar to the user to select the date from a Calendar. 
+This date picker usually connected to a text-box so user selection of date from the calendar can be transferred to the textbox.
+
+Libraries: 
+	@@Scripts.Render("~/assets/vendors/bootstrap-datepicker/dist/js/bootstrap-datepicker.js")
+	@@Styles.Render("~/assets/vendors/bootstrap-datepicker/dist/css/bootstrap-datepicker.css")
+
+initialization: 
+	$("#submissionDate").datepicker({
+                format: "dd/mm/yyyy",
+                startDate: new Date(), // from today
+                todayHighlight: true,
+                autoclose: true,
+                language: "en-us"
+            }).on('changeDate', function (selected) {
+                // when date is changed
+
+            });
+
+	get the date:
+	var submissionDate = $("#submissionDate").datepicker('getDate');
+	set a date:
+	$('#submissionDate').datepicker('setStartDate', new Date());
+                                    </textarea>
+                                    <p>
+                                        For More Feature And Configuration Please Click On The Link:
+                                        <a href="https://bootstrap-datepicker.readthedocs.io/" target="_blank">https://bootstrap-datepicker.readthedocs.io/</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--end::Item-->
+                        <!--begin::Item-->
+                        <div id="dateTimePicker" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_7_head" data-toggle="collapse" href="#m_accordion_3_item_7_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Date-Time Picker</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_7_body" role="tabpanel" aria-labelledby="m_accordion_3_item_7_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definition: A date-picker of jQuery UI is used to provide a calendar to the user to select the date from a Calendar.
+... To display any jQuery UI widget, we have to use the link of jQuery and jQuery UI.
+
+libraries: 
+	@@Scripts.Render("~/assets/vendors/bootstrap-datetime-picker/js/bootstrap-datetimepicker.js")
+	@@Styles.Render("~/assets/vendors/bootstrap-datetime-picker/css/bootstrap-datetimepicker.min.css")
+
+initialization:
+sessionDate = $("#SessionDateTime").datetimepicker({
+            format: "dd MM yyyy - HH:ii P",
+            showMeridian: true,
+            todayHighlight: true,
+            autoclose: true,
+            language: "en-us"
+        });
+get the date:
+	var date = sessionDate.datetimepicker('getStartDate');
+set a date:
+	sessionDate.datetimepicker('setStartDate', new Date());
+                                    </textarea>
+                                    <p>
+                                        For More Feature And Configuration Please Click On The Link:
+                                        <a href="https://xdsoft.net/jqplugins/datetimepicker/" target="_blank">https://xdsoft.net/jqplugins/datetimepicker/</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Item-->
+                        <!--begin::Item-->
+                        <div id="JexcelTable" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_8_head" data-toggle="collapse" href="#m_accordion_3_item_8_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Jexcel Table</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_8_body" role="tabpanel" aria-labelledby="m_accordion_3_item_8_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definition: jExcel is is a very light jquery plugin to embed a spreadsheet, compatible with Excel, in your browser. You can load data straight to a jExcel table from a JS array, json or even a CSV file.
+
+libraries: 
+	@@Styles.Render("~/assets/vendors/JExcel/dist/jexcel.css")
+	@@Styles.Render("~/assets/vendors/JExcel/dist/jexcel.theme.css")
+	@@Styles.Render("~/assets/vendors/JExcel/dist/jsuites.css")
+
+	@@Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+   	@@Scripts.Render("~/assets/vendors/JExcel/dist/jexcel.js")
+    @@Scripts.Render("~/assets/vendors/JExcel/dist/jsuites.js")
+
+    &lt;script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript">&lt;/script>
+    &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js">&lt;/script>
+
+initialization:
+	$('#JExcelTable').jexcel({
+                data: [[null]],
+                columns: [
+                    {
+                        type: 'text',
+                        title: 'Controller',
+                        width: '200',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'Action',
+                        width: '200',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'FeildKey',
+                        width: '250',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'English',
+                        width: '150',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'Arabic',
+                        width: '150',
+                        wordWrap: true
+                    },
+                    {
+                        type: 'text',
+                        title: 'French',
+                        width: '150',
+                        wordWrap: true
+                    },
+                ],
+                rowResize: true,
+                minSpareRows: 5,
+                csvHeaders: true,
+                search: true,
+                pagination: 25,
+            });
+getValue from A1 field(for example): var valueA1 = $('#JExcelTable').jexcel('getValue', 'A1');
+
+setValue at A1 field(for example):
+	var valueToSet = "value to set"'
+	$('#JExcelTable').jexcel('setValue', 'A1', valueToSet);
+
+get data from excel file:
+	html: &lt;input type="file" id="selectedFile" />
+	jquery:
+	document.getElementById('selectedFile').addEventListener("change", (event) => {
+            selectedFile = event.target.files[0];
+            if (selectedFile) {
+                let fileReader = new FileReader();
+                fileReader.readAsBinaryString(selectedFile);
+                fileReader.onload = (event) => {
+                    let data = event.target.result;
+                    let workbook = XLSX.read(data, { type: "binary" });
+                    workbook.SheetNames.forEach(sheet => {
+                        let rowObject = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheet]);
+                        jsonContent = rowObject;
+                    });
+                }
+                fileReader.onloadend = (event) => {
+                    if (jsonContent) {
+                        // data return as List of object in jsonContent
+			// to display our data on our jexcel table the excel file must be in the same format of our jexcel table (SAME TITLE NAME)
+			$.each(jsonContent, function (index, value) {
+                            $('#JExcelTable').jexcel('setValue', 'A' + index, value.Controller);
+                            $('#JExcelTable').jexcel('setValue', 'B' + index, value.Action);
+                            $('#JExcelTable').jexcel('setValue', 'C' + imdex, value.FieldKey);
+                            $('#JExcelTable').jexcel('setValue', 'D' + index, value.English);
+                            $('#JExcelTable').jexcel('setValue', 'E' + index, value.Arabic);
+                            $('#JExcelTable').jexcel('setValue', 'F' + index, value.French);
+                           
+                        });
+                    }
+                }
+            }
+        });
+                                    </textarea>
+                                    <p>
+                                        For More Feature And Configuration Please Click On The Link:
+                                        <a href="https://www.jqueryscript.net/table/jQuery-Plugin-For-Dynamic-Spreadsheet-like-Data-Grid-jExcel.html" target="_blank">https://www.jqueryscript.net/table/jQuery-Plugin-For-Dynamic-Spreadsheet-like-Data-Grid-jExcel.html</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Item-->
+                        <!--begin::Item-->
+                        <div id="dataTable" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_9_head" data-toggle="collapse" href="#m_accordion_3_item_9_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Data Table</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_9_body" role="tabpanel" aria-labelledby="m_accordion_3_item_9_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definition: DataTables is a simple-to-use jQuery plug-in with a huge range of customisable options. 
+The examples in this section demonstrate basic initialisation of DataTables and how it can be easily 
+customised by passing an object with the options you want.
+
+Libraries:
+	@@Styles.Render("~/assets/vendors/custom/datatables/datatables.bundle.css")
+	@@Scripts.Render("~/assets/vendors/custom/datatables/datatables.bundle.js")
+
+Initialization:
+	a- Html: write a sample table code in html with data eg:
+            &lt;table id="example">
+                &lt;thead>
+                    &lt;tr>
+                        &lt;td>Fist Name&lt;/td>
+                        &lt;td>Last Name&lt;/td>
+                         &lt;td>Age&lt;/td>
+			        &lt;/tr>
+	            &lt;/thead>
+                &lt;tbody>
+                    &lt;tr>
+                        &lt;td>Samir&lt;/td>
+                        &lt;td>Najem&lt;/td>
+                        &lt;td>29&lt;/td>
+			        &lt;/tr>
+                     &lt;tr>
+                        &lt;td>Roula&lt;/td>
+                        &lt;td>Andary&lt;/td>
+                         &lt;td>25&lt;/td>
+			        &lt;/tr>
+                &lt;tbody>
+	        &lt;/table>
+	b- in jquery:
+		$(document).ready(function() {
+   			var table = $('#example').DataTable({
+        			"language": {
+            				"lengthMenu": "Display _MENU_ records per page",
+            				"zeroRecords": "Nothing found - sorry",
+            				"info": "Showing page _PAGE_ of _PAGES_",
+            				"infoEmpty": "No records available",
+            				"infoFiltered": "(filtered from _MAX_ total records)"
+        			},
+    			});
+		});
+                                    </textarea>
+                                    <p>
+                                        For More Feature And Configuration Please Click On The Link:
+                                        <a href="https://datatables.net" target="_blank">https://datatables.net</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Item-->
+                        <!--begin::Item-->
+                        <div id="mAppLoader" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_10_head" data-toggle="collapse" href="#m_accordion_3_item_10_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Loader mApp</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_10_body" role="tabpanel" aria-labelledby="m_accordion_3_item_10_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definition: usualy it's a circular dynamic forme used to disable a block or of the interface while the user is waiting or should wait for a result or specific action to execute.
+
+Activate the loader:
+	var id_of_specific_block = $("#blockId");
+	mApp.block(id_of_specific_block);
+disactivate and remove the loader:
+	var id_of_specific_block = $("#blockId");
+	mApp.unblock(id_of_specific_block);
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Item-->
+                        <!--begin::Item-->
+                        <div id="sweetAlert" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_11_head" data-toggle="collapse" href="#m_accordion_3_item_11_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Sweet Alert(swal)</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_11_body" role="tabpanel" aria-labelledby="m_accordion_3_item_11_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definition: Pop up used to alert the user about any changes that happened(eg: an error occurs during an execution of a function or call),
+     or simply it can be used to give the user an informative warning.
+
+how to use:
+	1- Success swal: swal("Title", "text", "success");
+	2- Error swal : swal("Title", "text", "error");
+	3- Warning swal: swal("Title", "text", "warning");
+	4- Swal with action: 
+	 swal({
+                title: "Title",
+                text: "text",
+                type: "warning", // or success, or error
+                showCancelButton: true,
+                cancelButtonText: "Cancel",
+                confirmButtonClass: "btn btn-brand m-btn",
+                confirmButtonText: "Yes"
+            }).then(function (e) {
+
+                if (e.dismiss !== "cancel") {
+                    //yes button is clicked do something....
+                } else {
+                    //cancel button is clicked do something...
+                }
+            });
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Item-->
+                        <div id="localization" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_12_head" data-toggle="collapse" href="#m_accordion_3_item_12_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Localization</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_12_body" role="tabpanel" aria-labelledby="m_accordion_3_item_12_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definition: Process used in our system to save and display all the text in the language choosen by the user.
+
+How it works: 
+	Instead of writing any text or any word we generate a "Key" and we place it in the Html (eg: &lt;lable>"Key" &lt;input type="text>&lt;/lable>). 
+	That key is saved in our database with it actual word or text in three languages(arabic, french, english) and the name of the Controller and action.
+How we generate the Key:
+	The key are generated with 4 words; the controller's name + action's name if not index + Page+ the actual word in english in the format below: 
+	ControllerNameActionNamePageActualWord.
+How we can save the keys:
+	Our developer have provided an interface (see the link below) containing a table where you can enter all the keys placed in the html code, the controller, the action, and the languages in arabic english french.
+	Meanwhile if the key for any reason don't have a specific controller or action (key used in more than one page) the controller and action int he table should remain empty.
+how we can edit the existing keys:
+	To edit an existing key click on the edit button on the top right of the page, then select the specific controller and action (if existed) and click on the filter button.
+	All the keys with the controller nd action selected should be displayed in the table. Now you can search for your specific key and edit it.
+	
+The link for the localization: https://theSystemDomain/Localisations
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--begin::Item-->
+                        <!--end::Item-->
+                        <div id="linq" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_13_head" data-toggle="collapse" href="#m_accordion_3_item_13_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Linq</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_13_body" role="tabpanel" aria-labelledby="m_accordion_3_item_13_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definition: Language-Integrated Query (LINQ) is a powerful query language introduced with .Net 3.5 & Visual Studio 2008. 
+LINQ can be used with C# or Visual Basic to query different data sources.
+
+1- Where operator: Filtering operators in LINQ filter the sequence (collection) based on some given criteria.
+example: 
+IList&lt;Student> studentList = new List&lt;Student>() { 
+        new Student() { StudentID = 1, StudentName = "John", Age = 13} ,
+        new Student() { StudentID = 2, StudentName = "Moin",  Age = 21 } ,
+        new Student() { StudentID = 3, StudentName = "Bill",  Age = 18 } ,
+        new Student() { StudentID = 4, StudentName = "Ram" , Age = 20} ,
+        new Student() { StudentID = 5, StudentName = "Ron" , Age = 15 } 
+    };
+
+var filteredResult = studentList.Where(s => s.Age > 12 && s.Age < 20);  // return John, Bill and Ron
+
+2- OrderBy operator: OrderBy sorts the values of a collection in ascending or descending order. 
+It sorts the collection in ascending order by default because ascending keyword is optional here. 
+Use descending keyword to sort collection in descending order.
+
+example: 
+IList<Student> studentList = new List<Student>() { 
+    new Student() { StudentID = 1, StudentName = "John", Age = 18 } ,
+    new Student() { StudentID = 2, StudentName = "Steve",  Age = 15 } ,
+    new Student() { StudentID = 3, StudentName = "Bill",  Age = 25 } ,
+    new Student() { StudentID = 4, StudentName = "Ram" , Age = 20 } ,
+    new Student() { StudentID = 5, StudentName = "Ron" , Age = 19 } 
+};
+
+var studentsInDescOrder = studentList.OrderByDescending(s => s.Age);
+
+3- select operator: The Select operator always returns an IEnumerable 
+collection which contains elements based on a transformation function. 
+It is similar to the Select clause of SQL that produces a flat result set.
+
+example: 
+IList<Student> studentList = new List<Student>() { 
+   new Student() { StudentID = 1, StudentName = "John", Age = 18 } ,
+    new Student() { StudentID = 2, StudentName = "Steve",  Age = 15 } ,
+    new Student() { StudentID = 3, StudentName = "Bill",  Age = 25 } ,
+    new Student() { StudentID = 4, StudentName = "Ram" , Age = 20 } ,
+    new Student() { StudentID = 5, StudentName = "Ron" , Age = 19 } 
+};
+var selectResult = studentList.Select(s => new { Name = s.StudentName , Age = s.Age  });
+// return: {
+	{Name="John", Age=18} ,
+	{Name="Steve", Age= 15} ,
+	{Name="Bill", Age = 25} ,
+	{Name = "Ram", Age = 20},
+	{Name = "Ron", Age = 19} 
+}
+
+for more information click on the link: <a href="https://www.tutorialsteacher.com/linq/">https://www.tutorialsteacher.com/linq/</a>
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--begin::Item-->
+                        <!--end::Item-->
+                        <div id="each" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_14_head" data-toggle="collapse" href="#m_accordion_3_item_14_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Jquery each</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_14_body" role="tabpanel" aria-labelledby="m_accordion_3_item_14_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+.each()
+
+definition: The .each() method is designed to make DOM looping constructs concise and less error-prone. 
+When called it iterates over the DOM elements that are part of the jQuery object. Each time the callback runs, 
+it is passed the current loop iteration, beginning from 0. More importantly, 
+the callback is fired in the context of the current DOM element, so the keyword this refers to the element.
+
+example: 
+&lt;ul>
+        &lt;li>foo&lt;/li>
+        &lt;li>bar&lt;/li>
+&lt;/ul>
+
+$( "li" ).each(function( index, value ) {
+  console.log( index + ": " + $( this ).text() );
+});
+// result:
+// 0: foo
+// 1: bar
+
+for more information click on the link: <a href="https://api.jquery.com/each/">https://api.jquery.com/each/</a>
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--begin::Item-->
+                        <!--end::Item-->
+                        <div id="newPage" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_15_head" data-toggle="collapse" href="#m_accordion_3_item_15_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">How to start a new page</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_15_body" role="tabpanel" aria-labelledby="m_accordion_3_item_15_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+Each page is consisted of a controller(where uses C# language) and action(where uses html, javascript or jquery and razor C#).
+To create a controller: right click on the controller folder in the solution explorer on the right, then click on Add -> Controller, then select "controller" on the left below the MVC list 
+and click on add, then set a name to the controller the page	.
+
+Now to create a View (or action) page write a function in the controller that return an ActionResult and named the method with the action name(see the example below). Then right click inside the action function
+you have created and click on add view, then make sure the "view" is selected on the left in the "MVC" list and click on the Add button, finally make sure that the view name is the same of the function name and click on the add button.
+Now you must see a file inside the "Views" file in the solution explorer on the right named with the Controller name. When you open the file you will get your view(action) page you have created.
+
+example:
+namespace CleverOwl.WebApplication.Controllers
+{
+
+ public class AssignmentsController : BaseController // Assignments is the controller name, BaseController is a custom controller inherited from controller class
+    {
+
+        public ActionResult Index() //Index is the action name
+        {
+		return View();
+	}
+    }
+}
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--begin::Item-->
+                        <!--end::Item-->
+                        <div id="partialView" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_16_head" data-toggle="collapse" href="#m_accordion_3_item_16_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">How to create a partial view</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_16_body" role="tabpanel" aria-labelledby="m_accordion_3_item_16_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+To create a partial view, right click on the Shared folder -> click Add -> click View.. to open the Add View popup, as shown below.
+You can create a partial view in any View folder. However, it is recommended to create all your partial views in the Shared folder so that they can be used in multiple views.
+
+In the Add New Item popup, enter a partial view name, select "Create as a partial view" checkbox. We don't need not use any model for this partial view, 
+so keep the Template dropdown as Empty (without model) and click on Add button. This will create an empty partial view in the Shared folder.
+
+NB: it is common to start the partial view name with "_".
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--begin::Item-->
+                        <!--end::Item-->
+                        <div id="build" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_17_head" data-toggle="collapse" href="#m_accordion_3_item_17_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">What to do before building</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_17_body" role="tabpanel" aria-labelledby="m_accordion_3_item_17_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+before building, the builder must make sure that he has accomplished the 3 steps below:
+1- take all the commit pushed from other developers.
+2- make sure that he has all the DLL needed to build (ask all developer if there is any changes in the dlls required and take copy if any).
+3- make sure that he has all the asset needed from the frontend team.(make sure if there is any changes in the jquery or css files, then take a copy).   
+4- make sure the code run successfully before publish.
+
+when all accomplished the builder can now build safely.
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--begin::Item-->
+                        <!--end::Item-->
+                        <div id="lazyLoading" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_18_head" data-toggle="collapse" href="#m_accordion_3_item_18_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Lazy Loading</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_18_body" role="tabpanel" aria-labelledby="m_accordion_3_item_18_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definition: Lazy loading (also known as asynchronous loading) is a design pattern commonly used in computer programming and mostly in web design and development to defer initialization 
+of an object until the point at which it is needed. It can contribute to efficiency in the program's operation if properly and appropriately used. This makes it ideal in use cases 
+where network content is accessed and initialization times are to be kept at a minimum, such as in the case of web pages. 
+For example, deferring loading of images on a web page until they are needed can make the initial display of the web page faster. The opposite of lazy loading is eager loading.
+
+to more understand how to implement the lazy loading let's take an example from the Messages page:
+	in the messages page each time we reach, while scrolling, the top of the messages container we get only 10 previous messages.
+	to acheive that we need to implement 4 steps:
+		1- first we need to know each time the user reach the top of the messages.
+		2- second we need to implemet an ajax call to get the 10 previous messages
+		3- thrid and last we need to implement a linq call in the controller to actually get the 10 previous messages from the database.
+		4- the data return from the database must be return from the controller as a partial view string. So we need to implement the partial view page of the messages.
+
+how to implement:
+	1-
+		var getNewMessages = true;
+		var skipMessages = 1;
+		var globalConversationId = 123;
+		$('#messenger_messages_container').scroll(function () {
+                
+                var scrollTop = $(this).scrollTop();
+                if (scrollTop <= 0) {
+                    console.log('Top reached');
+                    if (getNewMessages == true) {
+                        getPreviousMessages(globalConversationId, skipMessages); // function that implement the ajax call
+                        console.log('get new mssgs');
+                    }
+                }
+            	});
+
+
+
+	2- 
+		
+		@@using (Html.BeginForm("GetPreviousMessages", "Messages", FormMethod.Post, new { id = "GetPreviousMessages" }))
+		{
+
+    			@@Html.AntiForgeryToken()
+    			@@Html.Hidden("conversationid", "")
+    			@@Html.Hidden("skip", "")
+		}
+
+		function getPreviousMessages(convId, skip) {
+                getNewMessages = false;
+                
+                mApp.block('#loader');
+
+                $("#conversationid").val(convId);
+                $("#skip").val(skip);
+                $("#GetPreviousMessages").ajaxSubmit({
+                    beforeSubmit: function () {
+                    },
+                    success: function (data) {
+
+                        if (data == 404) { // no messages found
+                            mApp.unblock('#loader');
+                            return;
+                        }
+			// all is good to go
+
+
+                        $('#messenger_messages_container').prepend(data); // display the previous messages
+                        
+                        mApp.unblock('#loader');
+                        skipMessages++;
+                        getNewMessages = true;
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("Error In GetConversation !!!!!!!!");
+                        mApp.unblock('#loader');
+                        getNewMessages = true;
+                    }
+                });
+            }
+
+	3- 
+	[HttpPost]
+        [MoodleAdmin]
+        [MoodleToken]
+        public async Task&lt;ActionResult> GetPreviousMessages(int conversationid, int skip)
+        {
+            if (conversationid < 0)
+            {
+                return Json(404);
+            }
+            else
+            {
+
+		// necessary data needed //
+
+                string userKey = User.Identity.GetUserId();
+                RemoteAuthentication remoteAuthentication = await db.RemoteAuthentications.Where(r => r.Userkey == userKey && r.ESystem.ESystemName == "Moodle").FirstOrDefaultAsync();
+                string currentMoodleUserId = remoteAuthentication.EsystemRemoteId;
+                ViewBag.currentMoodleUserId = currentMoodleUserId;
+                string currentDate = DateTime.UtcNow.ToString("MM-dd-yyyy");
+                ViewBag.currentDateList = currentDate.Split('-');
+                ConversationMessagesModel conversationMessagesModel = await RLI.Common.Managers.MessagesManager.MoodleGetConversationMessages(userKey, conversationid.ToString(), HttpContext);
+                ConversationMessagesModel conversationMessagesModelResult = new ConversationMessagesModel();
+                conversationMessagesModelResult.id = conversationMessagesModel.id;
+                conversationMessagesModelResult.members = conversationMessagesModel.members;
+                conversationMessagesModelResult.messages = conversationMessagesModel.messages.OrderByDescending(m => m.timecreated).Skip(skip * 10).Take(10).ToList();
+                ViewBag.Locale = await RLI.Common.Managers.UtilitiesManager.GetLocalisationPerPage("Messages", "Index", CurrentLanguageIdentifier);
+
+		// ende of necessary data needed //
+
+                return PartialView("_Messages", conversationMessagesModelResult);
+            }
+           
+        }
+
+	4-
+
+@@model RLI.Common.DataObjects.ConversationMessagesModel
+@@using RLI.Common.Managers
+@@{
+    Dictionary&lt;string, string> Locale = ViewBag.Locale;
+    int currentMoodleUserId = int.Parse(ViewBag.currentMoodleUserId);
+    List&lt;RLI.Common.DataObjects.ConversationMessagesModel.Member> members = Model.members;
+    List&lt;RLI.Common.DataObjects.ConversationMessagesModel.Message> messages = Model.messages;
+
+    RLI.Common.DataObjects.ConversationMessagesModel.Member fromUser = members.Where(m => m.id != currentMoodleUserId).FirstOrDefault();
+    RLI.Common.DataObjects.ConversationMessagesModel.Member currentUser = members.Where(m => m.id == currentMoodleUserId).FirstOrDefault();
+
+}
+@@if (messages != null)
+{
+    string dateToShow = "";
+    string previousDate = "";
+    string[] currentDateList = ViewBag.currentDateList;
+    int currentDay = int.Parse(currentDateList[0] + "");
+    int currentMonth = int.Parse(currentDateList[1] + "");
+    int currentYear = int.Parse(currentDateList[2] + "");
+    &lt;div id="loader">&lt;/div>
+    for (int i = messages.Count() - 1; i >= 0; i--)
+    {
+
+        string mssgDate = RLI.Common.Managers.UtilitiesManager.ConvertFromUnixTimestamp(messages.ElementAt(i).timecreated) + "";
+        string[] mssgDateList = mssgDate.Split(' ');
+        string[] mssgDateSended = mssgDateList[0].Split('/');
+        int mssgDay = int.Parse(mssgDateSended[0] + "");
+        int mssgMonth = int.Parse(mssgDateSended[1] + "");
+        int mssgYear = int.Parse(mssgDateSended[2] + "");
+        if (currentDay == mssgDay && currentMonth == mssgMonth && currentYear == mssgYear)
+        {
+            dateToShow = ViewBag.UserName;
+
+        }
+        else
+        {
+            dateToShow = mssgDateSended[0] + "/" + mssgDateSended[1] + "/" + mssgDateSended[2];
+        }
+
+        &lt;div class="m-messenger__datetime">
+            @@if (dateToShow != previousDate)
+            {
+                previousDate = dateToShow;
+                &lt;span>@@dateToShow&lt;/span>
+            }
+        &lt;/div>
+        &lt;div class="m-messenger__wrapper">
+            &lt;div class="m-messenger__message @@(messages.ElementAt(i).useridfrom == currentMoodleUserId ? "m-messenger__message--out" : "m-messenger__message--in")">
+                @@if (messages.ElementAt(i).useridfrom != currentMoodleUserId)
+                {
+                    &lt;div class="m-messenger__message-pic">
+                        &lt;img class="profilePhoto" src="@@Model.members.Where(m=>m.id!=currentMoodleUserId).Select(m=>m.profileimageurlsmall).FirstOrDefault()" alt="" />
+                    &lt;/div>
+                }
+                &lt;div class="m-messenger__message-body" style="width:500px!important;">
+
+                    &lt;div class="m-messenger__message-content" style="border-radius : @@(messages.ElementAt(i).useridfrom == currentMoodleUserId ? "15px 0px 15px 15px" : "0px 15px 15px 15px" )">
+                        &lt;div class="m-messenger__message-username">
+                        &lt;span style="font-weight:bold; font-size:1.5em">@@(messages.ElementAt(i).useridfrom == currentMoodleUserId ? currentUser.fullname : fromUser.fullname)&lt;/span>
+                    &lt;/div>
+                        &lt;div class="m-messenger__message-text">
+                            &lt;span style="font-size:1.3em">@@Html.Raw(messages.ElementAt(i).text)&lt;/span>
+                        &lt;/div>
+                        &lt;div class="m-messenger__message-username">
+                            @@{
+                                string date = RLI.Common.Managers.UtilitiesManager.ConvertFromUnixTimestamp(messages.ElementAt(i).timecreated) + "";
+                                string[] dateList = date.Split(' ');
+                                string[] timeList = dateList[1].Split(':');
+                                string AMPM = string.Empty;
+                                try
+                                {
+                                    AMPM = dateList[2];
+                                }
+                                catch (Exception e)
+                                {
+
+                                }
+                                string time = timeList[0] + ":" + timeList[1];
+                                string convertedTime = time + " " + AMPM;
+                            }
+                            &lt;span>@@convertedTime&lt;/span>
+                        &lt;/div>
+                    &lt;/div>
+                &lt;/div>
+            &lt;/div>
+        &lt;/div>
+    }
+}
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--begin::Item-->
+                        <!--end::Item-->
+                        <div id="wizard" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_19_head" data-toggle="collapse" href="#m_accordion_3_item_19_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Wizard</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_19_body" role="tabpanel" aria-labelledby="m_accordion_3_item_19_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definittion: A jQuery Form Wizard is a jQuery plugin that assists with the creation of forms with some sort of form flow (without refreshing your page). 
+For example, if you had a large form for entering user data, you could use a form wizard to divide it into a series of related steps.
+
+implementation of a wizard:
+1- HTML:
+	&lt;div class="page-body">
+    &lt;div class="container">
+        &lt;div class="row">
+            &lt;div class="col-12">
+                &lt;div class="head">
+                    &lt;div class="m-portlet m-portlet--mobile m--margin-top-10">
+                        &lt;div class="m-wizard m-wizard--5 m-wizard--success" id="m_wizard">
+                            &lt;div class="m-portlet__head" style="background:#f3f3ff; border-radius:25px 25px 0px 0px; display:inline-block; width:100% !important;height: fit-content;">
+                                &lt;div class="m-wizard__head m-portlet__padding-x">
+                                    &lt;div class="row" style="display:block">
+                                        &lt;div class="col-xl-5">
+                                            &lt;div class="m-wizard__nav" style="border-bottom: 0px !important">
+                                                &lt;div class="m-wizard__steps">
+                                                    &lt;div class="m-wizard__step m-wizard__step--current" m-wizard-target="m_wizard_form_step_1">
+                                                        &lt;div class="m-wizard__step-info">
+                                                            &lt;a href="#" class="m-wizard__step-number">
+                                                                &lt;span class="m-wizard__step-seq">&lt;/span>
+                                                                &lt;span class="m-wizard__step-label">
+                                                                    Step 1
+                                                                &lt;/span>
+                                                            &lt;/a>
+                                                            &lt;div id="bar_1" class="wizard-step-bar-current">&lt; /div>
+                                                        &lt;/div>
+                                                    &lt;/div>
+                                                    &lt;div class="m-wizard__step" m-wizard-target="m_wizard_form_step_2">
+                                                        &lt;div class="m-wizard__step-info">
+                                                            &lt;a href="#" class="m-wizard__step-number">
+                                                                &lt;span class="m-wizard__step-seq">&lt;/span>
+                                                                &lt;span class="m-wizard__step-label">
+                                                                    Step 2
+                                                                &lt;/span>
+                                                            &lt;/a>
+                                                            &lt;div id="bar_2" class="wizard-step-bar">&lt;/div>
+                                                        &lt;/div>
+                                                    &lt;/div>
+                                                &lt;/div>
+                                            &lt;/div>
+                                        &lt;/div>
+                                        &lt;div class="col-7">&lt;/div>
+                                    &lt;/div>
+                                &lt;/div>
+                            &lt;/div>
+                            &lt;div class="m-portlet__body">
+                                &lt;div class="m-wizard__form">
+                                    &lt;div class="m-portlet__body m-portlet__body--no-padding">
+
+                                        &lt;!--begin: Form Wizard Step 1-->
+                                        &lt;div class="m-wizard__form-step m-wizard__form-step--current" id="m_wizard_form_step_1" data-form-id="sessionSetupForm">
+                                            &lt;h3>From of step 1&lt;/h3>
+                                        &lt;/div>
+                                        &lt;!--end: Form Wizard Step 1-->
+                                        &lt;!--begin: Form Wizard Step 2-->
+                                        &lt;div class="m-wizard__form-step" id="m_wizard_form_step_2" data-form-id="sessionAudienceForm">
+                                            &lt;h3>Form of step 2&lt;/h3>
+                                        &lt;/div>
+                                        &lt;!--end: Form Wizard Step 2-->
+                                    &lt;/div>
+                                    &lt;div class="m-form m-form--label-align-left- m-form--state-">
+                                        &lt;!--begin: Form Actions -->
+                                        &lt;div class="m-portlet__foot m--margin-top-40-desktop" style="border-top:none !important">
+                                            &lt;div class="m-form__actions">
+                                                &lt;div class="row">
+                                                    &lt;div class="col-lg-1 col-xl-2">
+                                &lt;/div>
+                                &lt;div class="col-lg-6">
+                                &lt;/div>
+                                &lt;div class="col-lg-5 col-xl-4">
+                                &lt;button type="button" class="btn m-btn--pill btn-secondary m--padding-top-15 m--padding-bottom-15 m--padding-left-20 m--padding-right-20 w-100-mobile m--margin-bottom-10-tablet-and-mobile" data-wizard-action="prev">
+                                Back
+                                &lt;/button>
+                                &lt;button id="submitBtn" type="button" data-wizard-action="submit" class="btn m-btn--pill m-btn m-btn--gradient-from-primary m-btn--gradient-to-info pull-right m--padding-top-15 m--padding-bottom-15 m--padding-left-20 m--padding-right-20 w-100-mobile">
+                                &lt;span>
+                                Create
+                                &lt;/span>
+                                &lt;/button>
+
+                                &lt;button id="nextBtn" type="button" data-wizard-action="next" class="btn m-btn--pill m-btn m-btn--gradient-from-primary m-btn--gradient-to-info pull-right m--padding-top-15 m--padding-bottom-15 m--padding-left-20 m--padding-right-20 w-100-mobile">
+                                &lt;span>
+                                Next
+                                &lt;/span>
+                                &lt;/button>
+                                &lt;/div>
+                                &lt;/div>
+                                &lt;/div>
+                                &lt;/div>
+                                &lt;!--end: Form Actions -->
+                                &lt;/div>
+                                &lt;/div>
+                                &lt;/div>
+                                &lt;/div>
+                                &lt;/div>
+                                &lt;/div>
+
+                                &lt;/div>
+
+                                &lt;/div>
+
+                                &lt;/div>
+                                &lt;/div>
+
+                                2- you can also implement css to get your own wizard design. In your case we used the css below:
+                                &lt;style>
+
+                                .wizard-step-bar-done {
+                                margin-top: 20px;
+                                background: linear-gradient( 90deg, rgba(249,120,53,1) 0%, rgba(252,152,64,1) 50%, rgba(255,188,76,1) 100%);
+                                height: 20px;
+                                border-radius: 20px;
+                                }
+
+                                .wizard-step-bar-current {
+                                margin-top: 20px;
+                                background: #a4a3bf;
+                                height: 20px;
+                                border-radius: 20px;
+                                }
+
+                                @@media(max-width: 768px) {
+                                .wizard-step-bar-current {
+                                margin-top: 10px !important;
+                                background: #a4a3bf !important;
+                                height: 10px !important;
+                                border-radius: 10px !important;
+                                }
+
+                                .wizard-step-bar {
+                                margin-top: 10px !important;
+                                background: #cccccc !important;
+                                height: 10px !important;
+                                border-radius: 10px !important;
+                                }
+                                }
+
+
+                                .wizard-step-bar {
+                                margin-top: 20px;
+                                background: #cccccc;
+                                height: 20px;
+                                border-radius: 20px;
+                                }
+
+                                .m-wizard__step.m-wizard__step--current {
+                                border-bottom: 0px solid !important;
+                                }
+
+                                .m-wizard.m-wizard--5.m-wizard--success
+                                .m-wizard__head .m-wizard__steps
+                                .m-wizard__step.m-wizard__step--done
+                                .m-wizard__step-info
+                                .m-wizard__step-number
+                                .m-wizard__step-label {
+                                color: #2a224f !important;
+                                font-weight: bold;
+                                }
+
+                                .m-wizard.m-wizard--5.m-wizard--success
+                                .m-wizard__head .m-wizard__steps
+                                .m-wizard__step.m-wizard__step--done
+                                .m-wizard__step-info
+                                .m-wizard__step-number
+                                .m-wizard__step-seq {
+                                color: #2a224f !important;
+                                font-weight: bold;
+                                }
+
+                                .m-wizard.m-wizard--5.m-wizard--success
+                                .m-wizard__head .m-wizard__steps
+                                .m-wizard__step.m-wizard__step--current
+                                .m-wizard__step-info
+                                .m-wizard__step-number
+                                .m-wizard__step-label {
+                                color: #a4a3bf !important;
+                                font-weight: bold;
+                                }
+
+                                .m-wizard.m-wizard--5.m-wizard--success
+                                .m-wizard__head .m-wizard__steps
+                                .m-wizard__step.m-wizard__step--current
+                                .m-wizard__step-info
+                                .m-wizard__step-number
+                                .m-wizard__step-seq {
+                                color: #a4a3bf !important;
+                                font-weight: bold;
+                                }
+
+                                .m-wizard.m-wizard--5
+                                .m-wizard__head
+                                .m-wizard__nav
+                                .m-wizard__steps
+                                .m-wizard__step
+                                .m-wizard__step-info
+                                .m-wizard__step-number
+                                .m-wizard__step-label {
+                                color: #cccccc !important;
+                                font-weight: bold;
+                                }
+
+                                .m-wizard.m-wizard--5
+                                .m-wizard__head
+                                .m-wizard__nav
+                                .m-wizard__steps
+                                .m-wizard__step
+                                .m-wizard__step-info
+                                .m-wizard__step-number
+                                .m-wizard__step-seq {
+                                color: #cccccc !important;
+                                font-weight: bold;
+                                }
+
+                                /*should be moved to bundle*/
+                                .m-wizard.m-wizard--5 .m-wizard__head .m-wizard__nav .m-wizard__steps {
+                                margin-top: 2rem !important;
+                                }
+                                /*should be moved to bundle*/
+                                .m-wizard.m-wizard--5 .m-wizard__head .m-wizard__nav .m-wizard__steps .m-wizard__step {
+                                padding-bottom: 0px !important;
+                                }
+                                /*should be moved to bundle*/
+                                @@media(max-width: 768px) {
+                                .m-wizard.m-wizard--5 .m-wizard__head {
+                                margin: unset !important;
+                                }
+
+                                .m-wizard.m-wizard--5 .m-wizard__head .m-wizard__nav .m-wizard__steps {
+                                margin-top: 0rem !important;
+                                }
+
+                                .m-wizard.m-wizard--5 .m-wizard__head .m-wizard__nav .m-wizard__steps .m-wizard__step .m-wizard__step-info {
+                                height: unset !important;
+                                }
+                                }
+                                /*should be moved to bundle*/
+                                @@media (max-width: 1024px) {
+                                .m-form .m-form__group {
+                                margin-bottom: 10px !important;
+                                padding-top: 0 !important;
+                                padding-bottom: 10px !important;
+                                }
+
+                                .m-wizard.m-wizard--5 .m-wizard__head .m-wizard__nav .m-wizard__steps {
+                                margin: 0px !important;
+                                }
+                                }
+
+                                &lt;/style>
+
+                                3- To initialiaze the functionality of your wizard write the jqeury belwo(it is more preferable to create a wizard file in the asset):
+                                //== Class definition
+                                var Wizard = function () {
+                                //== Base elements
+                                var wizardEl = $('#m_wizard');
+                                var btnNext = wizardEl.find('[data-wizard-action="next"]');
+                                var btnComplete = wizardEl.find('[data-wizard-action="submit"]');
+                                var dataName = "";
+
+                                var formEl;
+                                var currentStep;
+                                var currentUrl;
+                                var validator;
+                                var wizard;
+                                var dataValue;
+                                var minutesFromLastSMS = 0;
+
+                                function refreshCurrentStep() {
+
+                                currentStep = wizardEl.find('.m-wizard__form-step--current');
+
+                                formEl = $('#' + currentStep.data('form-id'));
+
+                                currentUrl = currentStep.data('url');
+
+                                validator = formEl.validate({
+                                });
+
+                                if (dataValue != null) {
+
+                                $("input[name='" + dataName + "']").val(dataValue);
+                                }
+                                }
+
+                                var initWizard = function () {
+                                //== Initialize form wizard
+                                wizard = new mWizard('m_wizard', {
+                                startStep: 1
+                                });
+
+                                //== Validation before going to next page
+                                wizard.on('beforeNext', function (wizardObj) {
+                                refreshCurrentStep();
+
+                                //wizardObj.stop();
+
+                                });
+
+                                //== Change event
+                                wizard.on('didChange', function (wizard) {
+
+                                });
+                                }
+
+                                var initButtons = function () {
+
+                                btnNext.on('click', function (e) {
+                                console.log("next clicked");
+
+                                });
+
+                                btnComplete.on('click', function (e) {
+                                console.log("create clicked");
+                                });
+                                }
+
+                                return {
+                                // public functions
+                                init: function () {
+                                wizardEl = $('#m_wizard');
+                                formEl = $('#m_form');
+
+                                initWizard();
+                                initButtons();
+
+                                }
+                                };
+                                }();
+
+                                jQuery(document).ready(function () {
+                                Wizard.init();
+                                });
+                                </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--begin::Item-->
+                        <!--end::Item-->
+                        <div id="razor" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_20_head" data-toggle="collapse" href="#m_accordion_3_item_20_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Razor</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_20_body" role="tabpanel" aria-labelledby="m_accordion_3_item_20_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definition: Razor is an ASP.NET programming syntax used to create dynamic web pages with the C#
+
+Example: 
+	@@{ var myMessage = "Hello World"; }
+
+	&lt;!-- Inline expression or variable -->
+	&lt;p>The value of myMessage is: @@myMessage&lt;/p>
+
+	<!-- Multi-statement block -->
+	@@{
+		var greeting = "Welcome to our site!";
+		var weekDay = DateTime.Now.DayOfWeek;
+		var greetingMessage = greeting + " Here in Huston it is: " + weekDay;
+	}
+	&lt;p>The greeting is: @@greetingMessage&lt;/p>
+                                </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--begin::Item-->
+                        <!--end::Item-->
+                        <div id="viewModel" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_21_head" data-toggle="collapse" href="#m_accordion_3_item_21_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">View Model</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_21_body" role="tabpanel" aria-labelledby="m_accordion_3_item_21_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definition: In ASP.NET MVC, ViewModel is a class that contains the fields which are represented in the strongly-typed view. It is used to pass data from controller to strongly-typed view.
+
+Implementation:
+	1- creation:
+		Right click on the Models file in your solution on the right then click on Add -> Class, set a name for the class (more preferable that it ends with ViewModel) then click on
+		the add button.
+	2- Write all the fields and varaiables that you need. Let's take an example of an existing View Model:
+		namespace CleverOwl.WebApplication.Models
+    		{
+        		public class AssigViewModel
+        		{
+            			public List<string> FileTypes { get; set; }
+            			public int MaxSubSize { get; set; }
+            			public int MaxFilesNumber { get; set; }
+            
+            			[Required]
+            			public string RemindMeToGradeBy { get; set; }
+            			[Required]
+            			public string DueDate { get; set; }
+            
+            			.
+	    			    .
+	    			    .
+    			}
+		}
+
+	NB:[Required]: Validates that the field is not null. You can find more built-in validations in the link below:
+                                    <a href="https://docs.microsoft.com/en-us/aspnet/core/mvc/models/validation?view=aspnetcore-6.0">https://docs.microsoft.com/en-us/aspnet/core/mvc/models/validation?view=aspnetcore-6.0</a>
+                                </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--begin::Item-->
+                        <!--end::Item-->
+                        <div id="modal" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_22_head" data-toggle="collapse" href="#m_accordion_3_item_22_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Modal</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_22_body" role="tabpanel" aria-labelledby="m_accordion_3_item_22_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definition: A modal is a dialog box/popup window that is displayed on top of the current page: Open Modal.
+
+Implementation:
+&lt;div class="modal fade" id="m_scrollable_modal_comment" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top:55px">
+    &lt;div id="comment" class="modal-dialog" role="document">
+        &lt;div class="modal-content">
+            &lt;div class="modal-header">
+                &lt;h5 class="modal-title" id="exampleModalLabel">Add Comment&lt;/h5>
+                &lt;button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    &lt;span aria-hidden="true">&times;&lt;/span>
+                &lt;/button>
+            &lt;/div>
+            &lt;div class="modal-body">
+                &lt;div class="m-scrollable" data-scrollbar-shown="true" data-scrollable="true">
+                    &lt;textarea id="commentField" style="width:100%">&lt;/textarea>
+                &lt;/div>
+            &lt;/div>
+            &lt;div class="modal-footer">
+                &lt;button id="closeModal" type="button" class="btn btn-secondary" data-dismiss="modal">Close&lt;/button>
+                &lt;button id="saveComment" type="button" data-dismiss="modal" class="btn btn-primary">Accept&lt;/button>
+            &lt;/div>
+        &lt;/div>
+    &lt;/div>
+&lt;/div>
+                                </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--begin::Item-->
+                        <!--end::Item-->
+                        <div id="bootstrap" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_23_head" data-toggle="collapse" href="#m_accordion_3_item_23_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Bootstrap</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_23_body" role="tabpanel" aria-labelledby="m_accordion_3_item_23_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+definition: Bootstrap is the most popular CSS Framework for developing responsive and mobile-first websites.
+1-Bootstrap is a free front-end framework for faster and easier web development
+2-Bootstrap includes HTML and CSS based design templates for typography, forms, buttons, tables, navigation, modals, image carousels and many other, as well as optional JavaScript plugins3-
+3-Bootstrap also gives you the ability to easily create responsive designs
+
+1- how responsive screen works with bootstrap:
+	bootstrap divides the screen into 12 columns. You can’t have more than 12 columns overall, but you can certainly have fewer than 12 if you like. 
+	Our demo is going to have 2 equal-length, nested columns. Inside the wider column, add the following code:
+	&lt;div class="row">
+  		&lt;!-- wider column -->
+ 		&lt;div class="col-md-6 mb-4">
+    			&lt;h2>First column&lt;/h2> 
+  		&lt;/div>
+  		&lt;!-- narrower column -->
+  		&lt;div class="col-md-6 mb-4">
+    			&lt;h2>Second column&lt;/h2>
+  		&lt;/div>
+	&lt;/div>
+
+	The col-md-* class indicates that the two-column layout will only be triggered from medium-sized screens upwards.(xl- for small screen, md- for medium, lg- for large, xl- for exttra large, col- for all screen size)
+	Smaller screens will get both columns stacked on top of each other. Also, notice the numbers at the end of the col-md-* class
+	Their sum amounts to 12, which is the total number of columns in the Bootstrap grid: 6 + 6 = 12. 
+	The mb-4 (margin bottom) class is one of the many utility classes Bootstrap makes available. 
+	This particular one is part of the spacing utility classes and is used to create some margin at the bottom of each column.
+
+2-The Responsive Navigation
+	Let’s build the navigation bar of the website. It will contain the website’s title and some right-aligned menu link items. This is going to be fixed to the top of the website, as you’ve seen in the demo page. So here’s the markup for this:
+
+	&lt;nav class="navbar fixed-top navbar-expand-md navbar-light bg-light">
+
+	The navbar class is for showing the navigation section. An additional fixed-top class makes it stick to the top of the page. The navbar-light and bg-light classes control the text color and background color of the navigation bar respectively. Pretty clear!
+
+	Let’s move ahead and insert some more code into it:
+
+	&lt;nav class="navbar fixed-top navbar-expand-md navbar-light bg-light">
+  		&lt;div class="container">
+
+    		&lt;!-- more navigation code here -->
+
+  		&lt;/div>
+	&lt;/nav>
+	The container is used to contain everything inside the navigation bar as a wrapper.
+
+	Till now, whatever we’ve added is just the basic structure of our navigation bar. Let’s see the real magical stuff that makes the navigation responsive.
+
+	&lt;nav class="navbar fixed-top navbar-expand-md navbar-light bg-light">
+  		&lt;div class="container">
+   			 &lt;a class="navbar-brand" href="#">Responsive Website&lt;/a>
+    				&lt;button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      					&lt;span class="navbar-toggler-icon">&lt;/span>
+   				&lt;/button>
+    				&lt;div class="collapse navbar-collapse" id="navbarCollapse">
+     					 &lt;!-- left navigation links -->
+      						&lt;ul class="navbar-nav mr-auto">
+
+        						&lt;!-- active navigation link -->
+        						&lt;li class="nav-item active">
+          							&lt;a class="nav-link" href="#">Home
+            								&lt;span class="sr-only">(current)&lt;/span>
+          							&lt;/a>
+        						&lt;/li>
+
+        						&lt;!-- regular navigation link -->
+        						&lt;li class="nav-item">
+         							&lt;a class="nav-link" href="#">About</a>
+        						&lt;/li>
+
+        						&lt;!-- more navigation links -->
+
+      						&lt;/ul>
+
+      						&lt;!-- right navigation link -->
+      						&lt;ul class="nav navbar-nav ml-auto">
+        						&lt;li class="nav-item">
+          							&lt;a class="nav-link" href="#">Login&lt;/a>
+        						&lt;/li>
+      						&lt;/ul>
+    				&lt;/div>
+ 		&lt;/div>
+	&lt;/nav>
+	The branding and menu items are self-explanatory. It should be clear that adding the class navbar-brand gives the title a clean look and is used for the website’s name. 
+	The nav items are wrapped inside an additional div with the classes collapse navbar-collapse, which are used to make the menu appear like a stack when viewing in smaller browsers.
+
+	Just below the branding, you might be seeing an additional link with the navbar-toggler class that wraps a span navbar-toggler-icon. 
+	This link is visible only on the smaller screens with a list icon. Also see we’ve used data-toggle=collapse that Bootstrap uses to hide/show the menu items in smaller windows. 
+	data-target is used to identify which menus to hide/show.
+
+
+3-The Right Sidebar
+	The right sidebar will contain a vertical navigation list. Inside the smaller nested column, include the markup for the unordered list:
+
+	&lt;ul class="nav nav-pills flex-column">
+  		&lt;li class="nav-item">
+    			&lt;a class="nav-link active" href="#">Active&lt;/a>
+  		&lt;/li>
+  		&lt;li class="nav-item">
+    			&lt;a class="nav-link" href="#">Link&lt;/a>
+  		&lt;/li>
+ 		 &lt;!-- more links -->
+	&lt;/ul>
+	Bootstrap adds some interest to the simple unordered list with the pills class. Adding the flex-column class ensures the list displays vertically.
+4-Margin and padding
+	Use the margin and padding spacing utilities to control how elements and components are spaced and sized. 
+	Bootstrap includes a six-level scale for spacing utilities, based on a 1rem value default $spacer variable. 
+	Choose values for all viewports (e.g., .mr-3 for margin-right: 1rem in LTR), 
+	or pick responsive variants to target specific viewports (e.g., .mr-md-3 for margin-right: 1rem —in LTR— starting at the md breakpoint).
+5-Flexbox options
+	Bootstrap is built with flexbox, but not every element’s display has been changed to display: flex as this would add many unnecessary overrides and unexpectedly 
+	change key browser behaviors. Most of our components are built with flexbox enabled.
+	Should you need to add display: flex to an element, do so with .d-flex or one of the responsive variants (e.g., .d-sm-flex). 
+	You’ll need this class or display value to allow the use of our extra flexbox utilities for sizing, alignment, spacing, and more.
+
+6- For more infromtion please visit the link: <a href="https://getbootstrap.com/docs">https://getbootstrap.com/docs</a>
+                                </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--begin::Item-->
+                        <!--end::Item-->
+                        <div id="consistency" class="m-accordion__item">
+                            <div class="m-accordion__item-head collapsed" role="tab" id="m_accordion_3_item_24_head" data-toggle="collapse" href="#m_accordion_3_item_24_body" aria-expanded="false">
+                                @*<span class="m-accordion__item-icon"><i class="fa  flaticon-alert-2"></i></span>*@
+                                <span class="m-accordion__item-title">Consistency</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>
+                            <div class="m-accordion__item-body collapse" id="m_accordion_3_item_24_body" role="tabpanel" aria-labelledby="m_accordion_3_item_24_head" data-parent="#m_accordion_3">
+                                <div class="m-accordion__item-content">
+                                    <textarea>
+
+definition: A consistent design will mean that common user interface elements (Company Logo, Site navigation, page content etc) appear 
+in the same place throughout the website, so when visitors navigate through your website they know where common elements are likely to be found on the page.
+
+Each time you need to create a page make sure that elements are consistent. For example:
+	all "Create" button should have the same color(Orange)(or have the same btn-primary class) and form, all "Delete" button should be red(or have the same btn-danger class), and all "Back" button should be gris(or have the same btn-brand class).
+	
+                                </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--begin::Item-->
+
+                    </div>
+                    <!--end::Section-->
+                    
+                </div>
+            </div>
+            <div class="m-portlet__foot m--margin-bottom-10">
+                <div class="row">
+                    <div class="col-12" style="text-align:center">
+                        <button class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+                
+
+            </div>
+        </div>
+
+        <!--end::Portlet-->
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $("textarea").prop("disabled", true);
+    </script>
+
+
+
+}
+
+

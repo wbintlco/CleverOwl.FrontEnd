@@ -1,0 +1,103 @@
+﻿@model FrontEnd.WebApplication.Models.ContentCurriculumViewModel
+@using RLI.Common.Managers
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+
+@using (Html.BeginForm("ContentCurriculumUpload", "CrowdContentTest", FormMethod.Post, new { @class = "m-form m-form--fit m-form--label-align-right m-form--group-seperator-dashed", @id = "curriculumMappingForm", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="m-form__section m-form__section--first">
+        <div class="m-form__heading">
+            <h3 class="font-weight-bold">
+                <i class="fa fa-pen-fancy" style="padding-right: 20px;font-size:3rem;"></i>
+                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageMapYourResource"))
+            </h3>
+        </div>
+        <div class="m-form__section m-form__section--first">
+
+            <div class="form-group m-form__group">
+                <lable>
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageLessonName"))
+                    <input id="LessonName" name="LessonName" type="text" style="width:100%" class="form-control" />
+                </lable>
+            </div>
+            <div class="form-group m-form__group">
+                <lable>
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageGrade"))
+                    @Html.DropDownList("GradeKey", (SelectList)ViewBag.GradeKey, "", new { @class = "form-control", style = "width:100%", id = "GradeDropDown" })
+                </lable>
+            </div>
+
+            <div class="form-group m-form__group">
+                <lable>
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageSubject"))
+                    @Html.DropDownList("SubjectKey", (SelectList)ViewBag.SubjectKey, "", new { @class = "form-control", style = "width:100%", id = "SubjectDropDown" })
+                </lable>
+            </div>
+            <div class="form-group m-form__group">
+                <lable>
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageLibrary"))
+                    @Html.DropDownList("LibraryKey", (SelectList)ViewBag.LibraryKey, "", new { @class = "form-control", style = "width:100%", id = "LibraryDropDown" })
+                </lable>
+            </div>
+            <div class="form-group m-form__group">
+                <lable>
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageChapter"))
+                    @Html.DropDownList("ChapterKey", (SelectList)ViewBag.ChapterKey, "", new { @class = "form-control", style = "width:100%", id = "ChapterDropDown" })
+                </lable>
+            </div>
+            <div class="form-group m-form__group">
+                <lable>
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageTopic"))
+                    @Html.DropDownList("TopicKey", (SelectList)ViewBag.TopicKey, "", new { @class = "form-control", style = "width:100%", id = "TopicDropDown" })
+                </lable>
+            </div>
+            <div class="form-group m-form__group">
+                <lable>
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageTopic"))
+                    @Html.DropDownList("LessonType", (SelectList)ViewBag.LessonType, "", new { @class = "form-control", style = "width:100%", id = "LessonTypeDropDown" })
+                </lable>
+            </div>
+            <div class="form-group m-form__group">
+                <lable>
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageProvider"))
+                    @Html.DropDownList("ProviderKey", (SelectList)ViewBag.ProviderKey, "", new { @class = "form-control", style = "width:100%", id = "ProviderDropDown" })
+                </lable>
+            </div>
+            <div class="form-group m-form__group">
+                <lable>
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageRemark"))
+                    <textarea id="Remark" name="Remark" style="width:100%" class="form-control"> </textarea>
+                </lable>
+            </div>
+            <div class="form-group m-form__group m-form__group--sm row">
+                <div class="col-xl-12">
+                    <div class="m-checkbox-inline">
+                        <label class="m-checkbox m-checkbox--solid m-checkbox--brand">
+                            @Html.CheckBoxFor(m => m.AcknowledgeAccuracyInformation, new { @class = "m-checkbox m-checkbox--solid m-checkbox--brand" })
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SubmitPageValidation"))
+                            @*@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipateProfileReviewPhoneAcknowledgeAccuracyInformationLabel"))*@
+                            <span></span>
+                        </label>
+
+                    </div>
+                    <span class="m-form__help text-danger" id="AcknowledgementNotFound2"></span>
+                    @* @Html.ValidationMessageFor(model => model.AcknowledgeAccuracyInformation, Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CrowdContentParticipatePagePhoneAcknowledgeAccuracyInformationValidationMessage")).ToString(), new { @class = "m-form__help text-danger" })*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.min.js")
+
+    <script>
+
+
+    </script>
+
+}

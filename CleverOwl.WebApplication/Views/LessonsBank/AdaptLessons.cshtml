@@ -1,0 +1,1346 @@
+﻿@model IEnumerable<RLI.EntityFramework.EDM.TeachersFile>
+@using RLI.Common.Managers
+@using RLI.EntityFramework.EDM
+@using Microsoft.AspNet.Identity
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    ViewBag.Title = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageLessonsBuilder"));
+    Language currentLanguage = ViewBag.CurrentLanguage;
+    bool iscoordinator = false;
+    if ((User.IsInRole("ContentManager") || User.IsInRole("Coordinator") || User.IsInRole("HeadOfDepartment") || User.IsInRole("SchoolPrincipal") || User.IsInRole("SeniorCoordinator")) && ViewBag.CurrentUser.Id != User.Identity.GetUserId())
+    {
+        iscoordinator = true;
+    }
+}
+
+@if (currentLanguage == null || !currentLanguage.IsRTL)
+{
+    @Styles.Render("~/assets/vendors/dropzone/dist/min/dropzone.min.css")
+}
+else
+{
+    <!--RTL CSS-->
+    @Styles.Render("~/assets/vendors/dropzone/dist/min/dropzone.min.rtl.css")
+}
+
+@if (currentLanguage == null || !currentLanguage.IsRTL)
+{
+
+
+    <style>
+        .search-form-widget .select2.select2-container.select2-container--default {
+            padding: 0;
+            border-radius: 30px 0px 0px 30px !important;
+        }
+    </style>
+}
+else
+{
+    <style>
+        .search-form-widget .select2.select2-container.select2-container--default {
+            padding: 0;
+            border-radius: 0px 30px 30px 0px !important;
+        }
+    </style>
+}
+<style>
+    .m-dropdown__wrapper {
+        position: relative !important;
+    }
+
+    #sortAlphaBtn {
+        cursor: pointer;
+    }
+
+    #sortDateBtn {
+        cursor: pointer;
+    }
+
+    #sortStatusBtn {
+        cursor: pointer;
+    }
+
+    .m-portlet.m-portlet--full-height {
+        min-height: 200px !important;
+    }
+
+    .m-portlet .m-portlet__head {
+        border-bottom: unset !important;
+    }
+
+    .m-dropdown.m-dropdown--align-right.m-dropdown--align-push .m-dropdown__wrapper {
+        margin-right: unset !important;
+        position: absolute !important;
+    }
+
+    .m-dropdown .m-dropdown__wrapper .m-dropdown__body {
+        padding-top: 0 !important;
+    }
+
+    .m-widget3 .m-widget3__item .m-widget3__header .m-widget3__info .m-widget3__username {
+        font-size: 1.1em !important;
+    }
+
+    .m-dropdown .m-dropdown__wrapper {
+        top: 40% !important;
+    }
+
+    .select2-results {
+        padding: 15% !important;
+    }
+
+    svg {
+        height: 50px;
+    }
+
+    .page-banner {
+        margin-top: 100px;
+        height: fit-content;
+        margin-bottom: 30px;
+        background-color: #ffffff;
+    }
+
+    .page-body {
+        padding: 0;
+        margin-bottom: 50px;
+    }
+
+    .grid-card {
+        box-shadow: rgb(99 99 99 / 20%) 0px 2px 8px 0px;
+        border-radius: 25px;
+        padding: 40px;
+        background: linear-gradient( to left, rgb(115 110 197 / 80%) 0%, rgb(68 60 182) 100% ) left bottom #ffffff no-repeat;
+        background-size: 100% 18px;
+    }
+
+    .grid-card-head-title {
+        margin-top: 20px;
+    }
+
+    .grid-card-head-datetime {
+        margin-top: 20px;
+    }
+
+    .grid-card-body {
+        margin-top: 25px;
+        font-weight: 100;
+    }
+
+    .grid-card-footer {
+        margin-top: 50px;
+        margin-bottom: -10px;
+    }
+
+    .table-row {
+        display: table-row;
+        height: auto;
+    }
+
+    .table-cell1 {
+        border: none;
+        display: table-cell;
+        padding: 2px;
+        width: 80%
+    }
+
+    .table-cell2 {
+        border: none;
+        display: table-cell;
+        padding: 2px;
+    }
+
+    video {
+        max-width: 398px;
+        max-height: 130px;
+    }
+
+    .search-form-widget .select2-search__field {
+        background: transparent !important;
+        border: 0 !important;
+        padding: 19px 10px 19px 30px !important;
+        font-size: 16px !important;
+        font-weight: 400 !important;
+        margin: 0 !important;
+        border-radius: 45px !important;
+        -webkit-transition: all 0.3s ease-in-out;
+        -o-transition: all 0.3s ease-in-out !important;
+        transition: all 0.3s ease-in-out !important;
+    }
+
+
+    .search-form-widget .select2-container--default .select2-selection--multiple {
+        background: transparent !important;
+        border: 0 !important;
+    }
+
+    .search-form-widget .select2-container--default.select2-container--focus .select2-selection--multiple {
+        background: transparent !important;
+        border: 0 !important;
+    }
+
+    .search-form-widget .select2-dropdown {
+        margin-top: 10px;
+        background-color: #ffffff !important;
+        border-radius: 45px !important;
+    }
+
+    .search-form-widget .select2-results {
+        padding: 20px !important;
+    }
+
+    .search-form-widget .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #fdf1f1 !important;
+    }
+
+    .search-form-widget .select2-selection__choice {
+        padding: 18px !important;
+        width: inherit !important;
+    }
+
+    .search-form-widget .select2-selection__choice__remove {
+        float: right;
+        display: block;
+        height: 100%;
+        margin-top: 6px;
+        margin-left: 6px;
+    }
+
+    .search-form-widget .select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
+        border: 0 !important;
+        background-color: transparent !important;
+    }
+
+
+    .select2-selection__clear {
+        padding-top: 8px !important;
+    }
+
+    .select2-results {
+        padding: 10px !important;
+    }
+
+    /* .select2-search.select2-search--inline {
+        position: absolute !important;
+    }*/
+
+    .search-form-widget .select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
+        position: absolute !important;
+    }
+
+    @@media(min-width: 992px) and (max-width:1024px) {
+        .RenderBody {
+            max-width: 100%;
+            padding-right: 15%;
+            padding-left: 15%;
+        }
+    }
+
+    @@media (max-width:522px) {
+        #select2-recordsDropdown-container {
+            position: absolute;
+            right: 18%;
+        }
+    }
+
+    post-post-grid {
+        overflow: visible !important;
+    }
+
+    .coordinator {
+        pointer-events: none;
+        opacity: 0.5;
+        cursor: not-allowed;
+        filter: grayscale(100%);
+    }
+</style>
+
+<section class="page-banner">
+    <div class="container">
+        <div class="page-title-wrapper">
+            <div>
+                <ul class="bradcurmed">
+                    <li><a href="@Url.Action("Index","Dashboard")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsWall"))</a></li>
+                    <li><a href="@Url.Action("Index","AdaptLessons")" rel="noopener noreferrer">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonLessonsBank"))</a></li>
+                </ul>
+            </div>
+            <div class="row m--margin-top-20-desktop @(iscoordinator ? "coordinator" : "")">
+                <div class="col-lg-1 m-auto m--hidden-tablet m--hidden-mobile">
+                    <i class="m-menu__link-icon left_bar_menu_link_icon_personalize fas fa-chalkboard fa-3x"></i>
+                </div>
+                <div class="col-lg-6 col-12 m-auto">
+                    <h1 class="page-title">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonLessonsBank"))</h1>
+                </div>
+                <div class="col-lg-2 col-12 m-1">
+                    @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Teacher")
+                    {
+                        <a href="" id="uploadModalopenBtn" class="btn m-btn--pill m-btn m-btn--gradient-from-success m-btn--gradient-to-success pull-right m--padding-top-15 m--padding-bottom-15 m--padding-left-20 m--padding-right-20 w-100-mobile">
+                            <i class="fa fa-upload"></i> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageUpload"))
+                        </a>
+                    }
+                </div>
+                <div class="col-lg-2 col-12 m-1">
+                    @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Teacher")
+                    {
+                        <a href="javascript:loginAdapt()" class="createButton btn m-btn--pill m-btn m-btn--gradient-from-primary m-btn--gradient-to-info pull-right m--padding-top-15 m--padding-bottom-15 m--padding-left-20 m--padding-right-20 w-100-mobile">
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsGoToAuthoringTool"))
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @if (Model != null && Model.Count() != 0)
+        {
+            <div class="row mt-4">
+
+                <div class="col-9 pr-0">
+                    <div class="search-form-widget m-input-icon m-input-icon--left m-input-icon--right" style="margin-top:0px!important">
+                        @*<input id="searchInput" type="text" class="form-control searchInputAssignSync" >*@
+                        @*form-control searchInputAssignSync*@
+                        <select id="searchInput" class="search-field" multiple="multiple" name="param" @*placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsSearch"))*@>
+                            <option></option>
+                        </select>
+                        <span class="m-input-icon__icon m-input-icon__icon--right mr-3 searchIcon"><span><i class="fas fa-search"></i></span></span>
+                    </div>
+                </div>
+
+                <div class="col-3 pl-1">
+                    <div class="m-input-icon m-input-icon--left m-input-icon--right records-control-widget">
+                        <select class="form-control" id="recordsDropdown" style="width: 100%; border-radius: 0px 30px 30px 0px !important;">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50" selected="">50</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row mt-4">
+                <div class="col-lg-4 col-md-4 col-12 m--margin-top-5-mobile">
+                    <i class="fas fa-sort-alpha-down" id="sortAlphaBtn" data-sorting="AZ"></i>
+                    <span>Alphabet</span>
+                </div>
+                <div class="col-lg-4 col-md-4 col-12 m--margin-top-5-mobile">
+                    <i class="fas fa-sort" id="sortStatusBtn" data-sortingStatus="Pending"></i>
+                    <span>Pending</span>
+                </div>
+                <div class="col-lg-4 col-md-4 col-12 m--margin-top-5-mobile">
+                    <i class="fas fa-sort" id="sortDateBtn" data-sortingDate="Asc"></i>
+                    <span>Asc</span>
+                </div>
+                @*<div class="col-lg-4 col-md-4 col-12 m--margin-top-5-mobile">
+                        @Html.DropDownList("Status", (SelectList)ViewBag.Status, "Status", htmlAttributes: new { @class = "form-control", @id = "StatusDropDown", @style = "width:100%;" })
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-12 m--margin-top-5-mobile">
+                        @Html.DropDownList("Dates", (SelectList)ViewBag.Dates, "Dates", htmlAttributes: new { @class = "form-control", @id = "DatesDropDown", @style = "width:100%;" })
+                    </div>*@
+            </div>
+        }
+
+    </div>
+</section>
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="page-body">
+            <div class="container">
+
+                <div id="lessonsBankDiv" class="row">
+                    @Html.Partial("~/Views/LessonsBank/_AuthoringLessonCard.cshtml", Model)
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--begin::Modal-->
+<div class="modal fade" id="m_modal_56" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document" style="margin-top: 5%;">
+        <div class="modal-content" style="border-radius: 10px;">
+            <div class="modal-header">
+                <label> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsAssigntoStudents"))</label>
+
+            </div>
+            <div class="modal-body" id="modalStudents">
+                <form>
+                    <div class="m-form__group form-group">
+
+                        <div class="m-checkbox-list">
+
+                            @if (ViewBag.RecentStudentsShare != null)
+                            {
+                                List<Student> recentStudentsShare = ViewBag.RecentStudentsShare;
+                                <label>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "TeacherPinboardPageRecent"))</label>
+
+
+                                <hr />
+                            }
+
+                            <div id="SchoolsContainer" class="m-4">
+
+                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsSchool"))
+
+                                @Html.DropDownList("Schools", (SelectList)ViewBag.Schools, htmlAttributes: new { @class = "form-control", @id = "SchoolsDropDown", @style = "width:100%;" })
+                            </div>
+
+                            <div id="GradesContainer" class="m-4">
+                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsGrade"))
+
+                                @Html.DropDownList("Grades", (SelectList)ViewBag.GradesDroDown, "Grades", htmlAttributes: new { @class = "form-control", @id = "GradesDropDown", @style = "width:100%;" })
+                            </div>
+
+                            <div class="row" id="m_modal_55Header">
+                                <label class="col-lg-10 checkboxLabel"> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsEveryone"))</label>
+                                <label class="m-checkbox m-checkbox--solid m-checkbox--brand ">
+
+                                    <input type="checkbox" id="selectallStudents">
+                                    <span></span>
+                                </label>
+                            </div>
+                            <hr />
+                            <div id="studentsContainer1">
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer m-auto">
+                <button type="button" id="assignToStudentsBtn" class="btn m-btn--pill btn-brand">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsDoneBtn"))</button>
+                <button type="button" id="cancelshareBtn" class="btn m-btn--pill btn-outline-brand" data-dismiss="modal">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsCloseBtn"))</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--end::Modal-->
+<!--begin::Modal-->
+<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document" style="margin-top: 5%;">
+        <div class="modal-content" id="uploadModalContent" style="border-radius: 10px;">
+            <div class="modal-header">
+                <label> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageUpload"))</label>
+            </div>
+            <div class="modal-body">
+                <div class="row m-4">
+                    Lesson Name:
+                    <input class="form-control" id="lessonUrlName" placeholder="enter lesson name" />
+                </div>
+
+                <div class="row m-4" id="urlUploadLinkContainer">
+                    Url:
+                    <input class="form-control" id="urlUploadLink" onpaste="PasteFunction()" placeholder="enter url" />
+                </div>
+
+                <div class="row m-4" id="dropzoneContainer">
+                    Upload:
+                    <div class="col-12">
+                        <div class="m-dropzone dropzone m-dropzone--metal" id="pageImageDropZone">
+                            <div class="m-dropzone__msg dz-message needsclick">
+                                <div>
+                                    <i class="fa fa-file-upload fa-8x" style="margin-bottom:20px;"></i>
+                                </div>
+                                <span class="m-dropzone__msg-desc">or upload file here</span>
+                            </div>
+                        </div>
+                        <span class="field-validation-valid m-form__help text-danger fileUpload" data-valmsg-for="LessonName" data-valmsg-replace="false">*</span>
+                        <span id="pageImageDropZoneHelp" class="m-form__help" style="display:none; color:red">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "CreateAssigPageFieldRequired"))</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer m-auto">
+                <button type="button" class="btn m-btn--pill btn-brand" id="doneUploadLesson">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsDoneBtn"))</button>
+                <button type="button" class="btn m-btn--pill btn-outline-brand" data-dismiss="modal">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsCloseBtn"))</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--end::Modal-->
+
+@using (Html.BeginForm("GetNextLessons", "LessonsBank", FormMethod.Post, new { id = "GetNextLessons" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("skip", "")
+}
+
+@using (Html.BeginForm("SortByAlphabet", "LessonsBank", FormMethod.Post, new { id = "SortByAlphabet" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("alphabet", "")
+}
+
+@using (Html.BeginForm("SortByDate", "LessonsBank", FormMethod.Post, new { id = "SortByDate" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("dateIndex", "")
+}
+
+@using (Html.BeginForm("SortByStatus", "LessonsBank", FormMethod.Post, new { id = "SortByStatus" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("statusIndex", "")
+}
+
+@using (Html.BeginForm("UrlFileUpload", "LessonsBank", FormMethod.Post, new { id = "UrlFileUploadHidden" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("fileUrl", "")
+}
+
+@using (Html.BeginForm("DeleteFileFromLessonBank", "LessonsBank", FormMethod.Post, new { id = "DeleteFileFromLessonBank" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("teachersFileKey", "")
+}
+
+@using (Html.BeginForm("DeleteFile", "LessonsBank", FormMethod.Post, new { id = "DeleteFileHidden" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("file_name", "")
+    @Html.Hidden("fol_name", "")
+}
+
+@using (Html.BeginForm("SaveFile", "LessonsBank", FormMethod.Post, new { id = "SaveFileHidden" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("f_name", "")
+    @Html.Hidden("folder_name", "")
+    @Html.Hidden("less_name", "")
+}
+
+@using (Html.BeginForm("MakeAdaptLessonFinalAjax", "Lessons", FormMethod.Post, new { id = "MakeAdaptLessonFinalAjaxHidden" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.Hidden("IdFile", "")
+}
+
+@section Scripts {
+
+    <!--begin::Page Vendors -->
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/vendors/select2/dist/js/select2.full.js")
+    @Scripts.Render("~/assets/vendors/dropzone/dist/min/dropzone.min.js")
+    <script>
+        var fromAdaptIndex = '@ViewBag.fromAdapt';
+        if (fromAdaptIndex == "yes") {
+            swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AdaptLessonsCongratsTitle"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AdaptLessonsCongratsMsg"))", "success");
+        }
+
+        $("#uploadModalopenBtn").click(function () {
+            event.preventDefault();
+            $("#uploadModal").modal('show');
+        })
+    var LessonBuilderManagementPageAdaptLessonOpps = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsOpps"))";
+    var LessonBuilderManagementPageAdaptFilterErrorText = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsWecouldntgetyourlessonspleasetryagain"))";
+    var LessonBuilderManagementPageAdaptLessonsYouMustEnter4Characters = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsYouMustEnter4Characters"))";
+    var LessonBuilderManagementPageAdaptSearching = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptSearching"))";
+    var LessonBuilderManagementPageAdaptLessonsNoResultFound = "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsNoResultFound"))";
+    var skipLessons = 1;
+    var getNext = true;
+    var getNext2 = true;
+        var searchInput;
+        Dropzone.autoDiscover = false;
+        var uploadResponse="";
+     var uploadUrl = '@Url.Action("UploadSCORMFiles")';
+        var UploadDropZone = new Dropzone('#pageImageDropZone', {
+            url: uploadUrl,
+            file: "file",
+            maxFiles: 5,
+            maxfilesexceeded: function (file) {
+                filesGeted = undefined;
+                this.removeFile(file);
+            },
+            maxFilesize: "@System.Configuration.ConfigurationManager.AppSettings["CROWDCONTENTUPLOADFILESIZE"]", // MB
+            addRemoveLinks: true,
+            acceptedFiles: ".zip",
+            timeout: 180000,
+            sending: function () {
+                mApp.block($('#pageImageDropZone'));
+                mApp.block($('#uploadModalContent'));
+                mApp.progress($('#doneUploadLesson'));
+            },
+            removedfile: function (file) {
+                //filesGeted = undefined;
+                //this.removeFile(file);
+                DeleteFile(uploadResponse.fileName, uploadResponse.folderName);
+                var _ref;
+                return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+                $("#urlUploadLink").show();
+                $("#urlUploadLinkContainer").show();
+
+            },
+            success: function (file, response) {
+                var extension = file.name.split('.').pop();
+                filesGeted = file;
+                console.log(file);
+                uploadResponse = response;
+                console.log(uploadResponse);
+
+                $("#urlUploadLink").val('');
+                $("#urlUploadLink").hide();
+                $("#urlUploadLinkContainer").hide();
+                if (response == "") {
+                    this.removeFile(file);
+                    $("#urlUploadLink").show();
+                    $("#urlUploadLinkContainer").show();
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AdaptLessonsWarningTitle"))","@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AdaptLessonsWarningIncorrectFormat"))","warning")
+                }
+                mApp.unblock($('#pageImageDropZone'));
+                mApp.unblock($('#uploadModalContent'));
+                mApp.unprogress($('#doneUploadLesson'));
+            },
+            error: function (file, error) {
+                mApp.unblock($('#pageImageDropZone'));
+                mApp.unblock($('#uploadModalContent'));
+                mApp.unprogress($('#doneUploadLesson'));
+                uploadResponse = "";
+                //swal("error", "sdfsa", "error");
+                var _ref;
+                return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+                $("#urlUploadLink").show();
+                $("#urlUploadLinkContainer").show();
+            },
+            params: { __RequestVerificationToken: $('@Html.AntiForgeryToken()').val() }
+        });
+
+    $("#urlUploadLink").keyup(function () {
+        //console.log("PasteKeyup");
+        if ($(this).val() == "") {
+            $("#dropzoneContainer").show();
+        } else {
+            $("#dropzoneContainer").hide();
+        }
+    });
+
+    //$("#urlUploadLink").bind("paste", function (e) {
+    //    console.log("PasteBind");
+    //    if ($(this).val() == "") {
+    //        $("#dropzoneContainer").show();
+    //    } else {
+    //        $("#dropzoneContainer").hide();
+    //    }
+    //});
+
+    function PasteFunction() {
+            $("#dropzoneContainer").hide();
+    }
+
+        function validURL(str) {
+            var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+                '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+                '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+                '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+            return !!pattern.test(str);
+        }
+
+    $("#doneUploadLesson").click(function () {
+        var lessonName = $("#lessonUrlName").val().trim();
+            if (lessonName != '') {
+                if (uploadResponse != "") {
+                    SaveFile(uploadResponse.fileName, uploadResponse.folderName);
+                } else {
+                    var url = $("#urlUploadLink").val().trim();
+                    if (validURL(url)) { //&& url.includes(".zip")
+                        UploadUrlFile(url);
+                        console.log("valid zip");
+                    } else {
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LayoutPageErrorMsgTitle"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AdaptLessonsErrorInsertAValidZip"))", "error");
+                    }
+                }
+            } else {
+                swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AdaptLessonsWarningTitle"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AdaptLessonsWarningNameLessReq"))", "warning");
+            }
+        })
+
+        function UploadUrlFile(urlFile) {
+            $("#fileUrl").val(urlFile);
+
+            mApp.block($('#pageImageDropZone'));
+            mApp.block($('#uploadModalContent'));
+            mApp.progress($('#doneUploadLesson'));
+            $("#UrlFileUploadHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    if (data != "") {
+                        SaveFile(data.fileName, data.folderName);
+                    } else {
+                        mApp.unblock($('#pageImageDropZone'));
+                        mApp.unblock($('#uploadModalContent'));
+                        mApp.unprogress($('#doneUploadLesson'));
+                        swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LayoutPageErrorMsgTitle"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AdaptLessonsErrorInDownloadingZip"))", "error");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    mApp.unblock($('#pageImageDropZone'));
+                    mApp.unblock($('#uploadModalContent'));
+                    mApp.unprogress($('#doneUploadLesson'));
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LayoutPageErrorMsgTitle"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AdaptLessonsErrorInDownloadingZip"))", "error");
+                }
+            });
+        }
+
+        function SaveFile(fileName, folderName) {
+            $("#f_name").val(fileName);
+            $("#folder_name").val(folderName);
+            var lessonName = $("#lessonUrlName").val();
+            $("#less_name").val(lessonName);
+
+            mApp.block($('#pageImageDropZone'));
+            mApp.block($('#uploadModalContent'));
+            mApp.progress($('#doneUploadLesson'));
+            $("#SaveFileHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    location.reload();
+                    $("#uploadModal").modal('hide');
+                    mApp.unblock($('#pageImageDropZone'));
+                    mApp.unblock($('#uploadModalContent'));
+                    mApp.unprogress($('#doneUploadLesson'));
+                },
+                error: function (xhr, status, error) {
+                    mApp.unblock($('#pageImageDropZone'));
+                    mApp.unblock($('#uploadModalContent'));
+                    mApp.unprogress($('#doneUploadLesson'));
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LayoutPageErrorMsgTitle"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AdaptLessonsErrorInSavingFile"))", "error");
+
+                }
+            });
+        }
+
+    function MakeFinalJavascript(file) {
+            mApp.block($(".post-post-grid"));
+            $("#IdFile").val(file);
+            $("#MakeAdaptLessonFinalAjaxHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+
+                    mApp.unblock($(".post-post-grid"));
+
+                    if (data == 200) {
+                        location.reload();
+                    } else {
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LayoutPageErrorMsgTitle"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AdaptLessonsErrorInMakingFinal"))", "error");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    mApp.unblock($(".post-post-grid"));
+                    mApp.unblock($('#pageImageDropZone'));
+                    mApp.unprogress($('#doneUploadLesson'));
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LayoutPageErrorMsgTitle"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AdaptLessonsErrorInMakingFinal"))", "error");
+                }
+            });
+        }
+
+        function DeleteFile(fileName, folderName) {
+            $("#file_name").val(fileName);
+            $("#fol_name").val(folderName);
+
+            mApp.block($('#pageImageDropZone'));
+            mApp.block($('#uploadModalContent'));
+            mApp.progress($('#doneUploadLesson'));
+            $("#DeleteFileHidden").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    mApp.unblock($('#pageImageDropZone'));
+                    mApp.unblock($('#uploadModalContent'));
+                    mApp.unprogress($('#doneUploadLesson'));
+                    $("#urlUploadLink").show();
+                    $("#urlUploadLinkContainer").show();
+                    uploadResponse = "";
+                },
+                error: function (xhr, status, error) {
+                    mApp.unblock($('#pageImageDropZone'));
+                    mApp.unblock($('#uploadModalContent'));
+                    mApp.unprogress($('#doneUploadLesson'));
+                    swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LayoutPageErrorMsgTitle"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AdaptLessonsErrorInDeleteFile"))", "error");
+                }
+            });
+        }
+
+        $(document).ready(function () {
+
+            InitButtons();
+
+        $(window).scroll(function () {
+            if ($(window).scrollTop() + $(window).height() >= $(window).height() - 10) {
+                if (getNext == true && getNext2 == true) {
+                    getNext = false;
+                    getNextLessons(skipLessons);
+                }
+            }
+        })
+
+        initSelect2();
+
+        $('#recordsDropdown').select2({
+            minimumResultsForSearch: 10
+        });
+            var sortingIndex = "";
+            $("#sortAlphaBtn").click(function () {
+                 sortingIndex = $(this).attr("data-sorting");
+                SortByAlphabet(sortingIndex);
+                if (sortingIndex == "AZ") {
+                    sortingIndex = "ZA";
+                    $(this).attr("data-sorting", "ZA");
+                    $(this).removeClass("fas fa-sort-alpha-down");
+                    $(this).addClass("fas fa-sort-alpha-up");
+                } else {
+                    sortingIndex = "AZ";
+                    $(this).attr("data-sorting", "AZ");
+                    $(this).removeClass("fas fa-sort-alpha-up");
+                    $(this).addClass("fas fa-sort-alpha-down");
+                }
+            })
+
+            var sortingStatusIndex = "";
+            $("#sortStatusBtn").click(function () {
+                sortingStatusIndex = $(this).attr("data-sortingStatus");
+                SortByStatus(sortingStatusIndex);
+                if (sortingStatusIndex == "Pending") {
+                    sortingStatusIndex = "Final";
+                    $(this).attr("data-sortingStatus", "Final");
+                    $(this).parent().find("span").text("Final");
+                } else {
+                    sortingStatusIndex = "Pending";
+                    $(this).attr("data-sortingStatus", "Pending");
+                    $(this).parent().find("span").text("Pending");
+                }
+            })
+
+            var sortingDateIndex = "";
+            $("#sortDateBtn").click(function () {
+                sortingDateIndex = $(this).attr("data-sortingDate");
+                SortByDate(sortingDateIndex);
+                if (sortingDateIndex == "Asc") {
+                    sortingIndex = "Desc";
+                    $(this).attr("data-sortingDate", "Desc");
+                    $(this).parent().find("span").text("Desc");
+                } else {
+                    sortingDateIndex = "Asc";
+                    $(this).attr("data-sortingDate", "Asc");
+                    $(this).parent().find("span").text("Asc");
+                }
+            })
+
+            $('#StatusDropDown').select2({
+                placeholder: "Status"
+            });
+            $('#DatesDropDown').select2({
+                placeholder: "Date"
+            });
+
+        $('#recordsDropdown').change(function () {
+            var query = $("#searchInput").val();
+            if (query != "") {
+                getNext2 = false;
+                FilterLesson(false);
+            }
+        });
+
+
+
+        searchInput.on('select2:select', function (e) {
+            //searchInputHandler();
+            getNext2 = false;
+            FilterLesson(false);
+            $('.searchIcon').hide();
+            searchInput.val("");
+        });
+
+            //searchInput.on('change', function (e) {
+
+            //    searchInput.hide();
+            //});
+
+        searchInput.on("select2:unselecting", function (e) {
+            //destroySelect2();
+            //initSelect2();
+            searchInput.val("");
+            FilterLesson(true);
+            $('.searchIcon').show();
+
+        });
+
+    });
+    function searchInputHandler() {
+        var count = $('.select2-selection__choice').length;
+        if (count > 1) {
+            $('.select2-selection__choice').each(function (index, value) {
+                var text = $('.select2-selection__choice').eq(index).text();
+                console.log("text " + text);
+                if (text == "×" || text == "") {
+                    $('.select2-selection__choice').eq(index).remove();
+                }
+            });
+        }
+    }
+    function initSelect2() {
+        searchInput = $('#searchInput').select2({
+
+            ajax: {
+                url: '@Url.Action("Search")',
+                dataType: 'json',
+                type: 'POST',
+                delay: 250,
+                cache: true,
+                allowClear: true,
+                multiple: true,
+                maximumSelectionLength: 1,
+                data: function (params) {
+                    var query = {
+                        query: params.term,
+                            __RequestVerificationToken : $('@Html.AntiForgeryToken()').val()
+                    }
+
+                    return query;
+                },
+                processResults: function (data, params) {
+                    console.log(data);
+                    return {
+                        results: data
+                    };
+                }
+            },
+            language: {
+                inputTooShort: function () {
+                    return LessonBuilderManagementPageAdaptLessonsYouMustEnter4Characters;
+                },
+                noResults: function () {
+                    return LessonBuilderManagementPageAdaptLessonsNoResultFound;
+                },
+                searching: function () {
+                    return LessonBuilderManagementPageAdaptSearching;
+                }
+            },
+            placeholder: "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsSearch"))",
+            escapeMarkup: function (markup) {
+                return markup;
+            },
+            minimumInputLength: 4,
+            templateSelection: function (data) {
+                setTimeout(function () {
+                    searchInputHandler();
+                }, 50);
+                return data.text;
+            }
+        });
+    }
+
+    function destroySelect2() {
+        searchInput.select2("destroy");
+        searchInput = null;
+        console.log("destroyed");
+        }
+
+        function DeleteFileFromLessonBank(key) {
+
+            mApp.block($('#lessonsBankDiv'));
+            $('#teachersFileKey').val(key);
+            $("#DeleteFileFromLessonBank").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    mApp.unblock($('#lessonsBankDiv'));
+                    if (data != 200) {
+                        swal(LessonBuilderManagementPageAdaptLessonOpps, LessonBuilderManagementPageAdaptFilterErrorText, "error");
+                    } else {
+                        $('#lessonsBankDiv').empty();
+                        getNextLessons(0);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    mApp.unblock($('#lessonsBankDiv'));
+                    swal(LessonBuilderManagementPageAdaptLessonOpps, LessonBuilderManagementPageAdaptFilterErrorText, "error");
+                }
+            });
+        }
+
+        function SortByStatus(statusIndex) {
+            console.log(skip);
+            mApp.block($('#lessonsBankDiv'));
+            $('#statusIndex').val(statusIndex);
+            $("#SortByStatus").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    mApp.unblock($('#lessonsBankDiv'));
+                    if (data == "error") {
+                        swal(LessonBuilderManagementPageAdaptLessonOpps, LessonBuilderManagementPageAdaptFilterErrorText, "error");
+                    } else if (data != 404) {
+                        $('#lessonsBankDiv').empty();
+                        $('#lessonsBankDiv').append(data);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    mApp.unblock($('#lessonsBankDiv'));
+                    swal(LessonBuilderManagementPageAdaptLessonOpps, LessonBuilderManagementPageAdaptFilterErrorText, "error");
+                }
+            });
+        }
+
+        function SortByDate(dateIndex) {
+            console.log(skip);
+            mApp.block($('#lessonsBankDiv'));
+            $('#dateIndex').val(dateIndex);
+            $("#SortByDate").ajaxSubmit({
+                beforeSubmit: function () {
+                },
+                success: function (data) {
+                    mApp.unblock($('#lessonsBankDiv'));
+                    if (data == "error") {
+                        swal(LessonBuilderManagementPageAdaptLessonOpps, LessonBuilderManagementPageAdaptFilterErrorText, "error");
+                    } else if (data != 404) {
+                        $('#lessonsBankDiv').empty();
+                        $('#lessonsBankDiv').append(data);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    mApp.unblock($('#lessonsBankDiv'));
+                    swal(LessonBuilderManagementPageAdaptLessonOpps, LessonBuilderManagementPageAdaptFilterErrorText, "error");
+                }
+            });
+        }
+
+    function SortByAlphabet(alphabet) {
+        console.log(skip);
+        mApp.block($('#lessonsBankDiv'));
+        $('#alphabet').val(alphabet);
+        $("#SortByAlphabet").ajaxSubmit({
+            beforeSubmit: function () {
+            },
+            success: function (data) {
+                mApp.unblock($('#lessonsBankDiv'));
+                if (data == "error") {
+                    swal(LessonBuilderManagementPageAdaptLessonOpps, LessonBuilderManagementPageAdaptFilterErrorText, "error");
+                } else if (data != 404) {
+                    $('#lessonsBankDiv').empty();
+                    $('#lessonsBankDiv').append(data);
+                }
+            },
+            error: function (xhr, status, error) {
+                mApp.unblock($('#lessonsBankDiv'));
+                swal(LessonBuilderManagementPageAdaptLessonOpps, LessonBuilderManagementPageAdaptFilterErrorText, "error");
+            }
+        });
+    }
+
+    function getNextLessons(skip) {
+        console.log(skip);
+        mApp.block($('.loader'));
+        $('#skip').val(skip);
+        $("#GetNextLessons").ajaxSubmit({
+            beforeSubmit: function () {
+            },
+            success: function (data) {
+                mApp.unblock($('.loader'));
+                if (data == "error") {
+                    swal(LessonBuilderManagementPageAdaptLessonOpps, LessonBuilderManagementPageAdaptFilterErrorText, "error");
+                    getNext = true;
+                } else if (data != 404) {
+
+                    $('.loader').remove();
+                    $('#lessonsBankDiv').append(data);
+                    skipLessons++;
+                    getNext = true;
+                }
+                InitButtons();
+            },
+            error: function (xhr, status, error) {
+                mApp.unblock($('.loader'));
+                getNext = true;
+                swal(LessonBuilderManagementPageAdaptLessonOpps, LessonBuilderManagementPageAdaptFilterErrorText, "error");
+            }
+        });
+    }
+
+    function FilterLesson(next2) {
+        mApp.block($("#lessonsBankDiv"));
+        var search = $("#searchInput").val();
+        var records = $("#recordsDropdown").val();
+        $.ajax({
+            url: '@Url.Action("LessonsFilter", "LessonsBank")',
+            type: 'POST',
+            dataType: "html",
+            data: {
+                query: search[search.length - 1],records: records,
+                __RequestVerificationToken: $('@Html.AntiForgeryToken()').val()
+            },
+            success: function (data) {
+                $("#lessonsBankDiv").empty();
+                $("#lessonsBankDiv").html(data);
+                if ($("#searchInput").val() == "") {
+                    skipLessons = 1;
+                }
+                if (next2 == true) {
+                    getNext2 = true;
+                } else {
+                    getNext2 = false;
+                }
+                mApp.unblock($("#lessonsBankDiv"));
+                /*$("#searchInput").select2('destroy');*/
+            },
+            error: function () {
+                swal(LessonBuilderManagementPageAdaptLessonOpps, LessonBuilderManagementPageAdaptFilterErrorText, "error");
+            }
+        });
+    }
+
+
+        ////////////////////////////
+
+    $('#SchoolsDropDown').select2({
+                    placeholder: 'select a school'
+    });
+
+    $('#GradesDropDown').select2({
+                    placeholder: 'select a grade'
+    });
+
+
+    $('#SchoolsDropDown').change(function () {
+    })
+        $("#m_modal_55Header").hide();
+    $('#GradesDropDown').change(function () {
+
+        loadStudentsInClass();
+    })
+
+
+
+    function loadStudentsInClass() {
+        mApp.block($("#studentsContainer1"));
+        var grade = $('#GradesDropDown option:selected').val();
+
+        var school = $('#SchoolsDropDown option:selected').val();
+        $.ajax({
+                    type: 'POST',
+            url: "@Url.Action("LookupStudentsForTeacherShareCheckBox", "Pinboard")?" + 'gradeId=' + grade + '&schoolId=' + school ,
+            data: { __RequestVerificationToken: $('@Html.AntiForgeryToken()').val() },
+            beforeSend: function(data) {
+            //invokeLoadingMode();
+            },
+            success: function(data) {
+            mApp.unblock($("#studentsContainer1"));
+            console.log("teststst=" + data.trim()+"asg");
+            if (data.trim() == "") {
+            $('#studentsContainer1').html("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LibraryIndexNoRegisteredStudents"))");
+            } else {
+            $("#m_modal_55Header").show();
+            $('#studentsContainer1').html(data);
+            }
+
+
+            //loadMasonryAll();
+
+            //revokeLoadingMode();
+            },
+            error: function() {
+
+            //revokeLoadingMode();
+                swal("@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LayoutPageErrorMsgTitle"))", "@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AdaptLessonsErrorInLookupStudents"))", "error");
+            }
+            });
+            }
+
+            $('#selectallStudents').click(function () {
+            if ($(this).is(':checked')) {
+            $('div input').prop('checked', true);
+            } else {
+            $('div input').prop('checked', false);
+            }
+            });
+
+            $(document).on("click", ".studentCheckBoxInput", function () {
+
+            console.log(".studentCheckBoxInput.studentCheckBoxInput.studentCheckBoxInput");
+            var studentsCount = $(".studentCheckBoxInput").length;
+            var studentsCheckedCount = 0;
+
+            $('.studentCheckBoxInput').each(function () {
+            if ($(this).is(':checked')) {
+            studentsCheckedCount++;
+            }
+            });
+            if (studentsCheckedCount == studentsCount) {
+            $("#selectallStudents").prop('checked', true);
+            } else {
+            $("#selectallStudents").prop('checked', false);
+            }
+            });
+
+            var assignLessonKeyToStudent;
+    var assignLessonNameToStudent;
+    function InitButtons() {
+        $(".assignIcon").on("click", function () {
+
+            console.log("assignIcon click!!!");
+
+
+            assignLessonKeyToStudent = $(this).attr("data-lessonKey");
+            assignLessonNameToStudent = $(this).attr("data-lessonName");
+
+            console.log("assignLessonKeyToStudent:" + assignLessonKeyToStudent);
+            console.log("assignLessonNameToStudent:" + assignLessonNameToStudent);
+        });
+    }
+
+
+           $("#assignToStudentsBtn").click(function () {
+            mApp.progress($(this));
+            DesiredStudents = [];
+            $('.studentCheckShare').each(function () {
+                var CheckBox = $(this).find("input").prop("checked");
+                if (CheckBox) {
+                    var studentId = $(this).attr("data-studenkey");
+                    DesiredStudents.push(studentId);
+                }
+            });
+            var SchoolsDropDown = $("#SchoolsDropDown option:selected").val();
+            var GradesDropDown = $("#GradesDropDown option:selected").val();
+               submit_post_via_hidden_form("@Url.Action("Create", "Assignments")", {
+                   lessonId: assignLessonKeyToStudent,
+                   lessonName: assignLessonNameToStudent,
+                   studentsListSelected: JSON.stringify(DesiredStudents),
+                   gradeKey: GradesDropDown,
+                   schoolKey: SchoolsDropDown
+               });
+            @*window.location = '@Url.Action("Create", "Assignments")/?lessonId=' + assignLessonKeyToStudent + '&lessonName=' + assignLessonNameToStudent + '&studentsListSelected=' + JSON.stringify(DesiredStudents);*@
+        })
+
+
+    </script>
+
+
+
+}
+
+@*old code*@
+
+@*<div class="m-portlet m-portlet--mobile">
+        <div class="m-portlet__head">
+            <div class="m-portlet__head-caption">
+                <div class="m-portlet__head-title">
+                    <h3 class="m-portlet__head-text">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageLessonsBuilder"))
+                    </h3>
+                </div>
+            </div>
+            <div class="m-portlet__head-tools">
+                <div class="m-portlet__nav">
+                    <div class="m-portlet__nav-item">
+                        @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name=="Teacher")
+                        {
+                            <a href="@Url.Action("AuthoringResource", "Utilities")" target="_blank" class="m-portlet__nav-link btn m-btn--pill btn-outline-success m-btn m-btn--outline-2x w-100">
+                                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPagebuildlessons"))
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="class=" m-portlet__body" style="padding:10px;">
+
+            <table class="table table-striped- table-bordered table-hover table-checkable dataTable no-footer dtr-inline"
+                   id="m_table" role="grid">
+                <thead>
+                    <tr>
+                        <th class="sorting_disabled">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageLesson"))</th>
+                        <th class="sorting_disabled">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageStatus"))</th>
+                        <th class="sorting_disabled">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageActions"))</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        if (item.File.ExtendedDatas != null)
+                        {
+                            <tr>
+                                <td>@item.File.ExtendedDatas.FirstOrDefault().FileName</td>
+                                @{
+                                    int statusKey = item.File.StatusKey;
+                                    string statusLabelText = "";
+                                    string statusLabelFontColor = "";
+                                    switch (statusKey)
+                                    {
+                                        case (int)RLI.Common.Enums.StatusEnum.StatusPending:
+                                            statusLabelText = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPagePending")).ToString();
+                                            statusLabelFontColor = "m--font-warning";
+                                            break;
+                                        case (int)RLI.Common.Enums.StatusEnum.StatusApproved:
+                                            statusLabelText = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageApproved")).ToString();
+                                            statusLabelFontColor = "m--font-success";
+                                            break;
+                                        case (int)RLI.Common.Enums.StatusEnum.StatusRejected:
+                                            statusLabelText = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageRejected")).ToString();
+                                            statusLabelFontColor = "m--font-danger";
+                                            break;
+                                        default:
+                                            statusLabelText = "";
+                                            statusLabelFontColor = "";
+                                            break;
+                                    }
+                                }
+                                <td class="@statusLabelFontColor">@statusLabelText</td>
+                                <td>
+                                    <span class="dropdown">
+                                        <a href="#" class="btn m-btn m-btn--hover-brand m-btn--icon m-btn--icon-only m-btn--pill" data-toggle="dropdown" aria-expanded="false">
+                                            <i class="la la-ellipsis-h"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-32px, 27px, 0px);">
+                                            <a class="dropdown-item" href="@(Url.Action("index", "ScormPlayer")+"?fileName="+ item.File.ExtendedDatas.FirstOrDefault().FilePath)" target="_blank"><i class="fas fa-eye"></i> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageViewLesson"))</a>
+                                            @if (statusKey == (int)RLI.Common.Enums.StatusEnum.StatusPending)
+                                            {
+                                                <a class="dropdown-item" href="@Url.Action("MakeAdaptLessonFinal", "Lessons",new { fileKey=item.FileKey})"><i class="fas fa-upload"></i>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageMakeFinal"))</a>
+                                            }
+
+                                            @if (statusKey == (int)RLI.Common.Enums.StatusEnum.StatusApproved)
+                                            {
+                                                <a class="dropdown-item" href="@Url.Action("CreateAuthoringToolLesson", "Lessons",new { fileKey=item.FileKey})" target="_blank"><i class="fas fa-plus"></i>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageaddtocurriculum"))</a>
+                                                <a class="dropdown-item assignIcon" data-lessonName="@item.File.Lessons.FirstOrDefault().LessonName" data-lessonKey="@item.File.Lessons.FirstOrDefault().LessonKey" data-url="@item.File.Lessons.FirstOrDefault().LessonURL" data-toggle="modal" data-target="#m_modal_56" href="#"><i class="fas fa-forward"></i>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "IndexPageAssignLesson"))</a>
+                                            }
+
+                                        </div>
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    Error in Publishing
+                                </td>
+                            </tr>
+                        }
+
+                    }
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>*@
+
+

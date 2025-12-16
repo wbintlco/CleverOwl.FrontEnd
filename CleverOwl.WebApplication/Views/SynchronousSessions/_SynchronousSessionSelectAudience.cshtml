@@ -1,0 +1,110 @@
+﻿@model RLI.WebApplication.Models.SynchronousSessionSelectAudienceViewModel
+@using RLI.Common.Managers
+@using RLI.EntityFramework.EDM
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+@using (Html.BeginForm("SessionSelectAudience", "SynchronousSessions", FormMethod.Post, new { @class = "m-form m-form--label-align-left", @id = "sessionSelectedAudienceForm", role = "form", novalidate = "novalidate" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="row">
+        <div class="col-md-1 col-12"></div>
+        <div class="col-md-10 col-12">
+            <!-- to move to partial -->
+            <div class="m-form__heading">
+                <h3 class="font-weight-bold">
+                    @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageSelectAudienceTitle"))
+                </h3>
+            </div>
+            <div class="mt-5">
+                @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Student" && ViewBag.ClassTeacher != null)
+                {
+                    Teacher ClassTeacher = ViewBag.ClassTeacher;
+                    <div class="row">
+                        <div class="col-md-4 col-12">
+                            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageSelectTeacherAudience"))
+                        </div>
+                        <div class="col-md-8 col-12">
+                            <div id="enrolled_students" style="min-height:100px">
+                                @*<label class="m-checkbox m-checkbox--air">
+                                        All<input type="checkbox" class="all_students" data-child="students" checked="checked" />
+                                        <span></span>
+                                    </label>*@
+                                <ul>
+                                    <li>
+                                        <label class="m-checkbox">
+                                            <input class="teacher" type="checkbox" name="selectTeacher" value="@ClassTeacher.TeacherKey" checked="checked">@ClassTeacher.FirstName @ClassTeacher.LastName
+                                            <span></span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-md-4 col-12">
+                        @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageSelectAudience"))
+                    </div>
+                    <div class="col-md-8 col-12">
+                        <div id="enrolled_students" style="min-height:100px">
+                            <label class="m-checkbox m-checkbox--air">
+                                All<input type="checkbox" class="all_students" data-child="students" checked="checked" />
+                                <span></span>
+                            </label>
+
+                            <ul>
+                                @foreach (var student in Model.StudentsEnrolled)
+                                {
+                                    <li>
+                                        <label class="m-checkbox">
+                                            <input class="student" type="checkbox" name="studentsSelected" value="@student.StudentKey" checked="checked">@student.StudentName
+                                            <span></span>
+                                        </label>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-1 col-12"></div>
+    </div>
+
+}
+
+
+
+<script>
+     //initiale all the function for the select audience in Edit Page
+                nbStudentChecked = '@Model.SelectedStudentsEnrolled.Count()';
+                var numberOfStudents = '@Model.StudentsEnrolled.Count()';
+                $('.student').change(function () {
+                    if ($(this).is(":checked")) {
+                        nbStudentChecked++;
+                        if (nbStudentChecked == numberOfStudents) {
+                            $('.all_students').prop('checked', true);
+                        }
+                    } else {
+                        nbStudentChecked--;
+                        $('.all_students').prop('checked', false);
+                    }
+                });
+                $('.all_students').change(function () {
+                    if ($(this).is(":checked")) {
+                        $('.student').prop('checked', true);
+                        nbStudentChecked = numberOfStudents;
+                    } else {
+                        $('.student').prop('checked', false);
+                        nbStudentChecked = 0;
+                    }
+                });
+                if (nbStudentChecked == 0) {
+                    $('.all_students').click();
+                }
+</script>

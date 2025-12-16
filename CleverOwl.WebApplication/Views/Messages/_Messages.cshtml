@@ -1,0 +1,89 @@
+﻿@model RLI.Common.DataObjects.ConversationMessagesModel
+@using RLI.Common.Managers
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+    int currentMoodleUserId = int.Parse(ViewBag.currentMoodleUserId);
+    List<RLI.Common.DataObjects.ConversationMessagesModel.Member> members = Model.members;
+    List<RLI.Common.DataObjects.ConversationMessagesModel.Message> messages = Model.messages;
+
+    RLI.Common.DataObjects.ConversationMessagesModel.Member fromUser = members.Where(m => m.id != currentMoodleUserId).FirstOrDefault();
+    RLI.Common.DataObjects.ConversationMessagesModel.Member currentUser = members.Where(m => m.id == currentMoodleUserId).FirstOrDefault();
+
+}
+@if (messages != null)
+{
+    string dateToShow = "";
+    string previousDate = "";
+    string[] currentDateList = ViewBag.currentDateList;
+    int currentDay = int.Parse(currentDateList[0] + "");
+    int currentMonth = int.Parse(currentDateList[1] + "");
+    int currentYear = int.Parse(currentDateList[2] + "");
+    <div id="loader"></div>
+    for (int i = messages.Count() - 1; i >= 0; i--)
+    {
+
+        string mssgDate = RLI.Common.Managers.UtilitiesManager.ConvertFromUnixTimestamp(messages.ElementAt(i).timecreated) + "";
+        string[] mssgDateList = mssgDate.Split(' ');
+        string[] mssgDateSended = mssgDateList[0].Split('/');
+        int mssgDay = int.Parse(mssgDateSended[0] + "");
+        int mssgMonth = int.Parse(mssgDateSended[1] + "");
+        int mssgYear = int.Parse(mssgDateSended[2] + "");
+        if (currentDay == mssgDay && currentMonth == mssgMonth && currentYear == mssgYear)
+        {
+            dateToShow = ViewBag.UserName;
+
+        }
+        else
+        {
+            dateToShow = mssgDateSended[0] + "/" + mssgDateSended[1] + "/" + mssgDateSended[2];
+        }
+
+        <div class="m-messenger__datetime">
+            @if (dateToShow != previousDate)
+            {
+                previousDate = dateToShow;
+                <span>@dateToShow</span>
+            }
+        </div>
+        <div class="m-messenger__wrapper">
+            <div class="m-messenger__message @(messages.ElementAt(i).useridfrom == currentMoodleUserId ? "m-messenger__message--out" : "m-messenger__message--in")">
+                @if (messages.ElementAt(i).useridfrom != currentMoodleUserId)
+                {
+                    <div class="m-messenger__message-pic">
+                        <img class="profilePhoto" src="@Model.members.Where(m=>m.id!=currentMoodleUserId).Select(m=>m.profileimageurlsmall).FirstOrDefault()" alt="" />
+                    </div>
+                }
+                <div class="m-messenger__message-body" style="width:500px!important;">
+
+                    <div class="m-messenger__message-content" style="border-radius : @(messages.ElementAt(i).useridfrom == currentMoodleUserId ? "15px 0px 15px 15px" : "0px 15px 15px 15px" )">
+                        <div class="m-messenger__message-username">
+                        <span style="font-weight:bold; font-size:1.5em">@(messages.ElementAt(i).useridfrom == currentMoodleUserId ? currentUser.fullname : fromUser.fullname)</span>
+                    </div>
+                        <div class="m-messenger__message-text">
+                            <span style="font-size:1.3em">@Html.Raw(messages.ElementAt(i).text)</span>
+                        </div>
+                        <div class="m-messenger__message-username">
+                            @{
+                                string date = RLI.Common.Managers.UtilitiesManager.ConvertFromUnixTimestamp(messages.ElementAt(i).timecreated) + "";
+                                string[] dateList = date.Split(' ');
+                                string[] timeList = dateList[1].Split(':');
+                                string AMPM = string.Empty;
+                                try
+                                {
+                                    AMPM = dateList[2];
+                                }
+                                catch (Exception e)
+                                {
+
+                                }
+                                string time = timeList[0] + ":" + timeList[1];
+                                string convertedTime = time + " " + AMPM;
+                            }
+                            <span>@convertedTime</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

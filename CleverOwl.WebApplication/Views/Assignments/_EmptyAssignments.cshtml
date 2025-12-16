@@ -1,0 +1,42 @@
+﻿@using RLI.Common.Managers
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+ @if(User.IsInRole("Teacher"))
+                        {
+@Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
+{ "title", "Hey hey!" },
+{ "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Youdontseemtohaveanyassignments")).ToString() }
+, { "description", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Creatinganassignmentwillallowyoutosendassignmentsforstudents")).ToString() }
+, { "action", true },
+{ "actionBtnId", "createButtonInEmptySlate" },
+{ "actionBtnText", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_CreateAssignment001")).ToString() } })
+                        }
+                        else
+                        {
+@Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
+{ "title", "Hey hey!" },
+{ "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Youdontseemtohaveanyassignments")).ToString() }
+, { "description", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Creatinganassignmentwillallowyoutosendassignmentsforstudents")).ToString() }
+, { "action", false },
+{ "actionBtnId", "createButtonInEmptySlate" },
+{ "actionBtnText", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_CreateAssignment001")).ToString() } })
+                        }
+@*<div class="blankslate m-auto col-12">
+    <div class="mb-3">
+        @Html.Partial("~/Views/SharedSvgs/_EmptySlateIcon.cshtml")
+    </div>
+    <h3 class="mb-1">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Youdontseemtohaveanyassignments"))</h3>
+    <p class="mb-4">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Creatinganassignmentwillallowyoutosendassignmentsforstudents"))</p>
+    @if (User.IsInRole("Teacher"))
+    {
+        <button id="createButtonInEmptySlate" type="button" class="btn m-btn--pill m-btn m-btn--gradient-from-primary m-btn--gradient-to-info m--padding-top-15 m--padding-bottom-15 m--padding-left-20 m--padding-right-20 w-100-mobile">
+            <i class="fa fa-plus m--padding-right-5"></i>
+            <span>
+                @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_CreateAssignment001"))
+            </span>
+        </button>
+    }
+</div>*@
+

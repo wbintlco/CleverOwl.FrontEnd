@@ -1,0 +1,174 @@
+﻿@model CleverOwl.WebApplication.Models.ToDoViewModel
+
+@using RLI.Common.Managers
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+<div class="row m-auto">
+    <div class="col-lg-2 col-md-2" style="display: flex;align-items: center;">
+
+    </div>
+    <div class="col-lg-1 col-md-1 col-3 m--hidden-mobile" style="display: flex;align-items: center;">
+        <button class="previousDayBtn"><i class="fas fa-angle-left"></i></button>
+    </div>
+    <div class="col-lg-6 col-md-6 col-12">
+        <h2 id="dateText">@Model.TodosDate.ToString("dddd, dd MMMM yyyy") <i class=" fa fa-calendar fa-1x" style="color: #f98e47;"></i></h2>
+    </div>
+    <div class="col-lg-1 col-md-1 col-3 m--hidden-mobile" style="display: flex;align-items: center;justify-content: flex-end;">
+        <button class="nextDayBtn"><i class="fas fa-angle-right"></i></button>
+    </div>
+    <div class="col-lg-2 col-md-2 col-12" style="text-align:end;align-items: center;">
+        @if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Teacher")
+        {
+
+            <div class=" m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-left m-dropdown--align-push  m-auto" m-dropdown-toggle="click" style="text-align: center;" aria-expanded="true">
+
+
+                <a href="#" id="shareBtn" class="shareBtn" @*class=" m-dropdown__toggle"*@>
+                    <i class="fa fa-share shareBtn fa-1x" style="color: #f98e47;"></i>
+                    @*<i class="fa fa-2x fa-share "> @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Share"))</i>*@
+                </a>
+
+
+                <div class="m-dropdown__wrapper" style="z-index: 101;left:-125px">
+                    <span class="m-dropdown__arrow m-dropdown__arrow--left m-dropdown__arrow--adjust"></span>
+                    <div class="m-dropdown__inner">
+                        <div class="m-dropdown__body">
+                            <div class="m-dropdown__content">
+                                <ul class="m-nav">
+                                    <li class="m-nav__item">
+
+                                        @Html.DropDownList("GradesDropDown", (SelectList)ViewBag.Grades, "", new { @class = "form-control", style = "width:100%", id = "GradesDropDown" })
+                                    </li>
+                                    <li class="m-nav__item mt-4">
+                                        <select class="form-control shareBtn" style="width:100%" id="shareTypeDropDown">
+                                            <option>Agenda</option>
+                                            <option>Day</option>
+                                        </select>
+                                    </li>
+                                    <li class="m-nav__separator m-nav__separator--fit">
+                                    </li>
+
+                                    <li class="m-nav__item">
+
+                                        <aside class="f_widget social_widget">
+
+                                            <ul class="list">
+                                                @{
+                                                    int sstgKey = (int)ViewBag.SSTGKey;
+                                                    string encodeParam = RLI.Common.Managers.UtilitiesManager.Base64Encode(sstgKey.ToString());
+                                                }
+                                                <li><a style="cursor:pointer;" data-url="@HttpContext.Current.Request.Url.Authority/ToDoList/View/?id=@encodeParam" class="copyLink" data-type="copy" data-title=""><i class=" fa fa-copy fa-2x"></i></a></li>
+                                                <li><a href="" target="_blank" class="social_share" data-url="@HttpContext.Current.Request.Url.Authority/ToDoList/View/?id=@encodeParam" data-type="fb" data-title=""><i class=" fab fa-facebook-f fa-2x"></i></a></li>
+                                                <li><a href="" target="_blank" class="social_share" data-url="@HttpContext.Current.Request.Url.Authority/ToDoList/View/?id=@encodeParam" data-type="twitter" data-title=""><i class=" fab fa-twitter fa-2x"></i></a></li>
+                                                <li><a href="" target="_blank" class="social_share" data-url="@HttpContext.Current.Request.Url.Authority/ToDoList/View/?id=@encodeParam" data-type="whatsapp" data-title=""><i class=" fab fa-whatsapp fa-2x"></i></a></li>
+                                            </ul>
+                                        </aside>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        }
+
+    </div>
+</div>
+@if (RLI.Common.Managers.UserManager.GetUserRole(ViewBag.CurrentUser.Id).Name == "Teacher")
+{
+    if (Model.grades != null && Model.grades.Count != 0)
+    {
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <button class="show-grades btn btn-brand w-100">Show filters</button>
+            </div>
+            <div class="col-2"></div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 mt-1">
+                <div class="m-accordion m-accordion--section m-accordion--padding-lg" id="m_section_1_content">
+                    <div class="m-accordion__item">
+                        @*<div class="m-accordion__item-head collapsed-show collapsed" role="tab" id="m_section_1_content_1_head" data-toggle="collapse" href="#m_section_1_content_1_body" aria-expanded="true">
+                                <span class="m-accordion__item-title">Select Grade:</span>
+                                <span class="m-accordion__item-mode"></span>
+                            </div>*@
+                        <div class="m-accordion__item-body collapse show" id="m_section_1_content_1_body" role="tabpanel" aria-labelledby="m_section_1_content_1_head" data-parent="#m_section_1_content" style="">
+                            <div class="m-accordion__item-content">
+
+                                <div class="row justify-content-center align-items-center mx-auto false" style="max-width: 52rem;">
+                                    <div class="col px-sm-4">
+                                        <div class="filter-menu d-flex justify-content-center flex-wrap mx-auto mb-3 mt-md-6 ">
+                                            <button class="item btn btn-outline-primary m-2 gradeBtn gradefilterAll" data-filter="all" data-id="-1">
+                                                All
+                                            </button>
+                                            @foreach (var grade in Model.grades)
+                                            {
+                                                if (grade != null)
+                                                {
+
+                                                    <button class="item btn btn-outline-primary m-btn m-btn--custom btn-sm gradeFilterButton m-2 cycleBtnFilter_1 gradeBtn" data-id="@grade.GradeKey" data-filter="header">@grade.Grade1</button>
+                                                }
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+}
+<div class="row">
+    <div class="calendar-part">
+        @Html.Partial("_calendar")
+    </div>
+</div>
+
+<div class="row text-center">
+    <div class="col-lg-12  col-md-12 col-12">
+        <input type="text" class="searchInput" id="searchInput" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Search"))" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-12 info-error-container" style="display:none;">
+        <p>@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SearchErrorText1"))</p>
+    </div>
+</div>
+<div class="container todos-container">
+
+    @Html.Partial("_ToDoItem", Model)
+
+</div>
+
+    @Scripts.Render("~/assets/JS-Share-master/src/jsshare.js")
+    <script>
+        shareInitJS();
+        function shareInitJS() {
+            document.addEventListener("DOMContentLoaded", function (event) {
+                var shareItems = $('.social_share');
+                var isIOS = /iPad|iPhone|iPod/.test(navigator.platform)
+                    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                var isAndroid = /(android)/i.test(navigator.userAgent);
+                var options = {};
+                if (isIOS || isAndroid) {
+                    options.link_telegram = 'tg://msg';
+                    options.link_whatsapp = 'whatsapp://send';
+                }
+                for (var i = 0; i < shareItems.length; i += 1) {
+                    shareItems[i].addEventListener('click', function share(e) {
+                        //console.log("dasd");
+                        //console.log(this);
+                        return JSShare.go(this, options);
+                    });
+                }
+            });
+        }
+    </script>

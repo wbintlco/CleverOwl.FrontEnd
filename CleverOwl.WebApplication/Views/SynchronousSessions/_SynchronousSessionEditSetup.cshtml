@@ -1,0 +1,57 @@
+﻿@model RLI.WebApplication.Models.SynchronousSessionsSetupViewModel
+@using RLI.Common.Managers
+
+@{
+    Dictionary<string, string> Locale = ViewBag.Locale;
+}
+
+@using (Html.BeginForm("SessionEditSetup", "SynchronousSessions", FormMethod.Post, new { @class = "m-form m-form--label-align-left", @id = "sessionSetupForm", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="m-form__heading">
+        <h3 class="font-weight-bold">
+            @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageEditSessionDetails"))
+        </h3>
+    </div>
+    <div class="form-horizontal">
+        <div class="m-form__content">
+            @*@Html.ValidationSummary("", new { @class = "text-danger mt-4" })*@
+            @Html.HiddenFor(model => model.Key)
+        </div>
+        <div class="form-group m-form__group row">
+            <label class="col-lg-3 col-form-label text-primary m-auto">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageEditTopic"))</label>
+            <div class="col-lg-9">
+                @{string topic = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageEditFeildRequired1")).ToString(); }
+                @Html.EditorFor(model => model.Topic, new { htmlAttributes = new { @class = "form-control m-input m-auto", @placeholder = @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageEditWhatIsAbout?")) } })
+                @Html.ValidationMessageFor(model => model.Topic, topic, new { @class = "text-danger m--margin-left-20 m--margin-top-5", @style = "display:block;" })
+            </div>
+        </div>
+        <div class="form-group m-form__group row">
+            <label class="col-lg-3 col-form-label text-primary m--margin-top-5">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageEditDescription"))</label>
+            <div class="col-lg-9">
+                @{string desc = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageEditFeildRequired1")).ToString(); }
+                @Html.TextAreaFor(model => model.Descriprion, new { @class = "form-control m-input w-100 m-auto", @placeholder = @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageEditTellYourAudienceMoreAboutIt..")), @rows = "5" })
+                @Html.ValidationMessageFor(model => model.Descriprion, desc, new { @class = "text-danger m--margin-left-20 m--margin-top-5", @style = "display:block;" })
+            </div>
+        </div>
+        <div class="form-group m-form__group row">
+            <label class="col-lg-3 col-form-label text-primary m-auto">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageEditSessionDate"))</label>
+            <div class="col-lg-9">
+                <input id="SessionDateTime" value="@Model.SessionDate" name="SessionDateTime" type="text" class="form-control m-input m-auto" placeholder="@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageEditWhenIsTheSession?"))" autocomplete="off">
+                @{string date = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageEditFeildRequired1")).ToString(); }
+                @Html.HiddenFor(model => model.SessionDate)
+                @Html.ValidationMessageFor(model => model.SessionDate, date, new { @class = "text-danger m--margin-left-20 m--margin-top-5", @style = "display:block;" })
+            </div>
+        </div>
+        <div class="form-group m-form__group row">
+            <label class="col-lg-3 col-form-label text-primary m-auto">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageEditDuration"))</label>
+            <div class="col-lg-9">
+                @{string duration = Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageEditFeildRequired1")).ToString(); }
+                @Html.EditorFor(model => model.MeetingDuration, new { htmlAttributes = new { @id = "MeetingDuration", @class = "form-control m-input m-auto", @placeholder = @Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "SynchronousSessionsPageEditHowLong?")), @autocomplete = "off" } })
+                @Html.ValidationMessageFor(model => model.MeetingDuration, duration, new { @class = "text-danger m--margin-left-20 m--margin-top-5", @style = "display:block;" })
+            </div>
+        </div>
+    </div>
+}
+
+
