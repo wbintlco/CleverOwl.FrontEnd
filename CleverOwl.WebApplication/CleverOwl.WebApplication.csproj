@@ -336,15 +336,15 @@
     </Reference>
     <Reference Include="RLI.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\RLI.Common.dll</HintPath>
+      <HintPath>..\..\..\remote-learning-initiative\RLI.Common\bin\Debug\RLI.Common.dll</HintPath>
     </Reference>
     <Reference Include="RLI.EntityFramework, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\RLI.EntityFramework.dll</HintPath>
+      <HintPath>..\..\..\remote-learning-initiative\RLI.EntityFramework\bin\Debug\RLI.EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="RLI.WebApplication, Version=1.0.8902.25852, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="RLI.WebApplication, Version=1.0.9531.19428, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\RLI.WebApplication.dll</HintPath>
+      <HintPath>..\..\..\remote-learning-initiative\RLI.WebApplication\bin\RLI.WebApplication.dll</HintPath>
     </Reference>
     <Reference Include="Savage.Data, Version=5.4.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Savage.Data.5.4.2\lib\net46\Savage.Data.dll</HintPath>
@@ -783,6 +783,11 @@
       <DependentUpon>_StudentSubmissionsGrid.cshtml</DependentUpon>
     </Compile>
     <Compile Include="Views\StudentsSubmissionPage\_SubmissionDetails.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_SubmissionDetails.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StudentsSubmissionPage\_SubmissionDetails1.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>_SubmissionDetails.cshtml</DependentUpon>
@@ -7955,7 +7960,7 @@
     </Content>
     <Content Include="Views\StudentsSubmissionPage\_SubmissionDetails.cshtml">
       <Generator>RazorGenerator</Generator>
-      <LastGenOutput>_SubmissionDetails.generated.cs</LastGenOutput>
+      <LastGenOutput>_SubmissionDetails1.generated.cs</LastGenOutput>
     </Content>
     <Content Include="Views\AssignmentsSubmission\Index.cshtml">
       <Generator>RazorGenerator</Generator>

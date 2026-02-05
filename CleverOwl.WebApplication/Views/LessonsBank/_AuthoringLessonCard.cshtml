@@ -101,7 +101,7 @@ else
 
                                                 @if (file.StatusKey == (int)RLI.Common.Enums.StatusEnum.StatusPending)
                                                 {
-                                                    <li class="m-nav__item @(iscoordinator ? "coordinator" : "")">
+                                                    <li class="m-nav__item ">
 
                                                         <a href="javascript:MakeFinalJavascript('@file.FileKey')" class="m-nav__link">
                                                             <i class="m-nav__link-icon fas fa-upload"></i>
@@ -115,13 +115,13 @@ else
                                                 @if (file.StatusKey == (int)RLI.Common.Enums.StatusEnum.StatusApproved)
                                                 {
 
-                                                    <li class="m-nav__item @(iscoordinator ? "coordinator" : "")">
+                                                    <li class="m-nav__item ">
                                                         <a href="@(Url.Action("CreateAuthoringToolLesson", "Lessons", new { fileKey =file.FileKey }))" target="_blank" class="m-nav__link">
                                                             <i class="m-nav__link-icon fas fa-plus"></i>
                                                             <span class="m-nav__link-text">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsAddToCurriculum"))</span>
                                                         </a>
                                                     </li>
-                                                    <li class="m-nav__item @(iscoordinator ? "coordinator" : "")">
+                                                    <li class="m-nav__item ">
                                                         <a class="m-nav__link dropdown-item assignIcon" style="cursor:pointer;" data-lessonName="@file.Lessons.FirstOrDefault().LessonName" data-lessonKey="@file.Lessons.FirstOrDefault().LessonKey" data-url="@file.Lessons.FirstOrDefault().LessonURL" data-toggle="modal" data-target="#m_modal_56">
                                                             <i class="m-nav__link-icon fas fa-forward"></i>
                                                             <span class="m-nav__link-text">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "LessonBuilderManagementPageAdaptLessonsAssignLesson"))</span>
@@ -130,7 +130,7 @@ else
                                                 }
                                                 @if (file.StatusKey == (int)RLI.Common.Enums.StatusEnum.StatusPending)
                                                 {
-                                                    <li class="m-nav__item @(iscoordinator ? "coordinator" : "")">
+                                                    <li class="m-nav__item ">
                                                         <a href="javascript:DeleteFileFromLessonBank('@teachersFile.TeacherFileKey')" class="m-nav__link">
                                                             <i class="m-nav__link-icon fa fa-trash"></i>
                                                             <span class="m-nav__link-text">@Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_Delete"))</span>

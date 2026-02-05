@@ -302,17 +302,7 @@ WriteLiteral(">");
             #line hidden
 WriteLiteral("</a></li>\r\n                </ul>\r\n            </div>\r\n            <div");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 7134), Tuple.Create("\"", 7208)
-, Tuple.Create(Tuple.Create("", 7142), Tuple.Create("row", 7142), true)
-, Tuple.Create(Tuple.Create(" ", 7145), Tuple.Create("m--margin-top-20-desktop", 7146), true)
-            
-            #line 266 "..\..\Views\LessonsBank\AdaptLessons.cshtml"
-, Tuple.Create(Tuple.Create(" ", 7170), Tuple.Create<System.Object, System.Int32>(iscoordinator ? "coordinator" : ""
-            
-            #line default
-            #line hidden
-, 7171), false)
-);
+WriteLiteral(" class=\"row m--margin-top-20-desktop\"");
 
 WriteLiteral(">\r\n                <div");
 

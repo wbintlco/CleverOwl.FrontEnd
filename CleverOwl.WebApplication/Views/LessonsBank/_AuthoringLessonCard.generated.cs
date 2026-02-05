@@ -390,29 +390,20 @@ WriteLiteral("\r\n");
             #line hidden
 WriteLiteral("                                                    <li");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 5928), Tuple.Create("\"", 5985)
-, Tuple.Create(Tuple.Create("", 5936), Tuple.Create("m-nav__item", 5936), true)
-            
-            #line 104 "..\..\Views\LessonsBank\_AuthoringLessonCard.cshtml"
-, Tuple.Create(Tuple.Create(" ", 5947), Tuple.Create<System.Object, System.Int32>(iscoordinator ? "coordinator" : ""
-            
-            #line default
-            #line hidden
-, 5948), false)
-);
+WriteLiteral(" class=\"m-nav__item \"");
 
 WriteLiteral(">\r\n\r\n                                                        <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 6049), Tuple.Create("\"", 6103)
-, Tuple.Create(Tuple.Create("", 6056), Tuple.Create("javascript:MakeFinalJavascript(\'", 6056), true)
+WriteAttribute("href", Tuple.Create(" href=\"", 6012), Tuple.Create("\"", 6066)
+, Tuple.Create(Tuple.Create("", 6019), Tuple.Create("javascript:MakeFinalJavascript(\'", 6019), true)
             
             #line 106 "..\..\Views\LessonsBank\_AuthoringLessonCard.cshtml"
-                 , Tuple.Create(Tuple.Create("", 6088), Tuple.Create<System.Object, System.Int32>(file.FileKey
+                 , Tuple.Create(Tuple.Create("", 6051), Tuple.Create<System.Object, System.Int32>(file.FileKey
             
             #line default
             #line hidden
-, 6088), false)
-, Tuple.Create(Tuple.Create("", 6101), Tuple.Create("\')", 6101), true)
+, 6051), false)
+, Tuple.Create(Tuple.Create("", 6064), Tuple.Create("\')", 6064), true)
 );
 
 WriteLiteral(" class=\"m-nav__link\"");
@@ -464,27 +455,18 @@ WriteLiteral("\r\n");
             #line hidden
 WriteLiteral("                                                    <li");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 6843), Tuple.Create("\"", 6900)
-, Tuple.Create(Tuple.Create("", 6851), Tuple.Create("m-nav__item", 6851), true)
-            
-            #line 118 "..\..\Views\LessonsBank\_AuthoringLessonCard.cshtml"
-, Tuple.Create(Tuple.Create(" ", 6862), Tuple.Create<System.Object, System.Int32>(iscoordinator ? "coordinator" : ""
-            
-            #line default
-            #line hidden
-, 6863), false)
-);
+WriteLiteral(" class=\"m-nav__item \"");
 
 WriteLiteral(">\r\n                                                        <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 6962), Tuple.Create("\"", 7053)
+WriteAttribute("href", Tuple.Create(" href=\"", 6888), Tuple.Create("\"", 6979)
             
             #line 119 "..\..\Views\LessonsBank\_AuthoringLessonCard.cshtml"
-, Tuple.Create(Tuple.Create("", 6969), Tuple.Create<System.Object, System.Int32>(Url.Action("CreateAuthoringToolLesson", "Lessons", new { fileKey =file.FileKey })
+, Tuple.Create(Tuple.Create("", 6895), Tuple.Create<System.Object, System.Int32>(Url.Action("CreateAuthoringToolLesson", "Lessons", new { fileKey =file.FileKey })
             
             #line default
             #line hidden
-, 6969), false)
+, 6895), false)
 );
 
 WriteLiteral(" target=\"_blank\"");
@@ -513,16 +495,7 @@ WriteLiteral("</span>\r\n                                                       
 
 WriteLiteral("                                                    <li");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 7582), Tuple.Create("\"", 7639)
-, Tuple.Create(Tuple.Create("", 7590), Tuple.Create("m-nav__item", 7590), true)
-            
-            #line 124 "..\..\Views\LessonsBank\_AuthoringLessonCard.cshtml"
-, Tuple.Create(Tuple.Create(" ", 7601), Tuple.Create<System.Object, System.Int32>(iscoordinator ? "coordinator" : ""
-            
-            #line default
-            #line hidden
-, 7602), false)
-);
+WriteLiteral(" class=\"m-nav__item \"");
 
 WriteLiteral(">\r\n                                                        <a");
 
@@ -606,29 +579,20 @@ WriteLiteral("                                                ");
             #line hidden
 WriteLiteral("                                                    <li");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 8700), Tuple.Create("\"", 8757)
-, Tuple.Create(Tuple.Create("", 8708), Tuple.Create("m-nav__item", 8708), true)
-            
-            #line 133 "..\..\Views\LessonsBank\_AuthoringLessonCard.cshtml"
-, Tuple.Create(Tuple.Create(" ", 8719), Tuple.Create<System.Object, System.Int32>(iscoordinator ? "coordinator" : ""
-            
-            #line default
-            #line hidden
-, 8720), false)
-);
+WriteLiteral(" class=\"m-nav__item \"");
 
 WriteLiteral(">\r\n                                                        <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 8819), Tuple.Create("\"", 8893)
-, Tuple.Create(Tuple.Create("", 8826), Tuple.Create("javascript:DeleteFileFromLessonBank(\'", 8826), true)
+WriteAttribute("href", Tuple.Create(" href=\"", 8671), Tuple.Create("\"", 8745)
+, Tuple.Create(Tuple.Create("", 8678), Tuple.Create("javascript:DeleteFileFromLessonBank(\'", 8678), true)
             
             #line 134 "..\..\Views\LessonsBank\_AuthoringLessonCard.cshtml"
-                      , Tuple.Create(Tuple.Create("", 8863), Tuple.Create<System.Object, System.Int32>(teachersFile.TeacherFileKey
+                      , Tuple.Create(Tuple.Create("", 8715), Tuple.Create<System.Object, System.Int32>(teachersFile.TeacherFileKey
             
             #line default
             #line hidden
-, 8863), false)
-, Tuple.Create(Tuple.Create("", 8891), Tuple.Create("\')", 8891), true)
+, 8715), false)
+, Tuple.Create(Tuple.Create("", 8743), Tuple.Create("\')", 8743), true)
 );
 
 WriteLiteral(" class=\"m-nav__link\"");
@@ -723,14 +687,14 @@ WriteLiteral(">\r\n");
             #line hidden
 WriteLiteral("\r\n                    <span");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 11449), Tuple.Create("\"", 11478)
+WriteAttribute("class", Tuple.Create(" class=\"", 11301), Tuple.Create("\"", 11330)
             
             #line 177 "..\..\Views\LessonsBank\_AuthoringLessonCard.cshtml"
-, Tuple.Create(Tuple.Create("", 11457), Tuple.Create<System.Object, System.Int32>(statusLabelFontColor
+, Tuple.Create(Tuple.Create("", 11309), Tuple.Create<System.Object, System.Int32>(statusLabelFontColor
             
             #line default
             #line hidden
-, 11457), false)
+, 11309), false)
 );
 
 WriteLiteral(">");

@@ -635,7 +635,7 @@ WriteLiteral(">\r\n");
                     var timeRemainingMinutes1 = timeRemaining1.Minutes;
                     var today = DateTime.Now;
 
-                    if ((timeRemainingDays1 != 0 && timeRemainingHours1 != 0 && timeRemainingMinutes1 != 0) || Model.ExtensionDueDate != null)
+                    if ( timeRemainingMinutes1 != 0 || Model.ExtensionDueDate != null)
                     {
                         if (Model.SubmissionStatus == "draft" || Model.SubmissionStatus != "submitted")
                         {
@@ -867,15 +867,15 @@ WriteLiteral(">\r\n");
             #line hidden
 WriteLiteral("                            <div");
 
-WriteAttribute("id", Tuple.Create(" id=\"", 9582), Tuple.Create("\"", 9599)
-, Tuple.Create(Tuple.Create("", 9587), Tuple.Create("fileIndex_", 9587), true)
+WriteAttribute("id", Tuple.Create(" id=\"", 9526), Tuple.Create("\"", 9543)
+, Tuple.Create(Tuple.Create("", 9531), Tuple.Create("fileIndex_", 9531), true)
             
             #line 218 "..\..\Views\AssignmentsSubmission\_SubmissionAssignment.cshtml"
-, Tuple.Create(Tuple.Create("", 9597), Tuple.Create<System.Object, System.Int32>(i
+, Tuple.Create(Tuple.Create("", 9541), Tuple.Create<System.Object, System.Int32>(i
             
             #line default
             #line hidden
-, 9597), false)
+, 9541), false)
 );
 
 WriteLiteral(" class=\"col-12\"");
@@ -894,15 +894,15 @@ WriteLiteral(" style=\"text-align:center;\"");
 
 WriteLiteral(">\r\n                                        <a");
 
-WriteAttribute("href", Tuple.Create(" href=\"", 9815), Tuple.Create("\"", 9883)
+WriteAttribute("href", Tuple.Create(" href=\"", 9759), Tuple.Create("\"", 9827)
             
             #line 221 "..\..\Views\AssignmentsSubmission\_SubmissionAssignment.cshtml"
-, Tuple.Create(Tuple.Create("", 9822), Tuple.Create<System.Object, System.Int32>(attachment.fileurl.Replace("webservice", "")
+, Tuple.Create(Tuple.Create("", 9766), Tuple.Create<System.Object, System.Int32>(attachment.fileurl.Replace("webservice", "")
             
             #line default
             #line hidden
-, 9822), false)
-, Tuple.Create(Tuple.Create("", 9867), Tuple.Create("?forcedownload=1", 9867), true)
+, 9766), false)
+, Tuple.Create(Tuple.Create("", 9811), Tuple.Create("?forcedownload=1", 9811), true)
 );
 
 WriteLiteral(" download=\"download\"");

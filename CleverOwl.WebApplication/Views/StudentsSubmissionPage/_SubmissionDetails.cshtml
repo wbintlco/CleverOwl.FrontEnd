@@ -18,7 +18,7 @@
 
     bool iscoordinator = false;
 
-    if ((User.IsInRole("ContentManager") || User.IsInRole("Coordinator") || User.IsInRole("HeadOfDepartment") || User.IsInRole("SchoolDirector") || User.IsInRole("SchoolPrincipal") || User.IsInRole("SeniorCoordinator")) && ViewBag.CurrentUser.Id != User.Identity.GetUserId())
+    if ((User.IsInRole("ContentManager") || User.IsInRole("Coordinator") || User.IsInRole("HeadOfDepartment") || User.IsInRole("SchoolDirector") || User.IsInRole("SchoolPrincipal") || User.IsInRole("SeniorCoordinator")) || ViewBag.CurrentUser.Id != User.Identity.GetUserId())
     {
 
    // if (User.IsInRole("ContentManager") && ViewBag.CurrentUser.Id != User.Identity.GetUserId())

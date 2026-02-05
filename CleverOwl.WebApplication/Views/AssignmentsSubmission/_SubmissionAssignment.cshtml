@@ -144,7 +144,7 @@
                     var timeRemainingMinutes1 = timeRemaining1.Minutes;
                     var today = DateTime.Now;
 
-                    if ((timeRemainingDays1 != 0 && timeRemainingHours1 != 0 && timeRemainingMinutes1 != 0) || Model.ExtensionDueDate != null)
+                    if ( timeRemainingMinutes1 != 0 || Model.ExtensionDueDate != null)
                     {
                         if (Model.SubmissionStatus == "draft" || Model.SubmissionStatus != "submitted")
                         {
