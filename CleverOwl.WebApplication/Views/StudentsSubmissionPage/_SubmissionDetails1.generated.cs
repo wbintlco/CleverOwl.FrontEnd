@@ -122,6 +122,7 @@ WriteLiteral(@"
             color: #fff !important;
         }
 
+
     .lessonCard {
         width: 80% !important;
     }
@@ -163,7 +164,7 @@ WriteLiteral(" class=\"m-subheader__title \"");
 WriteLiteral(">");
 
             
-            #line 61 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 62 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                        Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageAutoCorrected")));
 
             
@@ -225,7 +226,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                    ");
 
             
-            #line 79 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 80 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageDueDate")));
 
             
@@ -241,7 +242,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                    ");
 
             
-            #line 82 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 83 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                Write(Model.DueDate);
 
             
@@ -282,7 +283,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                    ");
 
             
-            #line 94 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 95 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageExtensionDate")));
 
             
@@ -291,13 +292,13 @@ WriteLiteral("                                                    ");
 WriteLiteral("\r\n                                                </span><br />\r\n");
 
             
-            #line 96 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 97 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                 
             
             #line default
             #line hidden
             
-            #line 96 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 97 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                  if (Model.ExtensionDueDate != null)
                                                 {
 
@@ -313,7 +314,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                        ");
 
             
-            #line 99 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 100 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                    Write(Model.ExtensionDueDate);
 
             
@@ -322,7 +323,7 @@ WriteLiteral("                                                        ");
 WriteLiteral("\r\n                                                    </h4>\r\n");
 
             
-            #line 101 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 102 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                 }
                                                 else
                                                 {
@@ -338,7 +339,7 @@ WriteLiteral(">\r\n                                                        Not A
 "                                             </h4>\r\n");
 
             
-            #line 107 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 108 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                 }
 
             
@@ -388,7 +389,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                ");
 
             
-            #line 123 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 124 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                            Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageTimeRemaining")));
 
             
@@ -397,13 +398,13 @@ WriteLiteral("                                                ");
 WriteLiteral("\r\n                                            </span><br />\r\n");
 
             
-            #line 125 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 126 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                             
             
             #line default
             #line hidden
             
-            #line 125 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 126 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                               
                                                 var timeRemaining = Model.TimeRemaining.Value;
                                                 var timeRemainingHours = timeRemaining.Hours;
@@ -415,13 +416,13 @@ WriteLiteral("\r\n                                            </span><br />\r\n"
 WriteLiteral("\r\n");
 
             
-            #line 130 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 131 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                             
             
             #line default
             #line hidden
             
-            #line 130 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 131 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                              if (timeRemainingHours != 0 && timeRemainingMinutes != 0)
                                             {
                                                 if (timeRemainingHours == 0)
@@ -439,7 +440,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                        ");
 
             
-            #line 135 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 136 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                    Write(timeRemainingMinutes);
 
             
@@ -450,7 +451,7 @@ WriteLiteral(" m ");
 WriteLiteral("\r\n                                                    </h4>\r\n");
 
             
-            #line 137 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 138 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                 }
                                                 else
                                                 {
@@ -467,7 +468,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                        ");
 
             
-            #line 141 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 142 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                    Write(timeRemainingHours);
 
             
@@ -476,7 +477,7 @@ WriteLiteral("                                                        ");
 WriteLiteral(" h ");
 
             
-            #line 141 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 142 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                          Write(timeRemainingMinutes);
 
             
@@ -487,7 +488,7 @@ WriteLiteral(" m ");
 WriteLiteral("\r\n                                                    </h4>\r\n");
 
             
-            #line 143 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 144 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                 }
                                             }
                                             else
@@ -505,7 +506,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                    ");
 
             
-            #line 148 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 149 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_DueDateSubmissionMessage")));
 
             
@@ -514,7 +515,7 @@ WriteLiteral("                                                    ");
 WriteLiteral("\r\n                                                </h4>\r\n");
 
             
-            #line 150 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 151 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                             }
 
             
@@ -574,7 +575,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                    ");
 
             
-            #line 171 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 172 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageLastModified")));
 
             
@@ -590,7 +591,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                    ");
 
             
-            #line 174 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 175 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                Write(Model.LastModified);
 
             
@@ -624,7 +625,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                    ");
 
             
-            #line 185 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 186 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGradingStatus")));
 
             
@@ -633,13 +634,13 @@ WriteLiteral("                                                    ");
 WriteLiteral("\r\n                                                </span><br>\r\n");
 
             
-            #line 187 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 188 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                 
             
             #line default
             #line hidden
             
-            #line 187 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 188 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                  if (Model.GradingStatus == "graded")
                                                 {
 
@@ -655,7 +656,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                        ");
 
             
-            #line 190 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 191 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                    Write(Model.GradingStatus);
 
             
@@ -664,7 +665,7 @@ WriteLiteral("                                                        ");
 WriteLiteral("\r\n                                                    </h4>\r\n");
 
             
-            #line 192 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 193 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                 }
                                                 else
                                                 {
@@ -681,7 +682,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                        ");
 
             
-            #line 196 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 197 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                    Write(Model.GradingStatus);
 
             
@@ -690,7 +691,7 @@ WriteLiteral("                                                        ");
 WriteLiteral("\r\n                                                    </h4>\r\n");
 
             
-            #line 198 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 199 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                 }
 
             
@@ -731,7 +732,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                ");
 
             
-            #line 210 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 211 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                            Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGrade")));
 
             
@@ -741,13 +742,13 @@ WriteLiteral("\r\n                                            </span>\r\n       
 "                  <br>\r\n");
 
             
-            #line 213 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 214 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                             
             
             #line default
             #line hidden
             
-            #line 213 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 214 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                              if (Model.Grade != "" && Model.Grade != null)
                                             {
 
@@ -763,7 +764,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                    ");
 
             
-            #line 216 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 217 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                Write(Html.Raw(Model.Grade));
 
             
@@ -772,7 +773,7 @@ WriteLiteral("                                                    ");
 WriteLiteral("\r\n                                                </h4>\r\n");
 
             
-            #line 218 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 219 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                             }
                                             else
                                             {
@@ -788,7 +789,7 @@ WriteLiteral(">\r\n                                                    0/100\r\n
 "                             </h4>\r\n");
 
             
-            #line 224 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 225 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                             }
 
             
@@ -812,13 +813,13 @@ WriteLiteral(@"></div>
 ");
 
             
-            #line 236 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 237 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                 
             
             #line default
             #line hidden
             
-            #line 236 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 237 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                  if (Model.scormPagesInfo != null)
                 {
                     if (Model.scormPagesInfo.Count != 0)
@@ -897,7 +898,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                            ");
 
             
-            #line 287 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 288 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                        Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGrade")));
 
             
@@ -906,7 +907,7 @@ WriteLiteral("                                                            ");
 WriteLiteral(" ");
 
             
-            #line 287 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 288 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                                                                                            Write(Model.ScormOverallGrade);
 
             
@@ -922,7 +923,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                            ");
 
             
-            #line 290 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 291 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                        Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageThisGradeisautomatic")));
 
             
@@ -949,13 +950,13 @@ WriteLiteral(@"></div>
 ");
 
             
-            #line 302 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 303 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                         
             
             #line default
             #line hidden
             
-            #line 302 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 303 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                           
                                             List<QualitativeFeedback_Result> qualitativeFeedback_Result = (List<QualitativeFeedback_Result>)ViewBag.qualitativeFeedback_Result;
                                         
@@ -965,13 +966,13 @@ WriteLiteral(@"></div>
 WriteLiteral("\r\n\r\n");
 
             
-            #line 306 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 307 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                         
             
             #line default
             #line hidden
             
-            #line 306 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 307 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                          if (qualitativeFeedback_Result != null && qualitativeFeedback_Result.Count != 0)
                                         {
 
@@ -991,7 +992,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                    ");
 
             
-            #line 310 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 311 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                Write(Html.Partial("_AutoCorrectedQualitativeCard", qualitativeFeedback_Result));
 
             
@@ -1001,7 +1002,7 @@ WriteLiteral("\r\n                                                </div>\r\n    
 "                     </div>\r\n");
 
             
-            #line 313 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 314 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                         }
 
             
@@ -1016,13 +1017,13 @@ WriteLiteral(" class=\"col-xl-7\"");
 WriteLiteral(">\r\n");
 
             
-            #line 319 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 320 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                 
             
             #line default
             #line hidden
             
-            #line 319 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 320 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                  if (Model.scormPagesInfo != null)
                                 {
 
@@ -1056,13 +1057,13 @@ WriteLiteral(" class=\"m-widget4 m-widget4--progress\"");
 WriteLiteral(">\r\n");
 
             
-            #line 328 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 329 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                         
             
             #line default
             #line hidden
             
-            #line 328 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 329 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                          foreach (var scormInfo in Model.scormPagesInfo)
                                                         {
 
@@ -1086,7 +1087,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                                        ");
 
             
-            #line 334 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 335 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                    Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPagePage")));
 
             
@@ -1095,7 +1096,7 @@ WriteLiteral("                                                                  
 WriteLiteral(" #");
 
             
-            #line 334 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 335 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                                                                                                        Write(scormInfo.PageNumber);
 
             
@@ -1112,7 +1113,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                                        ");
 
             
-            #line 338 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 339 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                     Write(scormInfo.PageTitle != null ? scormInfo.PageTitle : "");
 
             
@@ -1138,7 +1139,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                                                ");
 
             
-            #line 344 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 345 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                            Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageMistakeError")));
 
             
@@ -1156,7 +1157,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                                                ");
 
             
-            #line 348 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 349 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                            Write(scormInfo.MistakeCount);
 
             
@@ -1165,7 +1166,7 @@ WriteLiteral("                                                                  
 WriteLiteral(" / ");
 
             
-            #line 348 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 349 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                                                      Write(scormInfo.ErrorCount);
 
             
@@ -1188,7 +1189,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                                                ");
 
             
-            #line 353 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 354 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                            Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageCheck")));
 
             
@@ -1206,7 +1207,7 @@ WriteLiteral(">\r\n");
 WriteLiteral("                                                                                ");
 
             
-            #line 357 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 358 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                            Write(scormInfo.CheckCount);
 
             
@@ -1232,7 +1233,7 @@ WriteLiteral(" class=\"m-widget17__progress-number\"");
 WriteLiteral(">");
 
             
-            #line 364 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 365 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                                                              Write(scormInfo.PageGrade);
 
             
@@ -1255,30 +1256,30 @@ WriteLiteral(" class=\"progress-bar bg-brand\"");
 
 WriteLiteral(" role=\"progressbar\"");
 
-WriteAttribute("style", Tuple.Create(" style=\"", 23792), Tuple.Create("\"", 23828)
-, Tuple.Create(Tuple.Create("", 23800), Tuple.Create("width:", 23800), true)
+WriteAttribute("style", Tuple.Create(" style=\"", 23794), Tuple.Create("\"", 23830)
+, Tuple.Create(Tuple.Create("", 23802), Tuple.Create("width:", 23802), true)
             
-            #line 368 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
-                                                                  , Tuple.Create(Tuple.Create(" ", 23806), Tuple.Create<System.Object, System.Int32>(scormInfo.PageGrade
+            #line 369 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+                                                                  , Tuple.Create(Tuple.Create(" ", 23808), Tuple.Create<System.Object, System.Int32>(scormInfo.PageGrade
             
             #line default
             #line hidden
-, 23807), false)
-, Tuple.Create(Tuple.Create("", 23827), Tuple.Create(";", 23827), true)
+, 23809), false)
+, Tuple.Create(Tuple.Create("", 23829), Tuple.Create(";", 23829), true)
 );
 
 WriteLiteral(" aria-valuenow=\"25\"");
 
 WriteLiteral(" aria-valuemin=\"0\"");
 
-WriteAttribute("aria-valuemax", Tuple.Create(" aria-valuemax=\"", 23866), Tuple.Create("\"", 23902)
+WriteAttribute("aria-valuemax", Tuple.Create(" aria-valuemax=\"", 23868), Tuple.Create("\"", 23904)
             
-            #line 368 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
-                                                                                                                                              , Tuple.Create(Tuple.Create("", 23882), Tuple.Create<System.Object, System.Int32>(scormInfo.PageGrade
+            #line 369 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+                                                                                                                                              , Tuple.Create(Tuple.Create("", 23884), Tuple.Create<System.Object, System.Int32>(scormInfo.PageGrade
             
             #line default
             #line hidden
-, 23882), false)
+, 23884), false)
 );
 
 WriteLiteral(@"></div>
@@ -1291,7 +1292,7 @@ WriteLiteral(@"></div>
 ");
 
             
-            #line 375 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 376 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                         }
 
             
@@ -1331,7 +1332,7 @@ WriteLiteral(" class=\"m-widget17__progress-number\"");
 WriteLiteral(">");
 
             
-            #line 385 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 386 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                                                          Write(totalScore);
 
             
@@ -1354,39 +1355,39 @@ WriteLiteral(" class=\"progress-bar bg-brand\"");
 WriteLiteral(" role=\"progressbar\"");
 
 WriteAttribute("style", Tuple.Create("\r\n                                                                               " +
-"  style=\"", 25636), Tuple.Create("\"", 25754)
-, Tuple.Create(Tuple.Create("", 25726), Tuple.Create("width:", 25726), true)
+"  style=\"", 25638), Tuple.Create("\"", 25756)
+, Tuple.Create(Tuple.Create("", 25728), Tuple.Create("width:", 25728), true)
             
-            #line 390 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
-             , Tuple.Create(Tuple.Create(" ", 25732), Tuple.Create<System.Object, System.Int32>(progressPercentage
+            #line 391 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+             , Tuple.Create(Tuple.Create(" ", 25734), Tuple.Create<System.Object, System.Int32>(progressPercentage
             
             #line default
             #line hidden
-, 25733), false)
-, Tuple.Create(Tuple.Create("", 25752), Tuple.Create("%;", 25752), true)
+, 25735), false)
+, Tuple.Create(Tuple.Create("", 25754), Tuple.Create("%;", 25754), true)
 );
 
-WriteAttribute("aria-valuenow", Tuple.Create(" aria-valuenow=\"", 25755), Tuple.Create("\"", 25782)
+WriteAttribute("aria-valuenow", Tuple.Create(" aria-valuenow=\"", 25757), Tuple.Create("\"", 25784)
             
-            #line 390 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
-                                                    , Tuple.Create(Tuple.Create("", 25771), Tuple.Create<System.Object, System.Int32>(totalScore
+            #line 391 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+                                                    , Tuple.Create(Tuple.Create("", 25773), Tuple.Create<System.Object, System.Int32>(totalScore
             
             #line default
             #line hidden
-, 25771), false)
+, 25773), false)
 );
 
 WriteLiteral("\r\n                                                                               " +
 "  aria-valuemin=\"0\"");
 
-WriteAttribute("aria-valuemax", Tuple.Create(" aria-valuemax=\"", 25883), Tuple.Create("\"", 25908)
+WriteAttribute("aria-valuemax", Tuple.Create(" aria-valuemax=\"", 25885), Tuple.Create("\"", 25910)
             
-            #line 391 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
-                                 , Tuple.Create(Tuple.Create("", 25899), Tuple.Create<System.Object, System.Int32>(maxScore
+            #line 392 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+                                 , Tuple.Create(Tuple.Create("", 25901), Tuple.Create<System.Object, System.Int32>(maxScore
             
             #line default
             #line hidden
-, 25899), false)
+, 25901), false)
 );
 
 WriteLiteral(@"></div>
@@ -1411,7 +1412,7 @@ WriteLiteral(@"
 ");
 
             
-            #line 470 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 471 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
 
 
 
@@ -1422,7 +1423,7 @@ WriteLiteral(@"
 WriteLiteral("                                    <!--end:: Widgets/User Progress -->\r\n");
 
             
-            #line 474 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 475 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                 }
                                 else
                                 {
@@ -1431,7 +1432,7 @@ WriteLiteral("                                    <!--end:: Widgets/User Progres
             #line default
             #line hidden
             
-            #line 477 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 478 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                Write(Html.Partial("_EmptySlateContainer", new ViewDataDictionary {
                                                                                                                                           { "title", Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_EmptySlateTitle")).ToString() },
                                                                                                                                           { "subTitle",Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "_InProgress")).ToString() }
@@ -1444,7 +1445,7 @@ WriteLiteral("                                    <!--end:: Widgets/User Progres
             #line default
             #line hidden
             
-            #line 483 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 484 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                                                                                                                     
                                 }
 
@@ -1454,7 +1455,7 @@ WriteLiteral("                                    <!--end:: Widgets/User Progres
 WriteLiteral("\r\n                            </div>\r\n                        </div>\r\n");
 
             
-            #line 488 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 489 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                     }
                 }
 
@@ -1480,7 +1481,7 @@ WriteLiteral(" class=\"m-subheader__title \"");
 WriteLiteral(">");
 
             
-            #line 493 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 494 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                        Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageSubmissionComments")));
 
             
@@ -1496,13 +1497,13 @@ WriteLiteral(" id=\"allCommentsLogContainer\"");
 WriteLiteral(">\r\n");
 
             
-            #line 499 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 500 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                     
             
             #line default
             #line hidden
             
-            #line 499 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 500 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                       
                         int userId = int.Parse(ViewBag.userId);
                         var groupedBYCommentsTeacher = Model.getCommentResultModel.comments.Where(c => c.userid != userId).GroupBy(item => item.fullname).Select(group => new { Customer = group.Key, Items = group.ToList() }).ToList();
@@ -1514,13 +1515,13 @@ WriteLiteral(">\r\n");
 WriteLiteral("\r\n\r\n");
 
             
-            #line 505 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 506 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                     
             
             #line default
             #line hidden
             
-            #line 505 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 506 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                      foreach (var content in Model.getCommentResultModel.comments.OrderBy(c => c.timecreated))
                     {
 
@@ -1534,13 +1535,13 @@ WriteLiteral(" class=\"col-12 m-3\"");
 WriteLiteral(">\r\n");
 
             
-            #line 508 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 509 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                             
             
             #line default
             #line hidden
             
-            #line 508 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 509 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                              if (content.userid != userId)
                             {
 
@@ -1554,7 +1555,7 @@ WriteLiteral(" class=\"m--font-brand\"");
 WriteLiteral(">");
 
             
-            #line 510 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 511 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                      Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageYou")));
 
             
@@ -1563,7 +1564,7 @@ WriteLiteral(">");
 WriteLiteral("</h4>\r\n");
 
             
-            #line 511 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 512 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                             }
                             else
                             {
@@ -1578,7 +1579,7 @@ WriteLiteral(" class=\"m--font-accent\"");
 WriteLiteral(">");
 
             
-            #line 514 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 515 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                       Write(content.fullname);
 
             
@@ -1587,7 +1588,7 @@ WriteLiteral(">");
 WriteLiteral("</h4>\r\n");
 
             
-            #line 515 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 516 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                             }
 
             
@@ -1598,7 +1599,7 @@ WriteLiteral("\r\n");
 WriteLiteral("                            ");
 
             
-            #line 517 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 518 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                        Write(Html.Raw(content.content));
 
             
@@ -1609,7 +1610,7 @@ WriteLiteral("\r\n                            <p>\r\n");
 WriteLiteral("                                ");
 
             
-            #line 519 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 520 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                            Write(RLI.Common.Managers.UtilitiesManager.ConvertFromUnixTimestamp(content.timecreated));
 
             
@@ -1618,13 +1619,13 @@ WriteLiteral("                                ");
 WriteLiteral("\r\n\r\n");
 
             
-            #line 521 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 522 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                 
             
             #line default
             #line hidden
             
-            #line 521 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 522 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                  if (content.userid != userId)
                                 {
 
@@ -1638,7 +1639,7 @@ WriteLiteral(" href=\"\"");
 WriteLiteral(" data-CommentId=\"");
 
             
-            #line 523 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 524 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                           Write(content.id);
 
             
@@ -1655,7 +1656,7 @@ WriteLiteral(" class=\"fa fa-trash\"");
 WriteLiteral("></i></a>\r\n");
 
             
-            #line 524 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 525 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                 }
 
             
@@ -1664,7 +1665,7 @@ WriteLiteral("></i></a>\r\n");
 WriteLiteral("                            </p>\r\n\r\n                        </div>\r\n");
 
             
-            #line 528 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 529 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                     }
 
             
@@ -1692,14 +1693,14 @@ WriteLiteral(" id=\"teacherComment\"");
 
 WriteLiteral(" style=\"text-decoration:none;resize:none;min-height:200px;border:none;\"");
 
-WriteAttribute("placeholder", Tuple.Create(" placeholder=\"", 36461), Tuple.Create("\"", 36572)
+WriteAttribute("placeholder", Tuple.Create(" placeholder=\"", 36463), Tuple.Create("\"", 36574)
             
-            #line 537 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
-                                                                                  , Tuple.Create(Tuple.Create("", 36475), Tuple.Create<System.Object, System.Int32>(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageCommentsPlaceHolder"))
+            #line 538 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+                                                                                  , Tuple.Create(Tuple.Create("", 36477), Tuple.Create<System.Object, System.Int32>(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageCommentsPlaceHolder"))
             
             #line default
             #line hidden
-, 36475), false)
+, 36477), false)
 );
 
 WriteLiteral("></textarea>\r\n                        </div>\r\n                        <div");
@@ -1710,17 +1711,17 @@ WriteLiteral(" style=\"text-align:end\"");
 
 WriteLiteral(">\r\n                            <button");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 36733), Tuple.Create("\"", 36808)
-, Tuple.Create(Tuple.Create("", 36741), Tuple.Create("btn", 36741), true)
-, Tuple.Create(Tuple.Create(" ", 36744), Tuple.Create("m-btn--pill", 36745), true)
-, Tuple.Create(Tuple.Create(" ", 36756), Tuple.Create("btn-secondary", 36757), true)
+WriteAttribute("class", Tuple.Create(" class=\"", 36735), Tuple.Create("\"", 36810)
+, Tuple.Create(Tuple.Create("", 36743), Tuple.Create("btn", 36743), true)
+, Tuple.Create(Tuple.Create(" ", 36746), Tuple.Create("m-btn--pill", 36747), true)
+, Tuple.Create(Tuple.Create(" ", 36758), Tuple.Create("btn-secondary", 36759), true)
             
-            #line 540 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
-, Tuple.Create(Tuple.Create(" ", 36770), Tuple.Create<System.Object, System.Int32>(iscoordinator ? "coordinator" : ""
+            #line 541 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+, Tuple.Create(Tuple.Create(" ", 36772), Tuple.Create<System.Object, System.Int32>(iscoordinator ? "coordinator" : ""
             
             #line default
             #line hidden
-, 36771), false)
+, 36773), false)
 );
 
 WriteLiteral(" id=\"cancelOwnFeedback\"");
@@ -1728,7 +1729,7 @@ WriteLiteral(" id=\"cancelOwnFeedback\"");
 WriteLiteral(">");
 
             
-            #line 540 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 541 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                                                                                   Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageClose")));
 
             
@@ -1736,19 +1737,19 @@ WriteLiteral(">");
             #line hidden
 WriteLiteral("</button>\r\n                            <button");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 36962), Tuple.Create("\"", 37081)
-, Tuple.Create(Tuple.Create("", 36970), Tuple.Create("btn", 36970), true)
-, Tuple.Create(Tuple.Create(" ", 36973), Tuple.Create("m-btn--pill", 36974), true)
-, Tuple.Create(Tuple.Create(" ", 36985), Tuple.Create("m-btn", 36986), true)
-, Tuple.Create(Tuple.Create(" ", 36991), Tuple.Create("m-btn--gradient-from-brand", 36992), true)
-, Tuple.Create(Tuple.Create(" ", 37018), Tuple.Create("m-btn--gradient-to-brand", 37019), true)
+WriteAttribute("class", Tuple.Create(" class=\"", 36964), Tuple.Create("\"", 37083)
+, Tuple.Create(Tuple.Create("", 36972), Tuple.Create("btn", 36972), true)
+, Tuple.Create(Tuple.Create(" ", 36975), Tuple.Create("m-btn--pill", 36976), true)
+, Tuple.Create(Tuple.Create(" ", 36987), Tuple.Create("m-btn", 36988), true)
+, Tuple.Create(Tuple.Create(" ", 36993), Tuple.Create("m-btn--gradient-from-brand", 36994), true)
+, Tuple.Create(Tuple.Create(" ", 37020), Tuple.Create("m-btn--gradient-to-brand", 37021), true)
             
-            #line 541 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
-                                    , Tuple.Create(Tuple.Create(" ", 37043), Tuple.Create<System.Object, System.Int32>(iscoordinator ? "coordinator" : ""
+            #line 542 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+                                    , Tuple.Create(Tuple.Create(" ", 37045), Tuple.Create<System.Object, System.Int32>(iscoordinator ? "coordinator" : ""
             
             #line default
             #line hidden
-, 37044), false)
+, 37046), false)
 );
 
 WriteLiteral(" id=\"addCommentBtnSave\"");
@@ -1756,7 +1757,7 @@ WriteLiteral(" id=\"addCommentBtnSave\"");
 WriteLiteral(">");
 
             
-            #line 541 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 542 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                                                                                                                               Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageSubmit")));
 
             
@@ -1779,7 +1780,7 @@ WriteLiteral(">\r\n\r\n                        <!--<div class=\"row mt-4\">\r\n 
 "b>");
 
             
-            #line 563 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 564 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                       Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageSubmissionStatus")));
 
             
@@ -1788,13 +1789,13 @@ WriteLiteral(">\r\n\r\n                        <!--<div class=\"row mt-4\">\r\n 
 WriteLiteral("</b></td>\r\n");
 
             
-            #line 564 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 565 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                     
             
             #line default
             #line hidden
             
-            #line 564 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 565 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                      if (Model.SubmissionStatus == "submitted")
                                     {
 
@@ -1808,7 +1809,7 @@ WriteLiteral(" class=\"m--font-success\"");
 WriteLiteral(">");
 
             
-            #line 566 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 567 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                Write(Model.SubmissionStatus);
 
             
@@ -1817,7 +1818,7 @@ WriteLiteral(">");
 WriteLiteral("</td>\r\n");
 
             
-            #line 567 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 568 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                     }
                                     else
                                     {
@@ -1832,7 +1833,7 @@ WriteLiteral(" class=\"m--font-brand\"");
 WriteLiteral(">");
 
             
-            #line 570 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 571 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                              Write(Model.SubmissionStatus);
 
             
@@ -1841,7 +1842,7 @@ WriteLiteral(">");
 WriteLiteral("</td>\r\n");
 
             
-            #line 571 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 572 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                     }
 
             
@@ -1851,7 +1852,7 @@ WriteLiteral("                                </tr>\r\n                         
 "                                  <td><b>");
 
             
-            #line 575 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 576 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                       Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGradingStatus")));
 
             
@@ -1860,13 +1861,13 @@ WriteLiteral("                                </tr>\r\n                         
 WriteLiteral("</b></td>\r\n");
 
             
-            #line 576 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 577 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                     
             
             #line default
             #line hidden
             
-            #line 576 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 577 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                      if (Model.GradingStatus == "graded")
                                     {
 
@@ -1880,7 +1881,7 @@ WriteLiteral(" class=\"m--font-success\"");
 WriteLiteral(">");
 
             
-            #line 578 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 579 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                Write(Model.GradingStatus);
 
             
@@ -1889,7 +1890,7 @@ WriteLiteral(">");
 WriteLiteral("</td>\r\n");
 
             
-            #line 579 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 580 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                     }
                                     else
                                     {
@@ -1904,7 +1905,7 @@ WriteLiteral(" class=\"m--font-brand\"");
 WriteLiteral(">");
 
             
-            #line 582 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 583 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                              Write(Model.GradingStatus);
 
             
@@ -1913,7 +1914,7 @@ WriteLiteral(">");
 WriteLiteral("</td>\r\n");
 
             
-            #line 583 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 584 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                     }
 
             
@@ -1922,13 +1923,13 @@ WriteLiteral("</td>\r\n");
 WriteLiteral("                                </tr>\r\n");
 
             
-            #line 585 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 586 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                 
             
             #line default
             #line hidden
             
-            #line 585 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 586 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                  if (Model.FeedbackComments != null)
                                 {
 
@@ -1939,7 +1940,7 @@ WriteLiteral("                                    <tr>\r\n\r\n                  
 "   <td><b>");
 
             
-            #line 589 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 590 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                           Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageFeedback")));
 
             
@@ -1948,7 +1949,7 @@ WriteLiteral("                                    <tr>\r\n\r\n                  
 WriteLiteral("</b></td>\r\n\r\n                                        <td>");
 
             
-            #line 591 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 592 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                        Write(Html.Raw(Model.FeedbackComments.FirstOrDefault()));
 
             
@@ -1957,7 +1958,7 @@ WriteLiteral("</b></td>\r\n\r\n                                        <td>");
 WriteLiteral("</td>\r\n                                    </tr>\r\n");
 
             
-            #line 593 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 594 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                 }
 
             
@@ -1967,7 +1968,7 @@ WriteLiteral("\r\n                                <tr>\r\n                      
 "b>");
 
             
-            #line 596 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 597 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                       Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGrade")));
 
             
@@ -1976,13 +1977,13 @@ WriteLiteral("\r\n                                <tr>\r\n                      
 WriteLiteral("</b></td>\r\n");
 
             
-            #line 597 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 598 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                     
             
             #line default
             #line hidden
             
-            #line 597 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 598 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                      if (Model.Grade != "" && Model.Grade != null)
                                     {
 
@@ -1994,7 +1995,7 @@ WriteLiteral("                                        <td>\r\n");
 WriteLiteral("                                            ");
 
             
-            #line 600 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 601 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                        Write(Html.Raw(Model.Grade));
 
             
@@ -2003,7 +2004,7 @@ WriteLiteral("                                            ");
 WriteLiteral("\r\n                                        </td>\r\n");
 
             
-            #line 602 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 603 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                     }
                                     else
                                     {
@@ -2014,7 +2015,7 @@ WriteLiteral("\r\n                                        </td>\r\n");
 WriteLiteral("                                        <td></td>\r\n");
 
             
-            #line 606 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 607 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                     }
 
             
@@ -2024,7 +2025,7 @@ WriteLiteral("                                </tr>\r\n                         
 "                                <td><b>");
 
             
-            #line 609 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 610 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                       Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageDueDate")));
 
             
@@ -2033,7 +2034,7 @@ WriteLiteral("                                </tr>\r\n                         
 WriteLiteral("</b></td>\r\n                                    <td>");
 
             
-            #line 610 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 611 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                    Write(Model.DueDate);
 
             
@@ -2044,7 +2045,7 @@ WriteLiteral("</td>\r\n                                </tr>-->\r\n             
 WriteLiteral("\r\n                        <!--<tr>\r\n                            <td><b>");
 
             
-            #line 637 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 638 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                               Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageExtensionDate")));
 
             
@@ -2053,13 +2054,13 @@ WriteLiteral("\r\n                        <!--<tr>\r\n                          
 WriteLiteral("</b></td>\r\n");
 
             
-            #line 638 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 639 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                             
             
             #line default
             #line hidden
             
-            #line 638 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 639 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                              if (Model.ExtensionDueDate != null)
                             {
 
@@ -2069,7 +2070,7 @@ WriteLiteral("</b></td>\r\n");
 WriteLiteral("                                <td>");
 
             
-            #line 640 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 641 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                Write(Model.ExtensionDueDate);
 
             
@@ -2078,7 +2079,7 @@ WriteLiteral("                                <td>");
 WriteLiteral("</td>\r\n");
 
             
-            #line 641 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 642 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                             }
 
             
@@ -2088,7 +2089,7 @@ WriteLiteral("                        </tr>\r\n\r\n                        <tr>\
 "          <td><b>");
 
             
-            #line 645 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 646 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                               Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageLastModified")));
 
             
@@ -2097,7 +2098,7 @@ WriteLiteral("                        </tr>\r\n\r\n                        <tr>\
 WriteLiteral("</b></td>\r\n                            <td>");
 
             
-            #line 646 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 647 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                            Write(Model.LastModified);
 
             
@@ -2107,7 +2108,7 @@ WriteLiteral("</td>\r\n                        </tr>\r\n                        
 "               <td><b>");
 
             
-            #line 649 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 650 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                               Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageSubmissionComments")));
 
             
@@ -2119,13 +2120,13 @@ WriteLiteral("\r\n                        <!--</tr>\r\n                         
 "                            </div>\r\n\r\n                        </div>-->\r\n");
 
             
-            #line 692 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 693 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                         
             
             #line default
             #line hidden
             
-            #line 692 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 693 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                           
                             var today = DateTime.Now;
                         
@@ -2135,13 +2136,13 @@ WriteLiteral("\r\n                        <!--</tr>\r\n                         
 WriteLiteral("\r\n");
 
             
-            #line 695 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 696 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                         
             
             #line default
             #line hidden
             
-            #line 695 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 696 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                          if (Model.SubmissionStatus == "submitted" || (Model.SubmissionStatus == "draft" && Model.DueDate.Value < today))
                         {
 
@@ -2160,16 +2161,16 @@ WriteLiteral(" class=\"col-xl-4 mt-1 mb-1\"");
 
 WriteLiteral(">\r\n                                    <button");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 46263), Tuple.Create("\"", 46322)
-, Tuple.Create(Tuple.Create("", 46271), Tuple.Create("btn", 46271), true)
-, Tuple.Create(Tuple.Create(" ", 46274), Tuple.Create("btn-brand", 46275), true)
+WriteAttribute("class", Tuple.Create(" class=\"", 46265), Tuple.Create("\"", 46324)
+, Tuple.Create(Tuple.Create("", 46273), Tuple.Create("btn", 46273), true)
+, Tuple.Create(Tuple.Create(" ", 46276), Tuple.Create("btn-brand", 46277), true)
             
-            #line 701 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
-, Tuple.Create(Tuple.Create(" ", 46284), Tuple.Create<System.Object, System.Int32>(iscoordinator ? "coordinator" : ""
+            #line 702 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+, Tuple.Create(Tuple.Create(" ", 46286), Tuple.Create<System.Object, System.Int32>(iscoordinator ? "coordinator" : ""
             
             #line default
             #line hidden
-, 46285), false)
+, 46287), false)
 );
 
 WriteLiteral(" id=\"GradeBTnToMoodleLMSPage\"");
@@ -2177,7 +2178,7 @@ WriteLiteral(" id=\"GradeBTnToMoodleLMSPage\"");
 WriteLiteral(">");
 
             
-            #line 701 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 702 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                                                                                 Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGrade")));
 
             
@@ -2194,17 +2195,17 @@ WriteLiteral(" class=\"col-xl-4 mt-1\"");
 
 WriteLiteral(">\r\n                                    <button");
 
-WriteAttribute("class", Tuple.Create(" class=\"", 46697), Tuple.Create("\"", 46761)
-, Tuple.Create(Tuple.Create("", 46705), Tuple.Create("btn", 46705), true)
-, Tuple.Create(Tuple.Create(" ", 46708), Tuple.Create("btn-brand", 46709), true)
-, Tuple.Create(Tuple.Create(" ", 46718), Tuple.Create("mb-1", 46719), true)
+WriteAttribute("class", Tuple.Create(" class=\"", 46699), Tuple.Create("\"", 46763)
+, Tuple.Create(Tuple.Create("", 46707), Tuple.Create("btn", 46707), true)
+, Tuple.Create(Tuple.Create(" ", 46710), Tuple.Create("btn-brand", 46711), true)
+, Tuple.Create(Tuple.Create(" ", 46720), Tuple.Create("mb-1", 46721), true)
             
-            #line 706 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
-, Tuple.Create(Tuple.Create(" ", 46723), Tuple.Create<System.Object, System.Int32>(iscoordinator ? "coordinator" : ""
+            #line 707 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+, Tuple.Create(Tuple.Create(" ", 46725), Tuple.Create<System.Object, System.Int32>(iscoordinator ? "coordinator" : ""
             
             #line default
             #line hidden
-, 46724), false)
+, 46726), false)
 );
 
 WriteLiteral(" data-toggle=\"modal\"");
@@ -2214,7 +2215,7 @@ WriteLiteral(" data-target=\"#m_scrollable_modal_1\"");
 WriteLiteral(">");
 
             
-            #line 706 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 707 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                                                                                                                 Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGrantextension")));
 
             
@@ -2224,7 +2225,7 @@ WriteLiteral("</button>\r\n                                </div>\r\n           
 "div>\r\n");
 
             
-            #line 709 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 710 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                         }
 
             
@@ -2249,7 +2250,7 @@ WriteLiteral(" class=\"btn btn-prev\"");
 WriteLiteral(">");
 
             
-            #line 715 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 716 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                              Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPagePrevious")));
 
             
@@ -2274,7 +2275,7 @@ WriteLiteral(" class=\"btn btn-next\"");
 WriteLiteral(">");
 
             
-            #line 721 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 722 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                              Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageNext")));
 
             
@@ -2322,7 +2323,7 @@ WriteLiteral(" id=\"exampleModalLabel\"");
 WriteLiteral(">");
 
             
-            #line 735 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 736 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                           Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGrantExtension11")));
 
             
@@ -2362,14 +2363,14 @@ WriteLiteral(" type=\"text\"");
 
 WriteLiteral(" value=\"\"");
 
-WriteAttribute("placeholder", Tuple.Create(" placeholder=\"", 48651), Tuple.Create("\"", 48762)
+WriteAttribute("placeholder", Tuple.Create(" placeholder=\"", 48653), Tuple.Create("\"", 48764)
             
-            #line 742 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
-    , Tuple.Create(Tuple.Create("", 48665), Tuple.Create<System.Object, System.Int32>(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageSelectDateAndTime11"))
+            #line 743 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+    , Tuple.Create(Tuple.Create("", 48667), Tuple.Create<System.Object, System.Int32>(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageSelectDateAndTime11"))
             
             #line default
             #line hidden
-, 48665), false)
+, 48667), false)
 );
 
 WriteLiteral(" style=\"width:100%; cursor:pointer\"");
@@ -2391,7 +2392,7 @@ WriteLiteral(" data-dismiss=\"modal\"");
 WriteLiteral(">");
 
             
-            #line 746 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 747 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                                                     Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageClose")));
 
             
@@ -2410,7 +2411,7 @@ WriteLiteral(" class=\"btn btn-primary\"");
 WriteLiteral(">");
 
             
-            #line 747 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 748 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                                                   Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageAccept")));
 
             
@@ -2459,7 +2460,7 @@ WriteLiteral(" id=\"\"");
 WriteLiteral(">");
 
             
-            #line 782 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 783 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                          Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGrade")));
 
             
@@ -2503,14 +2504,14 @@ WriteLiteral(" max=\"100\"");
 
 WriteLiteral(" value=\"\"");
 
-WriteAttribute("placeholder", Tuple.Create(" placeholder=\"", 51528), Tuple.Create("\"", 51625)
+WriteAttribute("placeholder", Tuple.Create(" placeholder=\"", 51530), Tuple.Create("\"", 51627)
             
-            #line 789 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
-                , Tuple.Create(Tuple.Create("", 51542), Tuple.Create<System.Object, System.Int32>(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGrade"))
+            #line 790 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+                , Tuple.Create(Tuple.Create("", 51544), Tuple.Create<System.Object, System.Int32>(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageGrade"))
             
             #line default
             #line hidden
-, 51542), false)
+, 51544), false)
 );
 
 WriteLiteral(" style=\"width:100%; cursor:pointer\"");
@@ -2532,7 +2533,7 @@ WriteLiteral(" data-dismiss=\"modal\"");
 WriteLiteral(">");
 
             
-            #line 793 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 794 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                                                 Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageClose")));
 
             
@@ -2549,7 +2550,7 @@ WriteLiteral(" class=\"btn btn-primary\"");
 WriteLiteral(">");
 
             
-            #line 794 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 795 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                                                         Write(Html.Raw(UtilitiesManager.GetFieldLabel(Locale, "AssignmentSubmissionsPageSave")));
 
             
@@ -2563,7 +2564,7 @@ WriteLiteral(" id=\"stringNextFullName\"");
 WriteLiteral(">");
 
             
-            #line 800 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 801 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                 Write(stringNextFullName);
 
             
@@ -2572,7 +2573,7 @@ WriteLiteral(">");
 WriteLiteral("</span>\r\n");
 
             
-            #line 801 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 802 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
  if (Model.ScormOverallGrade != null)
 {
 
@@ -2586,7 +2587,7 @@ WriteLiteral(" id=\"stringValueChart\"");
 WriteLiteral(">");
 
             
-            #line 803 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 804 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                                   Write(Model.ScormOverallGrade.Replace('%', ' '));
 
             
@@ -2595,7 +2596,7 @@ WriteLiteral(">");
 WriteLiteral("</span>\r\n");
 
             
-            #line 804 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 805 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
 }
 else
 {
@@ -2610,7 +2611,7 @@ WriteLiteral(" id=\"stringValueChart\"");
 WriteLiteral("></span>\r\n");
 
             
-            #line 808 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 809 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
 }
 
             
@@ -2623,7 +2624,7 @@ WriteLiteral(" id=\"stringUserId\"");
 WriteLiteral(">");
 
             
-            #line 809 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 810 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
                           Write(ViewBag.userId);
 
             
@@ -2638,7 +2639,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 812 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 813 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
 Write(Scripts.Render("~/assets/vendors/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"));
 
             
@@ -2649,7 +2650,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 813 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 814 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
 Write(Scripts.Render("~/assets/vendors/bootstrap-datepicker/dist/locales/bootstrap-datepicker.ar-tn.min.js"));
 
             
@@ -2660,7 +2661,7 @@ WriteLiteral("\r\n");
 WriteLiteral("    ");
 
             
-            #line 814 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
+            #line 815 "..\..\Views\StudentsSubmissionPage\_SubmissionDetails.cshtml"
 Write(Scripts.Render("~/assets/vendors/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr-CH.min.js"));
 
             

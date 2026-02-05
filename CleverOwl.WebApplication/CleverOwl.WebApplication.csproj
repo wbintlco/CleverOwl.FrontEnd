@@ -782,11 +782,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>_StudentSubmissionsGrid.cshtml</DependentUpon>
     </Compile>
-    <Compile Include="Views\StudentsSubmissionPage\_SubmissionDetails.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>_SubmissionDetails.cshtml</DependentUpon>
-    </Compile>
     <Compile Include="Views\StudentsSubmissionPage\_SubmissionDetails1.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
